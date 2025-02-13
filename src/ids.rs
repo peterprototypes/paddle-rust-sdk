@@ -60,7 +60,13 @@ pub struct PriceID(String);
 
 /// Unique Paddle ID for this product, prefixed with `pro_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ProductID(String);
+pub struct ProductID(pub String);
+
+impl AsRef<str> for ProductID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
 
 /// Unique Paddle ID for this notification, prefixed with `ntf_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]

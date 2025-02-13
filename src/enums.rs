@@ -470,6 +470,7 @@ pub enum CountryCodeSupported {
 /// Whether this entity can be used in Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum Status {
     /// Entity is active and can be used.
     Active,
@@ -693,6 +694,7 @@ pub enum CardType {
 /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum CatalogType {
     /// Non-catalog item. Typically created for a specific transaction or subscription. Not returned when listing or shown in the Paddle dashboard.
     Custom,
@@ -703,6 +705,7 @@ pub enum CatalogType {
 /// How payment is collected. `automatic` for checkout, `manual` for invoices.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum CollectionMode {
     /// Payment is collected automatically using a checkout initially, then using a payment method on file.
     Automatic,
@@ -940,6 +943,7 @@ pub enum TaxMode {
 /// Tax category for this product. Used for charging the correct rate of tax. Selected tax category must be enabled on your Paddle account.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum TaxCategory {
     /// Non-customizable digital files or media (not software) acquired with an up front payment that can be accessed without any physical product being delivered.
     DigitalGoods,
