@@ -8,6 +8,7 @@ use reqwest::Method;
 use serde::Serialize;
 use serde_with::skip_serializing_none;
 
+use crate::entities::Product;
 use crate::enums::{CatalogType, Status, TaxCategory};
 use crate::ids::ProductID;
 use crate::Result;
@@ -25,7 +26,7 @@ pub struct ProductsList<'a> {
     include: Option<Vec<String>>,
     order_by: Option<String>,
     per_page: Option<usize>,
-    status: Option<String>,
+    status: Option<Status>,
     #[serde(serialize_with = "crate::comma_separated")]
     tax_category: Option<Vec<TaxCategory>>,
     r#type: Option<CatalogType>,
@@ -61,7 +62,7 @@ impl<'a> ProductsList<'a> {
         self
     }
 
-    /// Include related entities in the response.
+    /// Include related entities in the response. Valid values are: "prices".
     pub fn include(&mut self, entities: impl IntoIterator<Item = impl AsRef<str>>) -> &mut Self {
         self.include = Some(
             entities
@@ -95,11 +96,7 @@ impl<'a> ProductsList<'a> {
 
     /// Return entities that match the specified status.
     pub fn status(&mut self, status: Status) -> &mut Self {
-        self.status = Some(match status {
-            Status::Active => "active".to_string(),
-            Status::Archived => "archived".to_string(),
-        });
-
+        self.status = Some(status);
         self
     }
 
@@ -119,7 +116,7 @@ impl<'a> ProductsList<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<crate::entities::Product>> {
+    pub async fn send(&self) -> Result<Vec<Product>> {
         self.client.send(self, Method::GET, "/products").await
     }
 }
@@ -180,7 +177,7 @@ impl<'a> ProductsCreate<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<crate::entities::Product> {
+    pub async fn send(&self) -> Result<Product> {
         self.client.send(self, Method::POST, "/products").await
     }
 }
@@ -218,7 +215,7 @@ impl<'a> ProductGet<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<crate::entities::Product> {
+    pub async fn send(&self) -> Result<Product> {
         self.client
             .send(
                 self,
@@ -243,7 +240,7 @@ pub struct ProductUpdate<'a> {
     tax_category: Option<TaxCategory>,
     image_url: Option<String>,
     custom_data: Option<HashMap<String, String>>,
-    status: Option<String>,
+    status: Option<Status>,
 }
 
 impl<'a> ProductUpdate<'a> {
@@ -299,16 +296,12 @@ impl<'a> ProductUpdate<'a> {
 
     /// Set the product status.
     pub fn status(&mut self, status: Status) -> &mut Self {
-        self.status = Some(match status {
-            Status::Active => "active".to_string(),
-            Status::Archived => "archived".to_string(),
-        });
-
+        self.status = Some(status);
         self
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<crate::entities::Product> {
+    pub async fn send(&self) -> Result<Product> {
         self.client
             .send(
                 self,

@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 use chrono::DateTime;
 use chrono::FixedOffset;
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
 use crate::enums::*;
@@ -822,7 +823,7 @@ pub struct Price {
     /// Unique Paddle ID for this price, prefixed with `pri_`.
     pub id: PriceID,
     /// Unique Paddle ID for this product, prefixed with `pro_`.
-    pub product_id: ProductID,
+    pub product_id: Option<ProductID>,
     /// Internal description for this price, not shown to customers. Typically notes for your team.
     pub description: String,
     /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
@@ -834,22 +835,23 @@ pub struct Price {
     /// Trial period for the product related to this price. The billing cycle begins once the trial period is over. `null` for no trial period. Requires `billing_cycle`.
     pub trial_period: Option<Duration>,
     /// How tax is calculated for this price.
-    pub tax_mode: TaxMode,
+    pub tax_mode: Option<TaxMode>,
     /// A base representation of monetary value unformatted in the lowest denomination with currency code.
-    pub unit_price: Money,
+    pub unit_price: Option<Money>,
     /// List of unit price overrides. Use to override the base price with a custom price and currency for a country or group of countries.
+    #[serde(default)]
     pub unit_price_overrides: Vec<UnitPriceOverride>,
-    pub quantity: PriceQuantity,
+    pub quantity: Option<PriceQuantity>,
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Your own structured key-value data.
     pub custom_data: Option<HashMap<String, String>>,
     /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
+    pub import_meta: Option<ImportMeta>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
 }
 
 /// Represents a product entity.
@@ -874,9 +876,9 @@ pub struct Product {
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: Option<ImportMeta>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
 }
 
 /// Represents a subscription item.

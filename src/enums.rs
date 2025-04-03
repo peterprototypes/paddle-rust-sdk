@@ -470,7 +470,7 @@ pub enum CountryCodeSupported {
 /// Whether this entity can be used in Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "kebab-case")]
 pub enum Status {
     /// Entity is active and can be used.
     Active,

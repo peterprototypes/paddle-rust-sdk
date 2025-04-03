@@ -1,7 +1,7 @@
 use paddle_rust_sdk::Paddle;
 
 #[tokio::main]
-pub async fn main() {
+async fn main() {
     let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
 
     let product = client

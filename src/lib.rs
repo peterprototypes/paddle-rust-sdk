@@ -12,6 +12,7 @@ pub mod enums;
 pub mod error;
 pub mod ids;
 
+pub mod prices;
 pub mod products;
 
 pub mod response;
@@ -106,6 +107,18 @@ impl Paddle {
     /// ```
     pub fn product_update(&self, product_id: impl Into<ProductID>) -> products::ProductUpdate {
         products::ProductUpdate::new(self, product_id)
+    }
+
+    /// Returns a request builder listing prices
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let prices = client.prices_list().send().await.unwrap();
+    /// ```
+    pub fn prices_list(&self) -> prices::PricesList {
+        prices::PricesList::new(self)
     }
 
     async fn send<T: DeserializeOwned>(

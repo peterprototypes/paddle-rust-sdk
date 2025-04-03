@@ -60,6 +60,12 @@ pub struct EventID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PriceID(String);
 
+impl AsRef<str> for PriceID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this product, prefixed with `pro_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ProductID(pub String);
