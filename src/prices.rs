@@ -268,3 +268,47 @@ impl<'a> PricesCreate<'a> {
         self.client.send(self, Method::POST, "/prices").await
     }
 }
+
+/// Request builder for fetching a specific price from Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct PriceGet<'a> {
+    #[serde(skip)]
+    client: &'a super::Paddle,
+    #[serde(skip)]
+    price_id: PriceID,
+    #[serde(serialize_with = "crate::comma_separated")]
+    include: Option<Vec<String>>,
+}
+
+impl<'a> PriceGet<'a> {
+    pub fn new(client: &'a super::Paddle, price_id: impl Into<PriceID>) -> Self {
+        Self {
+            client,
+            price_id: price_id.into(),
+            include: None,
+        }
+    }
+
+    /// Include related entities in the response. Allowed values: "product".
+    pub fn include(&mut self, entities: impl IntoIterator<Item = impl AsRef<str>>) -> &mut Self {
+        self.include = Some(
+            entities
+                .into_iter()
+                .map(|s| s.as_ref().to_string())
+                .collect(),
+        );
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Price> {
+        self.client
+            .send(
+                self,
+                Method::GET,
+                &format!("/prices/{}", self.price_id.as_ref()),
+            )
+            .await
+    }
+}

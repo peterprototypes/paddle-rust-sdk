@@ -60,6 +60,12 @@ pub struct EventID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PriceID(String);
 
+impl<T: Display> From<T> for PriceID {
+    fn from(value: T) -> Self {
+        PriceID(value.to_string())
+    }
+}
+
 impl AsRef<str> for PriceID {
     fn as_ref(&self) -> &str {
         &self.0

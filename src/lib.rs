@@ -2,8 +2,6 @@
 //!
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
-use enums::{CurrencyCode, TaxCategory};
-use ids::ProductID;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -16,6 +14,10 @@ pub mod prices;
 pub mod products;
 
 pub mod response;
+
+use enums::{CurrencyCode, TaxCategory};
+use ids::{PriceID, ProductID};
+
 use response::{ErrorResponse, Response, SuccessResponse};
 
 use error::{Error, PaddleError};
@@ -142,6 +144,10 @@ impl Paddle {
         currency: CurrencyCode,
     ) -> prices::PricesCreate {
         prices::PricesCreate::new(self, product_id, description, amount, currency)
+    }
+
+    pub fn price_get(&self, price_id: impl Into<PriceID>) -> prices::PriceGet {
+        prices::PriceGet::new(self, price_id)
     }
 
     async fn send<T: DeserializeOwned>(
