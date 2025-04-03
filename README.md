@@ -6,7 +6,7 @@ Rust SDK for working with the Paddle API in server-side apps. (Unofficial)
 The following list outlines the current coverage of the Paddle API in this SDK. Everything in green is usable. Contributions are welcome!
 
 - ✅ Products
-- 🚧 Prices
+- ✅ Prices
 - 🚧 Discounts
 - 🚧 Customers
 - 🚧 Addresses

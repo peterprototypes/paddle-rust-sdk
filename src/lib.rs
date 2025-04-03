@@ -146,8 +146,29 @@ impl Paddle {
         prices::PricesCreate::new(self, product_id, description, amount, currency)
     }
 
+    /// Returns a request builder for fetching a specific price by id.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let price = client.price_get("price_01jqx9rd...").send().await.unwrap();
+    /// ```
     pub fn price_get(&self, price_id: impl Into<PriceID>) -> prices::PriceGet {
         prices::PriceGet::new(self, price_id)
+    }
+
+    /// Returns a request builder for updating a specific price.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// use paddle::enums::TaxCategory;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let price = client.price_update("pri_01jqxv...").name("Updated Name").send().await.unwrap();
+    /// ```
+    pub fn price_update(&self, price_id: impl Into<PriceID>) -> prices::PriceUpdate {
+        prices::PriceUpdate::new(self, price_id)
     }
 
     async fn send<T: DeserializeOwned>(
