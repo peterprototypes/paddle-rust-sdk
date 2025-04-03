@@ -126,13 +126,13 @@ impl Paddle {
     /// * `product_id` - Paddle ID for the product that this price is for.
     /// * `description` - Internal description for this price, not shown to customers. Typically notes for your team.
     /// * `amount` - Amount of the price in the smallest unit of the currency (e.g. 1000 cents for 10 USD).
-    /// * `currency` - Currency code for the price. Use the [CurrencyCode](crate::enums::CurrencyCode) enum to specify the currency.
+    /// * `currency` - Currency code for the price. Use the [CurrencyCode] enum to specify the currency.
     ///
     /// # Example:
     /// ```
     /// use paddle::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let price = client.price_create("pro_01jqx9rd...", 19.99).send().await.unwrap();
+    /// let price = client.price_create("pro_01jqx9rd...", "Low price", 19.99, CurrencyCode::USD).send().await.unwrap();
     /// ```
     pub fn price_create(
         &self,

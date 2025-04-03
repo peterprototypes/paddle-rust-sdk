@@ -201,17 +201,17 @@ impl<'a> PricesCreate<'a> {
     }
 
     /// How tax is calculated for this price. If omitted, defaults to TaxMode::AccountSetting.
-    /// See [TaxMode](crate::enums::TaxMode) for more information.
+    /// See [TaxMode] for more information.
     pub fn tax_mode(&mut self, tax_mode: TaxMode) -> &mut Self {
         self.tax_mode = tax_mode;
         self
     }
 
     /// Use to override the base price with a custom price and currency for a country or group of countries.
-    /// See [UnitPriceOverride](crate::entities::UnitPriceOverride) for more information.
-    /// See [CountryCodeSupported](crate::enums::CountryCodeSupported) for more information.
-    /// See [Money](crate::entities::Money) for more information.
-    /// See [CurrencyCode](crate::enums::CurrencyCode) for more information.
+    /// See [UnitPriceOverride] for more information.
+    /// See [CountryCodeSupported] for more information.
+    /// See [Money] for more information.
+    /// See [CurrencyCode] for more information.
     pub fn add_unit_price_override(
         &mut self,
         country_codes: impl IntoIterator<Item = CountryCodeSupported>,
@@ -239,10 +239,10 @@ impl<'a> PricesCreate<'a> {
     /// Use to override the base price with a custom price and currency for a country or group of countries.
     /// This will replace any existing overrides.
     /// Use `add_unit_price_override` to add additional overrides.
-    /// See [UnitPriceOverride](crate::entities::UnitPriceOverride) for more information.
-    /// See [CountryCodeSupported](crate::enums::CountryCodeSupported) for more information.
-    /// See [Money](crate::entities::Money) for more information.
-    /// See [CurrencyCode](crate::enums::CurrencyCode) for more information.
+    /// See [UnitPriceOverride] for more information.
+    /// See [CountryCodeSupported] for more information.
+    /// See [Money] for more information.
+    /// See [CurrencyCode] for more information.
     pub fn set_unit_price_overrides(&mut self, overrides: Vec<UnitPriceOverride>) -> &mut Self {
         self.unit_price_overrides = Some(overrides);
         self
