@@ -325,7 +325,7 @@ pub struct Duration {
     /// Unit of time.
     pub interval: Interval,
     /// Amount of time.
-    pub frequency: i64,
+    pub frequency: u64,
 }
 
 /// Details for invoicing. Required if `collection_mode` is `manual`.
@@ -812,9 +812,9 @@ pub struct UnitPriceOverride {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PriceQuantity {
     /// Minimum quantity of the product related to this price that can be bought. Required if `maximum` set.
-    pub minimum: i64,
+    pub minimum: u64,
     /// Maximum quantity of the product related to this price that can be bought. Required if `minimum` set. Must be greater than or equal to the `minimum` value.
-    pub maximum: i64,
+    pub maximum: u64,
 }
 
 /// Represents a price entity.
@@ -823,7 +823,7 @@ pub struct Price {
     /// Unique Paddle ID for this price, prefixed with `pri_`.
     pub id: PriceID,
     /// Unique Paddle ID for this product, prefixed with `pro_`.
-    pub product_id: Option<ProductID>,
+    pub product_id: ProductID,
     /// Internal description for this price, not shown to customers. Typically notes for your team.
     pub description: String,
     /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
@@ -835,13 +835,13 @@ pub struct Price {
     /// Trial period for the product related to this price. The billing cycle begins once the trial period is over. `null` for no trial period. Requires `billing_cycle`.
     pub trial_period: Option<Duration>,
     /// How tax is calculated for this price.
-    pub tax_mode: Option<TaxMode>,
+    pub tax_mode: TaxMode,
     /// A base representation of monetary value unformatted in the lowest denomination with currency code.
-    pub unit_price: Option<Money>,
+    pub unit_price: Money,
     /// List of unit price overrides. Use to override the base price with a custom price and currency for a country or group of countries.
     #[serde(default)]
     pub unit_price_overrides: Vec<UnitPriceOverride>,
-    pub quantity: Option<PriceQuantity>,
+    pub quantity: PriceQuantity,
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Your own structured key-value data.

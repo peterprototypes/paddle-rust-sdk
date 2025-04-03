@@ -658,6 +658,7 @@ pub enum AdjustmentItemType {
 /// Unit of time.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "kebab-case")]
 pub enum Interval {
     Day,
     Week,
@@ -931,6 +932,7 @@ pub enum SubscriptionItemStatus {
 /// How tax is calculated for this price.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum TaxMode {
     /// Prices use the setting from your account.
     AccountSetting,

@@ -124,7 +124,7 @@ impl<'a> ProductsList<'a> {
 /// Request builder for creating a new product in Paddle API.
 #[skip_serializing_none]
 #[derive(Serialize)]
-pub struct ProductsCreate<'a> {
+pub struct ProductCreate<'a> {
     #[serde(skip)]
     client: &'a super::Paddle,
     name: String,
@@ -135,7 +135,7 @@ pub struct ProductsCreate<'a> {
     custom_data: Option<HashMap<String, String>>,
 }
 
-impl<'a> ProductsCreate<'a> {
+impl<'a> ProductCreate<'a> {
     pub fn new(
         client: &'a super::Paddle,
         name: impl Into<String>,

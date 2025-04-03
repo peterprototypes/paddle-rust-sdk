@@ -2,7 +2,7 @@
 //!
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
-use enums::TaxCategory;
+use enums::{CurrencyCode, TaxCategory};
 use ids::ProductID;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, Url};
 use serde::{de::DeserializeOwned, Serialize};
@@ -40,7 +40,7 @@ impl Paddle {
     /// Example:
     /// ```
     /// use paddle::Paddle;
-    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// ```
     pub fn new(
         api_key: impl Into<String>,
@@ -60,7 +60,7 @@ impl Paddle {
     /// # Example:
     /// ```
     /// use paddle::Paddle;
-    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let products = client.products_list().send().await.unwrap();
     /// ```
     pub fn products_list(&self) -> products::ProductsList {
@@ -73,15 +73,15 @@ impl Paddle {
     /// ```
     /// use paddle::Paddle;
     /// use paddle::enums::TaxCategory;
-    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.products_create("My Product", TaxCategory::Standard).send().await.unwrap();
     /// ```
     pub fn product_create(
         &self,
         name: impl Into<String>,
         tax_category: TaxCategory,
-    ) -> products::ProductsCreate {
-        products::ProductsCreate::new(self, name, tax_category)
+    ) -> products::ProductCreate {
+        products::ProductCreate::new(self, name, tax_category)
     }
 
     /// Returns a request builder for fetching a specific product.
@@ -89,7 +89,7 @@ impl Paddle {
     /// # Example:
     /// ```
     /// use paddle::Paddle;
-    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.product_get("pro_01jqx9rd...").send().await.unwrap();
     /// ```
     pub fn product_get(&self, product_id: impl Into<ProductID>) -> products::ProductGet {
@@ -102,7 +102,7 @@ impl Paddle {
     /// ```
     /// use paddle::Paddle;
     /// use paddle::enums::TaxCategory;
-    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.product_update("pro_01jqx9rd...").name("My New Name").send().await.unwrap();
     /// ```
     pub fn product_update(&self, product_id: impl Into<ProductID>) -> products::ProductUpdate {
@@ -114,11 +114,34 @@ impl Paddle {
     /// # Example:
     /// ```
     /// use paddle::Paddle;
-    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let prices = client.prices_list().send().await.unwrap();
     /// ```
     pub fn prices_list(&self) -> prices::PricesList {
         prices::PricesList::new(self)
+    }
+
+    /// Returns a request builder for creating a new price.
+    ///
+    /// * `product_id` - Paddle ID for the product that this price is for.
+    /// * `description` - Internal description for this price, not shown to customers. Typically notes for your team.
+    /// * `amount` - Amount of the price in the smallest unit of the currency (e.g. 1000 cents for 10 USD).
+    /// * `currency` - Currency code for the price. Use the [CurrencyCode](crate::enums::CurrencyCode) enum to specify the currency.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let price = client.price_create("pro_01jqx9rd...", 19.99).send().await.unwrap();
+    /// ```
+    pub fn price_create(
+        &self,
+        product_id: impl Into<ProductID>,
+        description: impl Into<String>,
+        amount: u64,
+        currency: CurrencyCode,
+    ) -> prices::PricesCreate {
+        prices::PricesCreate::new(self, product_id, description, amount, currency)
     }
 
     async fn send<T: DeserializeOwned>(
@@ -142,6 +165,10 @@ impl Paddle {
             }
             _ => builder,
         };
+
+        // let text = builder.send().await?.text().await?;
+        // println!("{}", text);
+        // todo!();
 
         let res: Response<_> = builder.send().await?.json().await?;
 
@@ -173,3 +200,21 @@ where
         None => serializer.serialize_none(),
     }
 }
+
+// fn comma_separated_enum<S, T>(
+//     values: &Vec<T>,
+//     serializer: S,
+// ) -> std::result::Result<S::Ok, S::Error>
+// where
+//     S: serde::Serializer,
+//     T: Serialize,
+// {
+//     let mut serialized = vec![];
+
+//     for val in values {
+//         let serialized_value = serde_json::to_string(val).map_err(serde::ser::Error::custom)?;
+//         serialized.push(serialized_value);
+//     }
+
+//     serializer.serialize_str(serialized.join(",").as_str())
+// }
