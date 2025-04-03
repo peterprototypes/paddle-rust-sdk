@@ -1,9 +1,9 @@
-# paddle-rust-sdk
+# Paddle Rust SDK
 Rust SDK for working with the Paddle API in server-side apps. (Unofficial)
 
-### Implementation Progress
+## Paddle API Coverage
 
-This crate is currently in development.
+The following list outlines the current coverage of the Paddle API in this SDK. Contributions are welcome!
 
 - ✅ Products
 - 🚧 Prices
@@ -25,7 +25,7 @@ This crate is currently in development.
 - 🚧 Notification logs
 - 🚧 Simulations
 
-### Running examples
+## Running examples
 
 ```bash
 PADDLE_API_KEY=<YOUR_API_KEY> cargo run --example products-list
