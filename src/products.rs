@@ -1,6 +1,8 @@
-//! Product entities describe the items that customers can purchase.
+//! Builders for making requests to the Paddle API for product entities.
 //!
-//! Product entities are used in the [Paddle API](https://developer.paddle.com/api-reference/products/overview) to manage product information and pricing.
+//! See the [Paddle API](https://developer.paddle.com/api-reference/products/overview) documentation for more information.
+
+use std::collections::HashMap;
 
 use reqwest::Method;
 use serde::Serialize;
@@ -10,10 +12,7 @@ use crate::enums::{CatalogType, Status, TaxCategory};
 use crate::ids::ProductID;
 use crate::Result;
 
-/// Returns a paginated list of products. Use the query parameters to page through results.
-///
-/// By default, Paddle returns products that are active. Use the status query parameter to return products that are archived.
-/// Use the include parameter to include related price entities in the response.
+/// Request builder for fetching products from Paddle API.
 #[skip_serializing_none]
 #[derive(Serialize)]
 pub struct ProductsList<'a> {
@@ -122,5 +121,66 @@ impl<'a> ProductsList<'a> {
     /// Send the request to Paddle and return the response.
     pub async fn send(&self) -> Result<Vec<crate::entities::Product>> {
         self.client.send(self, Method::GET, "/products").await
+    }
+}
+
+/// Request builder for creating a new product in Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct ProductsCreate<'a> {
+    #[serde(skip)]
+    client: &'a super::Paddle,
+    name: String,
+    tax_category: TaxCategory,
+    description: Option<String>,
+    catalog_type: Option<CatalogType>,
+    image_url: Option<String>,
+    custom_data: Option<HashMap<String, String>>,
+}
+
+impl<'a> ProductsCreate<'a> {
+    pub fn new(
+        client: &'a super::Paddle,
+        name: impl Into<String>,
+        tax_category: TaxCategory,
+    ) -> Self {
+        Self {
+            client,
+            name: name.into(),
+            tax_category,
+            description: None,
+            catalog_type: None,
+            image_url: None,
+            custom_data: None,
+        }
+    }
+
+    /// Set the product description.
+    pub fn description(&mut self, description: impl Into<String>) -> &mut Self {
+        self.description = Some(description.into());
+        self
+    }
+
+    /// Set the product catalog type.
+    pub fn catalog_type(&mut self, catalog_type: CatalogType) -> &mut Self {
+        self.catalog_type = Some(catalog_type);
+        self
+    }
+
+    /// Set the product image URL.
+    pub fn image_url(&mut self, image_url: impl Into<String>) -> &mut Self {
+        self.image_url = Some(image_url.into());
+        self
+    }
+
+    /// Set custom data for the product.
+    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
+        self.custom_data = Some(custom_data);
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<crate::entities::Product> {
+        self.client.send(self, Method::POST, "/products").await
     }
 }

@@ -943,7 +943,7 @@ pub enum TaxMode {
 /// Tax category for this product. Used for charging the correct rate of tax. Selected tax category must be enabled on your Paddle account.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "kebab-case")]
 pub enum TaxCategory {
     /// Non-customizable digital files or media (not software) acquired with an up front payment that can be accessed without any physical product being delivered.
     DigitalGoods,

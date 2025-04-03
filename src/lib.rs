@@ -2,6 +2,7 @@
 //!
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
+use enums::TaxCategory;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -62,6 +63,25 @@ impl Paddle {
     /// ```
     pub fn products_list(&self) -> products::ProductsList {
         products::ProductsList::new(self)
+    }
+
+    /// Returns a request builder for creating a new product.
+    ///
+    /// This method requires a name and a tax category.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// use paddle::enums::TaxCategory;
+    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let product = client.products_create("My Product", TaxCategory::Digital).send().await.unwrap();
+    /// ```
+    pub fn products_create(
+        &self,
+        name: impl Into<String>,
+        tax_category: TaxCategory,
+    ) -> products::ProductsCreate {
+        products::ProductsCreate::new(self, name, tax_category)
     }
 
     async fn send<T: DeserializeOwned>(
