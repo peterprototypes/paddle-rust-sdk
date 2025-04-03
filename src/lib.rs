@@ -3,6 +3,7 @@
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
 use enums::TaxCategory;
+use ids::ProductID;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -67,21 +68,44 @@ impl Paddle {
 
     /// Returns a request builder for creating a new product.
     ///
-    /// This method requires a name and a tax category.
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// use paddle::enums::TaxCategory;
+    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let product = client.products_create("My Product", TaxCategory::Standard).send().await.unwrap();
+    /// ```
+    pub fn product_create(
+        &self,
+        name: impl Into<String>,
+        tax_category: TaxCategory,
+    ) -> products::ProductsCreate {
+        products::ProductsCreate::new(self, name, tax_category)
+    }
+
+    /// Returns a request builder for fetching a specific product.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let product = client.product_get("pro_01jqx9rd...").send().await.unwrap();
+    /// ```
+    pub fn product_get(&self, product_id: impl Into<ProductID>) -> products::ProductGet {
+        products::ProductGet::new(self, product_id)
+    }
+
+    /// Returns a request builder for updating a specific product.
     ///
     /// # Example:
     /// ```
     /// use paddle::Paddle;
     /// use paddle::enums::TaxCategory;
     /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
-    /// let product = client.products_create("My Product", TaxCategory::Digital).send().await.unwrap();
+    /// let product = client.product_update("pro_01jqx9rd...").name("My New Name").send().await.unwrap();
     /// ```
-    pub fn products_create(
-        &self,
-        name: impl Into<String>,
-        tax_category: TaxCategory,
-    ) -> products::ProductsCreate {
-        products::ProductsCreate::new(self, name, tax_category)
+    pub fn product_update(&self, product_id: impl Into<ProductID>) -> products::ProductUpdate {
+        products::ProductUpdate::new(self, product_id)
     }
 
     async fn send<T: DeserializeOwned>(
@@ -100,8 +124,9 @@ impl Paddle {
 
         builder = match method {
             reqwest::Method::GET => builder.query(&req),
-            reqwest::Method::POST => builder.json(&req),
-            reqwest::Method::PUT => builder.json(&req),
+            reqwest::Method::POST | reqwest::Method::PUT | reqwest::Method::PATCH => {
+                builder.json(&req)
+            }
             _ => builder,
         };
 

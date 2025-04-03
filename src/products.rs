@@ -133,7 +133,7 @@ pub struct ProductsCreate<'a> {
     name: String,
     tax_category: TaxCategory,
     description: Option<String>,
-    catalog_type: Option<CatalogType>,
+    r#type: Option<CatalogType>,
     image_url: Option<String>,
     custom_data: Option<HashMap<String, String>>,
 }
@@ -149,7 +149,7 @@ impl<'a> ProductsCreate<'a> {
             name: name.into(),
             tax_category,
             description: None,
-            catalog_type: None,
+            r#type: None,
             image_url: None,
             custom_data: None,
         }
@@ -163,7 +163,7 @@ impl<'a> ProductsCreate<'a> {
 
     /// Set the product catalog type.
     pub fn catalog_type(&mut self, catalog_type: CatalogType) -> &mut Self {
-        self.catalog_type = Some(catalog_type);
+        self.r#type = Some(catalog_type);
         self
     }
 
@@ -182,5 +182,139 @@ impl<'a> ProductsCreate<'a> {
     /// Send the request to Paddle and return the response.
     pub async fn send(&self) -> Result<crate::entities::Product> {
         self.client.send(self, Method::POST, "/products").await
+    }
+}
+
+/// Request builder for fetching a specific product from Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct ProductGet<'a> {
+    #[serde(skip)]
+    client: &'a super::Paddle,
+    #[serde(skip)]
+    product_id: ProductID,
+    #[serde(serialize_with = "crate::comma_separated")]
+    include: Option<Vec<String>>,
+}
+
+impl<'a> ProductGet<'a> {
+    pub fn new(client: &'a super::Paddle, product_id: impl Into<ProductID>) -> Self {
+        Self {
+            client,
+            product_id: product_id.into(),
+            include: None,
+        }
+    }
+
+    /// Include related entities in the response.
+    pub fn include(&mut self, entities: impl IntoIterator<Item = impl AsRef<str>>) -> &mut Self {
+        self.include = Some(
+            entities
+                .into_iter()
+                .map(|s| s.as_ref().to_string())
+                .collect(),
+        );
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<crate::entities::Product> {
+        self.client
+            .send(
+                self,
+                Method::GET,
+                &format!("/products/{}", self.product_id.as_ref()),
+            )
+            .await
+    }
+}
+
+/// Request builder for updating a product in Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct ProductUpdate<'a> {
+    #[serde(skip)]
+    client: &'a super::Paddle,
+    #[serde(skip)]
+    product_id: ProductID,
+    name: Option<String>,
+    description: Option<String>,
+    r#type: Option<CatalogType>,
+    tax_category: Option<TaxCategory>,
+    image_url: Option<String>,
+    custom_data: Option<HashMap<String, String>>,
+    status: Option<String>,
+}
+
+impl<'a> ProductUpdate<'a> {
+    pub fn new(client: &'a super::Paddle, product_id: impl Into<ProductID>) -> Self {
+        Self {
+            client,
+            product_id: product_id.into(),
+            name: None,
+            description: None,
+            r#type: None,
+            tax_category: None,
+            image_url: None,
+            custom_data: None,
+            status: None,
+        }
+    }
+
+    /// Set the product name.
+    pub fn name(&mut self, name: impl Into<String>) -> &mut Self {
+        self.name = Some(name.into());
+        self
+    }
+
+    /// Set the product description.
+    pub fn description(&mut self, description: impl Into<String>) -> &mut Self {
+        self.description = Some(description.into());
+        self
+    }
+
+    /// Set the product catalog type.
+    pub fn catalog_type(&mut self, catalog_type: CatalogType) -> &mut Self {
+        self.r#type = Some(catalog_type);
+        self
+    }
+
+    /// Set the product tax category.
+    pub fn tax_category(&mut self, tax_category: TaxCategory) -> &mut Self {
+        self.tax_category = Some(tax_category);
+        self
+    }
+
+    /// Set the product image URL.
+    pub fn image_url(&mut self, image_url: impl Into<String>) -> &mut Self {
+        self.image_url = Some(image_url.into());
+        self
+    }
+
+    /// Set custom data for the product.
+    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
+        self.custom_data = Some(custom_data);
+        self
+    }
+
+    /// Set the product status.
+    pub fn status(&mut self, status: Status) -> &mut Self {
+        self.status = Some(match status {
+            Status::Active => "active".to_string(),
+            Status::Archived => "archived".to_string(),
+        });
+
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<crate::entities::Product> {
+        self.client
+            .send(
+                self,
+                Method::PATCH,
+                &format!("/products/{}", self.product_id.as_ref()),
+            )
+            .await
     }
 }
