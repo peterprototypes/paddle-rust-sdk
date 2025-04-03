@@ -1,3 +1,5 @@
+//! Error handling module for Paddle API client
+
 use std::error;
 use std::fmt;
 

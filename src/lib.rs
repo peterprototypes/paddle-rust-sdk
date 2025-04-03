@@ -1,5 +1,9 @@
-use reqwest::{header::CONTENT_TYPE, IntoUrl, Url};
-use serde::{Deserialize, Serialize};
+//! # Paddle API Client
+//!
+//! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
+
+use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, Url};
+use serde::{de::DeserializeOwned, Serialize};
 
 pub mod entities;
 pub mod enums;
@@ -8,44 +12,17 @@ pub mod ids;
 
 pub mod products;
 
+pub mod response;
+use response::{ErrorResponse, Response, SuccessResponse};
+
 use error::{Error, PaddleError};
 
-#[derive(Debug, Deserialize)]
-pub struct Meta {
-    pub request_id: String,
-}
+type Result<T> = std::result::Result<SuccessResponse<T>, Error>;
 
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
-enum Response<T> {
-    Success(SuccessResponse<T>),
-    Error(ErrorResponse),
-}
-
-#[derive(Debug, Deserialize)]
-pub struct SuccessResponse<T> {
-    pub data: T,
-    pub meta: Meta,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ErrorResponse {
-    pub error: PaddleError,
-    pub meta: Meta,
-}
-
-// pub struct PaddleResponse<T> {
-//     data: T,
-//     meta: Meta,
-// }
-
-pub trait PaddleRequest: Serialize {
-    type Response: serde::de::DeserializeOwned;
-
-    fn path(&self) -> String;
-    fn method(&self) -> reqwest::Method;
-}
-
+/// Paddle API client
+///
+/// This struct is used to create a new Paddle client instance.
+#[derive(Clone, Debug)]
 pub struct Paddle {
     base_url: Url,
     api_key: String,
@@ -55,24 +32,49 @@ impl Paddle {
     pub const PRODUCTION: &'static str = "https://api.paddle.com";
     pub const SANDBOX: &'static str = "https://sandbox-api.paddle.com";
 
-    pub fn new(api_key: String, base_url: impl IntoUrl) -> Result<Self, Error> {
+    /// Creates a new Paddle client instance.
+    ///
+    /// Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// ```
+    pub fn new(
+        api_key: impl Into<String>,
+        base_url: impl IntoUrl,
+    ) -> std::result::Result<Self, Error> {
         Ok(Self {
             base_url: base_url.into_url()?,
-            api_key,
+            api_key: api_key.into(),
         })
     }
 
-    pub async fn send<T: PaddleRequest>(
+    /// Returns a request builder for fetching products. Use the after method to page through results.
+    ///
+    /// By default, Paddle returns products that are active. Use the status method to return products that are archived.
+    /// Use the include method to include related price entities in the response.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::PRODUCTION).unwrap();
+    /// let products = client.products_list().send().await.unwrap();
+    /// ```
+    pub fn products_list(&self) -> products::ProductsList {
+        products::ProductsList::new(self)
+    }
+
+    async fn send<T: DeserializeOwned>(
         &self,
-        req: T,
-    ) -> Result<SuccessResponse<T::Response>, Error> {
-        let url = self.base_url.join(&req.path())?;
+        req: impl Serialize,
+        method: Method,
+        path: &str,
+    ) -> Result<T> {
+        let url = self.base_url.join(path)?;
         let client = reqwest::Client::new();
 
-        let method = req.method();
-
         let mut builder = client
-            .request(req.method(), url)
+            .request(method.clone(), url)
             .bearer_auth(self.api_key.clone())
             .header(CONTENT_TYPE, "application/json; charset=utf-8");
 
@@ -83,10 +85,6 @@ impl Paddle {
             _ => builder,
         };
 
-        // let res = builder.send().await?.text().await?;
-        // dbg!(res);
-        // todo!()
-
         let res: Response<_> = builder.send().await?.json().await?;
 
         match res {
@@ -96,7 +94,10 @@ impl Paddle {
     }
 }
 
-fn comma_separated<S, T>(values: &Option<Vec<T>>, serializer: S) -> Result<S::Ok, S::Error>
+fn comma_separated<S, T>(
+    values: &Option<Vec<T>>,
+    serializer: S,
+) -> std::result::Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
     T: AsRef<str>,
