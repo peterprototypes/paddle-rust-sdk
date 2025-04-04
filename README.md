@@ -8,7 +8,7 @@ The following list outlines the current coverage of the Paddle API in this SDK. 
 - ✅ Products
 - ✅ Prices
 - ✅ Discounts
-- 🚧 Customers
+- ✅ Customers
 - 🚧 Addresses
 - 🚧 Businesses
 - 🚧 Payment methods

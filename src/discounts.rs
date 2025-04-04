@@ -215,8 +215,7 @@ impl<'a> DiscountCreate<'a> {
     }
 }
 
-/// Request builder for fetching discounts from Paddle API.
-#[skip_serializing_none]
+/// Request builder for fetching a single discount from Paddle API.
 #[derive(Serialize)]
 pub struct DiscountGet<'a> {
     #[serde(skip)]

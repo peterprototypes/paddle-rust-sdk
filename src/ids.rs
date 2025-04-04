@@ -8,9 +8,33 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AddressID(String);
 
+impl<T: Display> From<T> for AddressID {
+    fn from(value: T) -> Self {
+        AddressID(value.to_string())
+    }
+}
+
+impl AsRef<str> for AddressID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this customer entity, prefixed with `ctm_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CustomerID(String);
+
+impl<T: Display> From<T> for CustomerID {
+    fn from(value: T) -> Self {
+        CustomerID(value.to_string())
+    }
+}
+
+impl AsRef<str> for CustomerID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
 
 /// Unique Paddle ID for this adjustment entity, prefixed with `adj_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]

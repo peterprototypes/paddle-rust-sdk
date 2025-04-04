@@ -2,6 +2,9 @@
 //!
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
+use std::fmt::Display;
+
+use entities::CustomerAuthenticationToken;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -10,6 +13,7 @@ pub mod enums;
 pub mod error;
 pub mod ids;
 
+pub mod customers;
 pub mod discounts;
 pub mod prices;
 pub mod products;
@@ -17,7 +21,7 @@ pub mod products;
 pub mod response;
 
 use enums::{CurrencyCode, DiscountType, TaxCategory};
-use ids::{DiscountID, PriceID, ProductID};
+use ids::{CustomerID, DiscountID, PriceID, ProductID};
 
 use response::{ErrorResponse, Response, SuccessResponse};
 
@@ -224,6 +228,114 @@ impl Paddle {
     /// ```
     pub fn discount_update(&self, discount_id: impl Into<DiscountID>) -> discounts::DiscountUpdate {
         discounts::DiscountUpdate::new(self, discount_id)
+    }
+
+    /// Returns a request builder for fetching customers. Use the after method to page through results.
+    ///
+    /// By default, Paddle returns customers that are `active`. Use the status query parameter to return customers that are archived.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.customers_list().send().await.unwrap();
+    /// ```
+    pub fn customers_list(&self) -> customers::CustomersList {
+        customers::CustomersList::new(self)
+    }
+
+    /// Returns a request builder for creating a new customer.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.customer_create("test@example.com").send().await.unwrap();
+    /// ```
+    pub fn customer_create(&self, email: impl Into<String>) -> customers::CustomerCreate {
+        customers::CustomerCreate::new(self, email.into())
+    }
+
+    /// Returns a request builder for fetching a specific customer by id.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let discount = client.customer_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
+    /// ```
+    pub fn customer_get(&self, customer_id: impl Into<CustomerID>) -> customers::CustomerGet {
+        customers::CustomerGet::new(self, customer_id)
+    }
+
+    /// Returns a request builder for updating customer data.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let discount = client.customer_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd").email("new_email@example.com").send().await.unwrap();
+    /// ```
+    pub fn customer_update(&self, customer_id: impl Into<CustomerID>) -> customers::CustomerUpdate {
+        customers::CustomerUpdate::new(self, customer_id)
+    }
+
+    /// Returns a request builder for fetching a list of credit balances for each currency for a customer.
+    ///
+    /// Each balance has three totals:
+    ///
+    /// * `available` - total available to use.
+    /// * `reserved` - total temporarily reserved for billed transactions.
+    /// * `used` - total amount of credit used.
+    ///
+    /// Credit is added to the available total initially. When used, it moves to the used total.
+    ///
+    /// The reserved total is used when a credit balance is applied to a transaction that's marked as billed, like when working with an issued invoice. It's not available for other transactions at this point, but isn't considered used until the transaction is completed. If a billed transaction is canceled, any reserved credit moves back to available.
+    ///
+    /// Credit balances are created automatically by Paddle when you take an action that results in Paddle creating a credit for a customer, like making prorated changes to a subscription. An empty data array is returned where a customer has no credit balances.
+    ///
+    /// The response is not paginated.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let discount = client.customer_credit_balances("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
+    /// ```
+    pub fn customer_credit_balances(
+        &self,
+        customer_id: impl Into<CustomerID>,
+    ) -> customers::CustomerCreditBalances {
+        customers::CustomerCreditBalances::new(self, customer_id)
+    }
+
+    /// Generates an authentication token for a customer.
+    ///
+    /// You can pass a generated authentication token to Paddle.js when opening a checkout to let customers work with saved payment methods.
+    ///
+    /// Authentication tokens are temporary and shouldn't be cached. They're valid until the expires_at date returned in the response.
+    pub async fn generate_auth_token(
+        &self,
+        customer_id: impl Display,
+    ) -> Result<CustomerAuthenticationToken> {
+        let client = reqwest::Client::new();
+
+        let res: Response<_> = client
+            .post(format!(
+                "{}customers/{}/auth-token",
+                self.base_url, customer_id
+            ))
+            // .header(CONTENT_TYPE, "application/json; charset=utf-8")
+            .bearer_auth(self.api_key.clone())
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        match res {
+            Response::Success(success) => Ok(success),
+            Response::Error(error) => Err(Error::Paddle(error)),
+        }
     }
 
     async fn send<T: DeserializeOwned>(
