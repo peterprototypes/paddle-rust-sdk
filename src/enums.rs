@@ -743,6 +743,7 @@ pub enum PaymentMethodOrigin {
 /// Whether this entity can be used in Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "kebab-case")]
 pub enum DiscountStatus {
     /// Entity is active and can be used.
     Active,
@@ -753,6 +754,7 @@ pub enum DiscountStatus {
 /// Type of discount. Determines how this discount impacts the checkout or transaction total.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum DiscountType {
     /// Discounts a checkout or transaction by a flat amount, for example -$100. Requires `currency_code`.
     Flat,

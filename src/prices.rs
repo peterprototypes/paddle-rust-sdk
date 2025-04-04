@@ -12,14 +12,14 @@ use serde_with::skip_serializing_none;
 use crate::entities::{Duration, Money, Price, PriceQuantity, UnitPriceOverride};
 use crate::enums::{CatalogType, CountryCodeSupported, CurrencyCode, Interval, Status, TaxMode};
 use crate::ids::{PriceID, ProductID};
-use crate::Result;
+use crate::{Paddle, Result};
 
 /// Request builder for fetching prices from Paddle API.
 #[skip_serializing_none]
 #[derive(Serialize)]
 pub struct PricesList<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     after: Option<PriceID>,
     #[serde(serialize_with = "crate::comma_separated")]
     id: Option<Vec<PriceID>>,
@@ -35,7 +35,7 @@ pub struct PricesList<'a> {
 }
 
 impl<'a> PricesList<'a> {
-    pub fn new(client: &'a super::Paddle) -> Self {
+    pub fn new(client: &'a Paddle) -> Self {
         Self {
             client,
             after: None,
@@ -127,7 +127,7 @@ impl<'a> PricesList<'a> {
 #[derive(Serialize)]
 pub struct PricesCreate<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     description: String,
     product_id: ProductID,
     unit_price: Money,
@@ -143,7 +143,7 @@ pub struct PricesCreate<'a> {
 
 impl<'a> PricesCreate<'a> {
     pub fn new(
-        client: &'a super::Paddle,
+        client: &'a Paddle,
         product_id: impl Into<ProductID>,
         description: impl Into<String>,
         amount: u64,
@@ -274,7 +274,7 @@ impl<'a> PricesCreate<'a> {
 #[derive(Serialize)]
 pub struct PriceGet<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     #[serde(skip)]
     price_id: PriceID,
     #[serde(serialize_with = "crate::comma_separated")]
@@ -282,7 +282,7 @@ pub struct PriceGet<'a> {
 }
 
 impl<'a> PriceGet<'a> {
-    pub fn new(client: &'a super::Paddle, price_id: impl Into<PriceID>) -> Self {
+    pub fn new(client: &'a Paddle, price_id: impl Into<PriceID>) -> Self {
         Self {
             client,
             price_id: price_id.into(),
@@ -318,7 +318,7 @@ impl<'a> PriceGet<'a> {
 #[derive(Serialize)]
 pub struct PriceUpdate<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     #[serde(skip)]
     price_id: PriceID,
     description: Option<String>,
@@ -335,7 +335,7 @@ pub struct PriceUpdate<'a> {
 }
 
 impl<'a> PriceUpdate<'a> {
-    pub fn new(client: &'a super::Paddle, price_id: impl Into<PriceID>) -> Self {
+    pub fn new(client: &'a Paddle, price_id: impl Into<PriceID>) -> Self {
         Self {
             client,
             price_id: price_id.into(),

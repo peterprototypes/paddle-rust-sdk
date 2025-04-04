@@ -635,7 +635,7 @@ pub struct Discount {
     /// Amount to discount by. For `percentage` discounts, must be an amount between `0.01` and `100`. For `flat` and `flat_per_seat` discounts, amount in the lowest denomination for a currency.
     pub amount: String,
     /// Supported three-letter ISO 4217 currency code. Required where discount type is `flat` or `flat_per_seat`.
-    pub currency_code: CurrencyCode,
+    pub currency_code: Option<CurrencyCode>,
     /// Whether this discount applies for multiple subscription billing periods (`true`) or not (`false`).
     pub recur: bool,
     /// Number of subscription billing periods that this discount recurs for. Requires `recur`. `null` if this discount recurs forever.
@@ -651,7 +651,7 @@ pub struct Discount {
     /// RFC 3339 datetime string of when this discount expires. Discount can no longer be redeemed after this date has elapsed. `null` if this discount can be redeemed forever.
     ///
     /// Expired discounts can't be redeemed against transactions or checkouts, but can be applied when updating subscriptions.
-    pub expires_at: Option<DateTime<FixedOffset>>,
+    pub expires_at: Option<DateTime<Utc>>,
     /// Your own structured key-value data.
     pub custom_data: Option<HashMap<String, String>>,
     /// How many times this discount has been redeemed. Automatically incremented by Paddle.
@@ -659,11 +659,11 @@ pub struct Discount {
     /// Paddle counts a usage as a redemption on a checkout, transaction, or subscription. Transactions created for subscription renewals, midcycle changes, and one-time charges aren't considered a redemption.
     pub times_used: i64,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
     /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
+    pub import_meta: Option<ImportMeta>,
 }
 
 /// Represents a discount entity when creating discounts.
@@ -1572,7 +1572,7 @@ pub struct TransactionTotals {
 
 /// SubscriptionTransactionDetailsPreview requires same fields as TransactionLineItemPreview but proration is optional
 #[derive(Clone, Debug, Serialize, Deserialize)]
-struct SubscriptionTransactionDetailsPreviewItem {
+pub struct SubscriptionTransactionDetailsPreviewItem {
     /// Paddle ID for the price related to this transaction line item, prefixed with `pri_`.
     /// The value is null for custom prices being previewed.
     pub price_id: Option<PriceID>,

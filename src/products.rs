@@ -11,14 +11,14 @@ use serde_with::skip_serializing_none;
 use crate::entities::Product;
 use crate::enums::{CatalogType, Status, TaxCategory};
 use crate::ids::ProductID;
-use crate::Result;
+use crate::{Paddle, Result};
 
 /// Request builder for fetching products from Paddle API.
 #[skip_serializing_none]
 #[derive(Serialize)]
 pub struct ProductsList<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     after: Option<ProductID>,
     #[serde(serialize_with = "crate::comma_separated")]
     id: Option<Vec<ProductID>>,
@@ -33,7 +33,7 @@ pub struct ProductsList<'a> {
 }
 
 impl<'a> ProductsList<'a> {
-    pub fn new(client: &'a super::Paddle) -> Self {
+    pub fn new(client: &'a Paddle) -> Self {
         Self {
             client,
             after: None,
@@ -126,7 +126,7 @@ impl<'a> ProductsList<'a> {
 #[derive(Serialize)]
 pub struct ProductCreate<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     name: String,
     tax_category: TaxCategory,
     description: Option<String>,
@@ -136,11 +136,7 @@ pub struct ProductCreate<'a> {
 }
 
 impl<'a> ProductCreate<'a> {
-    pub fn new(
-        client: &'a super::Paddle,
-        name: impl Into<String>,
-        tax_category: TaxCategory,
-    ) -> Self {
+    pub fn new(client: &'a Paddle, name: impl Into<String>, tax_category: TaxCategory) -> Self {
         Self {
             client,
             name: name.into(),
@@ -187,7 +183,7 @@ impl<'a> ProductCreate<'a> {
 #[derive(Serialize)]
 pub struct ProductGet<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     #[serde(skip)]
     product_id: ProductID,
     #[serde(serialize_with = "crate::comma_separated")]
@@ -195,7 +191,7 @@ pub struct ProductGet<'a> {
 }
 
 impl<'a> ProductGet<'a> {
-    pub fn new(client: &'a super::Paddle, product_id: impl Into<ProductID>) -> Self {
+    pub fn new(client: &'a Paddle, product_id: impl Into<ProductID>) -> Self {
         Self {
             client,
             product_id: product_id.into(),
@@ -231,7 +227,7 @@ impl<'a> ProductGet<'a> {
 #[derive(Serialize)]
 pub struct ProductUpdate<'a> {
     #[serde(skip)]
-    client: &'a super::Paddle,
+    client: &'a Paddle,
     #[serde(skip)]
     product_id: ProductID,
     name: Option<String>,
@@ -244,7 +240,7 @@ pub struct ProductUpdate<'a> {
 }
 
 impl<'a> ProductUpdate<'a> {
-    pub fn new(client: &'a super::Paddle, product_id: impl Into<ProductID>) -> Self {
+    pub fn new(client: &'a Paddle, product_id: impl Into<ProductID>) -> Self {
         Self {
             client,
             product_id: product_id.into(),

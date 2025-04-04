@@ -10,13 +10,14 @@ pub mod enums;
 pub mod error;
 pub mod ids;
 
+pub mod discounts;
 pub mod prices;
 pub mod products;
 
 pub mod response;
 
-use enums::{CurrencyCode, TaxCategory};
-use ids::{PriceID, ProductID};
+use enums::{CurrencyCode, DiscountType, TaxCategory};
+use ids::{DiscountID, PriceID, ProductID};
 
 use response::{ErrorResponse, Response, SuccessResponse};
 
@@ -44,6 +45,7 @@ impl Paddle {
     /// use paddle::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// ```
+    #[allow(clippy::result_large_err)]
     pub fn new(
         api_key: impl Into<String>,
         base_url: impl IntoUrl,
@@ -169,6 +171,47 @@ impl Paddle {
     /// ```
     pub fn price_update(&self, price_id: impl Into<PriceID>) -> prices::PriceUpdate {
         prices::PriceUpdate::new(self, price_id)
+    }
+
+    /// Returns a request builder for fetching discounts.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let discounts = client.discounts_list().send().await.unwrap();
+    /// ```
+    pub fn discounts_list(&self) -> discounts::DiscountsList {
+        discounts::DiscountsList::new(self)
+    }
+
+    /// Returns a request builder for creating discounts.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let discount = client.discount_create("15", "Winter Holidays", DiscountType::Percentage).send().await.unwrap();
+    /// ```
+    pub fn discount_create(
+        &self,
+        amount: impl Into<String>,
+        description: impl Into<String>,
+        discount_type: DiscountType,
+    ) -> discounts::DiscountCreate {
+        discounts::DiscountCreate::new(self, amount, description, discount_type)
+    }
+
+    /// Returns a request builder for fetching a specific discount by id.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let discount = client.discount_get("dsc_01jqzpbmnq...").send().await.unwrap();
+    /// ```
+    pub fn discount_get(&self, discount_id: impl Into<DiscountID>) -> discounts::DiscountGet {
+        discounts::DiscountGet::new(self, discount_id)
     }
 
     async fn send<T: DeserializeOwned>(

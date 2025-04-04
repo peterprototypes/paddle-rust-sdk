@@ -48,6 +48,18 @@ pub struct CustomerPortalSessionID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DiscountID(String);
 
+impl<T: Display> From<T> for DiscountID {
+    fn from(value: T) -> Self {
+        DiscountID(value.to_string())
+    }
+}
+
+impl AsRef<str> for DiscountID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique code that customers can use to apply this discount at checkout. Use letters and numbers only, up to 16 characters. Not case-sensitive.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DiscountCode(String);
