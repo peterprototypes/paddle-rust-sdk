@@ -13,6 +13,7 @@ pub mod enums;
 pub mod error;
 pub mod ids;
 
+pub mod addresses;
 pub mod customers;
 pub mod discounts;
 pub mod prices;
@@ -20,8 +21,8 @@ pub mod products;
 
 pub mod response;
 
-use enums::{CurrencyCode, DiscountType, TaxCategory};
-use ids::{CustomerID, DiscountID, PriceID, ProductID};
+use enums::{CountryCodeSupported, CurrencyCode, DiscountType, TaxCategory};
+use ids::{AddressID, CustomerID, DiscountID, PriceID, ProductID};
 
 use response::{ErrorResponse, Response, SuccessResponse};
 
@@ -320,12 +321,10 @@ impl Paddle {
     ) -> Result<CustomerAuthenticationToken> {
         let client = reqwest::Client::new();
 
+        let url = format!("{}customers/{}/auth-token", self.base_url, customer_id);
+
         let res: Response<_> = client
-            .post(format!(
-                "{}customers/{}/auth-token",
-                self.base_url, customer_id
-            ))
-            // .header(CONTENT_TYPE, "application/json; charset=utf-8")
+            .post(url)
             .bearer_auth(self.api_key.clone())
             .send()
             .await?
@@ -336,6 +335,68 @@ impl Paddle {
             Response::Success(success) => Ok(success),
             Response::Error(error) => Err(Error::Paddle(error)),
         }
+    }
+
+    /// Returns a request builder for fetching customers addresses.
+    ///
+    /// By default, Paddle returns addresses that are `active`. Use the status query parameter to return addresses that are archived.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.addresses_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
+    /// ```
+    pub fn addresses_list(&self, customer_id: impl Into<CustomerID>) -> addresses::AddressesList {
+        addresses::AddressesList::new(self, customer_id)
+    }
+
+    /// Returns a request builder for creating a new customer address.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.address_create("ctm_01jqztc78e1xfdgwhcgjzdrvgd", CountryCodeSupported::US).send().await.unwrap();
+    /// ```
+    pub fn address_create(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        country_code: CountryCodeSupported,
+    ) -> addresses::AddressCreate {
+        addresses::AddressCreate::new(self, customer_id, country_code)
+    }
+
+    /// Returns a request builder for getting an address for a customer using its ID and related customer ID.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.address_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").send().await.unwrap();
+    /// ```
+    pub fn address_get(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        address_id: impl Into<AddressID>,
+    ) -> addresses::AddressGet {
+        addresses::AddressGet::new(self, customer_id, address_id)
+    }
+
+    /// Returns a request builder for updating an address for a customer using its ID and related customer ID.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.address_update("add_01hv8gwdfkw5z6d1yy6pa3xyrz", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").first_line("Test").send().await.unwrap();
+    /// ```
+    pub fn address_update(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        address_id: impl Into<AddressID>,
+    ) -> addresses::AddressUpdate {
+        addresses::AddressUpdate::new(self, customer_id, address_id)
     }
 
     async fn send<T: DeserializeOwned>(

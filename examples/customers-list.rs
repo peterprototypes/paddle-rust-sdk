@@ -1,5 +1,4 @@
-use chrono::{Months, Utc};
-use paddle_rust_sdk::{enums::DiscountType, Paddle};
+use paddle_rust_sdk::Paddle;
 
 #[tokio::main]
 async fn main() {

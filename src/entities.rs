@@ -45,9 +45,9 @@ pub struct Address {
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: Option<ImportMeta>,
 }
