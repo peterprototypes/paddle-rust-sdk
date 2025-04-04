@@ -214,6 +214,18 @@ impl Paddle {
         discounts::DiscountGet::new(self, discount_id)
     }
 
+    /// Returns a request builder for creating discounts.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let discount = client.discount_update("dsc_01jqzpbmnq...").amount("18").send().await.unwrap();
+    /// ```
+    pub fn discount_update(&self, discount_id: impl Into<DiscountID>) -> discounts::DiscountUpdate {
+        discounts::DiscountUpdate::new(self, discount_id)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,

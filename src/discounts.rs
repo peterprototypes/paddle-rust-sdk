@@ -244,3 +244,149 @@ impl<'a> DiscountGet<'a> {
             .await
     }
 }
+
+/// Request builder for updating discounts in Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct DiscountUpdate<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    discount_id: DiscountID,
+    status: Option<Status>,
+    description: Option<String>,
+    enabled_for_checkout: Option<bool>,
+    code: Option<String>,
+    r#type: Option<DiscountType>,
+    amount: Option<String>,
+    currency_code: Option<CurrencyCode>,
+    recur: Option<bool>,
+    maximum_recurring_intervals: Option<u64>,
+    usage_limit: Option<u64>,
+    restrict_to: Option<Vec<String>>,
+    expires_at: Option<DateTime<Utc>>,
+    custom_data: Option<HashMap<String, String>>,
+}
+
+impl<'a> DiscountUpdate<'a> {
+    pub fn new(client: &'a Paddle, discount_id: impl Into<DiscountID>) -> Self {
+        Self {
+            client,
+            discount_id: discount_id.into(),
+            status: None,
+            description: None,
+            enabled_for_checkout: None,
+            code: None,
+            r#type: None,
+            amount: None,
+            currency_code: None,
+            recur: None,
+            maximum_recurring_intervals: None,
+            usage_limit: None,
+            restrict_to: None,
+            expires_at: None,
+            custom_data: None,
+        }
+    }
+
+    /// Whether this entity can be used in Paddle.
+    pub fn status(&mut self, status: Status) -> &mut Self {
+        self.status = Some(status);
+        self
+    }
+
+    /// Short description for this discount for your reference. Not shown to customers.
+    pub fn description(&mut self, description: impl Into<String>) -> &mut Self {
+        self.description = Some(description.into());
+        self
+    }
+
+    /// Whether this discount can be redeemed by customers at checkout (true) or not (false).
+    pub fn enabled_for_checkout(&mut self, enabled: bool) -> &mut Self {
+        self.enabled_for_checkout = Some(enabled);
+        self
+    }
+
+    /// Unique code that customers can use to redeem this discount at checkout. Not case-sensitive.
+    pub fn code(&mut self, code: impl Into<String>) -> &mut Self {
+        self.code = Some(code.into());
+        self
+    }
+
+    /// Type of discount. Determines how this discount impacts the checkout or transaction total.
+    pub fn discount_type(&mut self, discount_type: DiscountType) -> &mut Self {
+        self.r#type = Some(discount_type);
+        self
+    }
+
+    /// Amount to discount by. For percentage discounts, must be an amount between 0.01 and 100. For flat and flat_per_seat discounts, amount in the lowest denomination for a currency.
+    pub fn amount(&mut self, amount: impl Into<String>) -> &mut Self {
+        self.amount = Some(amount.into());
+        self
+    }
+
+    /// Supported three-letter ISO 4217 currency code. Required where discount type is [DiscountType::Flat] or [DiscountType::FlatPerSeat].
+    pub fn currency_code(&mut self, currency_code: CurrencyCode) -> &mut Self {
+        self.currency_code = Some(currency_code);
+        self
+    }
+
+    /// Whether this discount applies for multiple subscription billing periods (`true`) or not (`false`). If omitted, defaults to `false`.
+    pub fn recur(&mut self, recur: bool) -> &mut Self {
+        self.recur = Some(recur);
+        self
+    }
+
+    /// Number of subscription billing periods that this discount recurs for. Requires `recur`. `null` if this discount recurs forever.
+    ///
+    /// Subscription renewals, midcycle changes, and one-time charges billed to a subscription aren't considered a redemption. `times_used` is not incremented in these cases.
+    pub fn maximum_recurring_intervals(&mut self, maximum_recurring_intervals: u64) -> &mut Self {
+        self.maximum_recurring_intervals = Some(maximum_recurring_intervals);
+        self
+    }
+
+    /// Maximum number of times this discount can be redeemed. This is an overall limit for this discount, rather than a per-customer limit. `null` if this discount can be redeemed an unlimited amount of times.
+    pub fn usage_limit(&mut self, usage_limit: u64) -> &mut Self {
+        self.usage_limit = Some(usage_limit);
+        self
+    }
+
+    /// Product or price IDs that this discount is for. When including a product ID, all prices for that product can be discounted. `null` if this discount applies to all products and prices.
+    pub fn restrict_to(
+        &mut self,
+        restrict_to: impl IntoIterator<Item = impl AsRef<str>>,
+    ) -> &mut Self {
+        self.restrict_to = Some(
+            restrict_to
+                .into_iter()
+                .map(|s| s.as_ref().to_string())
+                .collect(),
+        );
+        self
+    }
+
+    /// Datetime when this discount expires. Discount can no longer be redeemed after this date has elapsed. `null` if this discount can be redeemed forever.
+    ///
+    /// Expired discounts can't be redeemed against transactions or checkouts, but can be applied when updating subscriptions.
+    pub fn expires_at(&mut self, expires_at: DateTime<Utc>) -> &mut Self {
+        self.expires_at = Some(expires_at);
+        self
+    }
+
+    /// Set custom data for this discount.
+    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
+        self.custom_data = Some(custom_data);
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Discount> {
+        self.client
+            .send(
+                self,
+                Method::PATCH,
+                &format!("/discounts/{}", self.discount_id.as_ref()),
+            )
+            .await
+    }
+}
