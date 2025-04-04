@@ -1,6 +1,13 @@
 [package]
-name = "paddle-rust-sdk"
 version = "0.1.0"
+name = "paddle-rust-sdk"
+description = "Rust SDK for working with the Paddle API in server-side apps. (Unofficial)"
+license = "Apache-2.0"
+readme = "README.md"
+authors = ["Peter Todorov <ptodorov@cytec.bg>"]
+keywords = ["payments", "paddle", "finance"]
+categories = ["finance", "web-programming"]
+repository = "https://github.com/peterprototypes/paddle-rust-sdk"
 edition = "2021"
 
 [dependencies]
