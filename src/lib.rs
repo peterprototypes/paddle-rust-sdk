@@ -14,6 +14,7 @@ pub mod error;
 pub mod ids;
 
 pub mod addresses;
+pub mod businesses;
 pub mod customers;
 pub mod discounts;
 pub mod prices;
@@ -397,6 +398,22 @@ impl Paddle {
         address_id: impl Into<AddressID>,
     ) -> addresses::AddressUpdate {
         addresses::AddressUpdate::new(self, customer_id, address_id)
+    }
+
+    /// Returns a request builder for creating a new customer business.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.business_create("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "Company Inc.").send().await.unwrap();
+    /// ```
+    pub fn business_create(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        name: impl Into<String>,
+    ) -> businesses::BusinessCreate {
+        businesses::BusinessCreate::new(self, customer_id, name)
     }
 
     async fn send<T: DeserializeOwned>(

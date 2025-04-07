@@ -52,31 +52,6 @@ pub struct Address {
     pub import_meta: Option<ImportMeta>,
 }
 
-/// Represents an address entity when creating addresses.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AddressCreate {
-    /// Unique Paddle ID for this address entity, prefixed with `add_`.
-    pub id: AddressID,
-    /// Memorable description for this address.
-    pub description: Option<String>,
-    /// First line of this address.
-    pub first_line: Option<String>,
-    /// Second line of this address.
-    pub second_line: Option<String>,
-    /// City of this address.
-    pub city: Option<String>,
-    /// ZIP or postal code of this address. Required for some countries.
-    pub postal_code: Option<String>,
-    /// State, county, or region of this address.
-    pub region: Option<String>,
-    /// Supported two-letter ISO 3166-1 alpha-2 country code.
-    pub country_code: CountryCodeSupported,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
-}
-
 /// Represents an address entity when previewing addresses.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AddressPreview {
@@ -84,29 +59,6 @@ pub struct AddressPreview {
     pub postal_code: Option<String>,
     /// Supported two-letter ISO 3166-1 alpha-2 country code.
     pub country_code: CountryCodeSupported,
-}
-
-/// Represents an address entity when updating addresses.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AddressUpdate {
-    /// Memorable description for this address.
-    pub description: Option<String>,
-    /// First line of this address.
-    pub first_line: Option<String>,
-    /// Second line of this address.
-    pub second_line: Option<String>,
-    /// City of this address.
-    pub city: Option<String>,
-    /// ZIP or postal code of this address. Required for some countries.
-    pub postal_code: Option<String>,
-    /// State, county, or region of this address.
-    pub region: Option<String>,
-    /// Supported two-letter ISO 3166-1 alpha-2 country code.
-    pub country_code: CountryCodeSupported,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Whether this entity can be used in Paddle.
-    pub status: Status,
 }
 
 /// Breakdown of the total for an adjustment.
@@ -353,7 +305,7 @@ pub struct BillingDetailsUpdate {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Contacts {
+pub struct Contact {
     /// Full name.
     pub name: String,
     /// Email address for this entity.
@@ -376,51 +328,15 @@ pub struct Business {
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// List of contacts related to this business, typically used for sending invoices.
-    pub contacts: Vec<Contacts>,
+    pub contacts: Option<Vec<Contact>>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
     /// Your own structured key-value data.
     pub custom_data: Option<HashMap<String, String>>,
     /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
-}
-
-/// Represents a business entity when creating businesses.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct BusinessCreate {
-    /// Unique Paddle ID for this business entity, prefixed with `biz_`.
-    pub id: BusinessID,
-    /// Full name.
-    pub name: String,
-    /// Company number for this business.
-    pub company_number: Option<String>,
-    /// Tax or VAT Number for this business.
-    pub tax_identifier: Option<String>,
-    /// List of contacts related to this business, typically used for sending invoices.
-    pub contacts: Contacts,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
-}
-
-/// Represents a business entity when updating businesses.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct BusinessUpdate {
-    /// Full name.
-    pub name: String,
-    /// Company number for this business.
-    pub company_number: Option<String>,
-    /// Tax or VAT Number for this business.
-    pub tax_identifier: Option<String>,
-    /// Whether this entity can be used in Paddle.
-    pub status: Status,
-    /// List of contacts related to this business, typically used for sending invoices.
-    pub contacts: Contacts,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub import_meta: Option<ImportMeta>,
 }
 
 /// Card metadata
@@ -482,26 +398,6 @@ pub struct Customer {
     pub updated_at: DateTime<Utc>,
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: Option<ImportMeta>,
-}
-
-/// Represents a customer entity when creating customers.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CustomerCreate {
-    /// Unique Paddle ID for this customer entity, prefixed with `ctm_`.
-    pub id: CustomerID,
-    /// Full name of this customer. Required when creating transactions where `collection_mode` is `manual` (invoices).
-    pub name: Option<String>,
-    /// Email address for this entity.
-    pub email: String,
-    /// Whether this customer opted into marketing from you. `false` unless customers check the marketing consent box
-    /// when using Paddle Checkout. Set automatically by Paddle.
-    pub marketing_consent: bool,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Valid IETF BCP 47 short form locale tag. If omitted, defaults to `en`.
-    pub locale: String,
-    /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
 }
 
 /// PayPal metadata
@@ -588,26 +484,6 @@ pub struct CustomerPortalSessionCreate {
     pub subscription_ids: Vec<SubscriptionID>,
 }
 
-/// Represents a customer entity when updating customers.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CustomerUpdate {
-    /// Full name of this customer. Required when creating transactions where `collection_mode` is `manual` (invoices).
-    pub name: Option<String>,
-    /// Email address for this entity.
-    pub email: String,
-    /// Whether this customer opted into marketing from you. `false` unless customers check the marketing consent box
-    /// when using Paddle Checkout. Set automatically by Paddle.
-    pub marketing_consent: bool,
-    /// Whether this entity can be used in Paddle.
-    pub status: Status,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Valid IETF BCP 47 short form locale tag.
-    pub locale: String,
-    /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
-}
-
 /// Represents a customer authentication token.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CustomerAuthenticationToken {
@@ -664,57 +540,6 @@ pub struct Discount {
     pub updated_at: DateTime<Utc>,
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: Option<ImportMeta>,
-}
-
-/// Represents a discount entity when creating discounts.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct DiscountCreate {
-    /// Unique Paddle ID for this discount, prefixed with `dsc_`.
-    pub id: DiscountID,
-    /// Whether this entity can be used in Paddle.
-    pub status: DiscountStatus,
-    /// Short description for this discount for your reference. Not shown to customers.
-    pub description: String,
-    /// Whether this discount can be redeemed by customers at checkout (`true`) or not (`false`).
-    pub enabled_for_checkout: bool,
-    /// Unique code that customers can use to redeem this discount at checkout. Use letters and numbers only, up to 16 characters. Not case-sensitive.
-    ///
-    /// If omitted and `enabled_for_checkout` is `true`, Paddle generates a random 10-character code.
-    pub code: Option<String>,
-    /// Type of discount. Determines how this discount impacts the checkout or transaction total.
-    pub r#type: DiscountType,
-    /// Amount to discount by. For `percentage` discounts, must be an amount between `0.01` and `100`. For `flat` and `flat_per_seat` discounts, amount in the lowest denomination for a currency.
-    pub amount: String,
-    /// Supported three-letter ISO 4217 currency code. Required where discount type is `flat` or `flat_per_seat`.
-    pub currency_code: CurrencyCode,
-    /// Whether this discount applies for multiple subscription billing periods (`true`) or not (`false`). If omitted, defaults to `false`.
-    pub recur: bool,
-    /// Number of subscription billing periods that this discount recurs for. Requires `recur`. `null` if this discount recurs forever.
-    ///
-    /// Subscription renewals, midcycle changes, and one-time charges billed to a subscription aren't considered a redemption. `times_used` is not incremented in these cases.
-    pub maximum_recurring_intervals: Option<i64>,
-    /// Maximum number of times this discount can be redeemed. This is an overall limit for this discount, rather than a per-customer limit. `null` if this discount can be redeemed an unlimited amount of times.
-    ///
-    /// Paddle counts a usage as a redemption on a checkout, transaction, or the initial application against a subscription. Transactions created for subscription renewals, midcycle changes, and one-time charges aren't considered a redemption.
-    pub usage_limit: Option<i64>,
-    /// Product or price IDs that this discount is for. When including a product ID, all prices for that product can be discounted. `null` if this discount applies to all products and prices.
-    pub restrict_to: Option<Vec<String>>,
-    /// RFC 3339 datetime string of when this discount expires. Discount can no longer be redeemed after this date has elapsed. `null` if this discount can be redeemed forever.
-    ///
-    /// Expired discounts can't be redeemed against transactions or checkouts, but can be applied when updating subscriptions.
-    pub expires_at: Option<DateTime<FixedOffset>>,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// How many times this discount has been redeemed. Automatically incremented by Paddle.
-    ///
-    /// Paddle counts a usage as a redemption on a checkout, transaction, or subscription. Transactions created for subscription renewals, midcycle changes, and one-time charges aren't considered a redemption.
-    pub times_used: i64,
-    /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
-    /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
-    /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
 }
 
 /// Details of the discount applied to this subscription.
@@ -1064,37 +889,6 @@ pub struct NotificationSettingUpdate {
     pub traffic_source: TrafficSource,
 }
 
-/// Represents a price entity when creating prices.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct PriceCreate {
-    /// Unique Paddle ID for this price, prefixed with `pri_`.
-    pub id: PriceID,
-    /// Internal description for this price, not shown to customers. Typically notes for your team.
-    pub description: String,
-    /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
-    pub r#type: CatalogType,
-    /// Name of this price, shown to customers at checkout and on invoices. Typically describes how often the related product bills.
-    pub name: Option<String>,
-    /// Unique Paddle ID for this product, prefixed with `pro_`.
-    pub product_id: ProductID,
-    /// How often this price should be charged. `null` if price is non-recurring (one-time). If omitted, defaults to `null`.
-    pub billing_cycle: Option<Duration>,
-    /// Trial period for the product related to this price. The billing cycle begins once the trial period is over.
-    /// `null` for no trial period. Requires `billing_cycle`. If omitted, defaults to `null`.
-    pub trial_period: Option<Duration>,
-    /// How tax is calculated for this price.
-    pub tax_mode: TaxMode,
-    /// A base representation of monetary value unformatted in the lowest denomination with currency code.
-    pub unit_price: Money,
-    /// List of unit price overrides. Use to override the base price with a custom price and currency for a country or group of countries.
-    pub unit_price_overrides: Vec<UnitPriceOverride>,
-    pub quantity: PriceQuantity,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
-}
-
 /// Represents a price preview entity.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PricePreview {
@@ -1133,53 +927,6 @@ pub struct PricePreview {
     pub updated_at: String,
 }
 
-/// Represents a price entity when updating prices.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct PriceUpdate {
-    /// Internal description for this price, not shown to customers. Typically notes for your team.
-    pub description: String,
-    /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
-    pub r#type: CatalogType,
-    /// Name of this price, shown to customers at checkout and on invoices. Typically describes how often the related product bills.
-    pub name: Option<String>,
-    /// How often this price should be charged. `null` if price is non-recurring (one-time).
-    pub billing_cycle: Option<Duration>,
-    /// Trial period for the product related to this price. The billing cycle begins once the trial period is over. `null` for no trial period. Requires `billing_cycle`.
-    pub trial_period: Option<Duration>,
-    /// How tax is calculated for this price.
-    pub tax_mode: TaxMode,
-    /// A base representation of monetary value unformatted in the lowest denomination with currency code.
-    pub unit_price: Money,
-    /// List of unit price overrides. Use to override the base price with a custom price and currency for a country or group of countries.
-    pub unit_price_overrides: Vec<UnitPriceOverride>,
-    pub quantity: PriceQuantity,
-    /// Whether this entity can be used in Paddle.
-    pub status: Status,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-}
-
-/// Represents a product entity when creating products.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ProductCreate {
-    /// Unique Paddle ID for this product, prefixed with `pro_`.
-    pub id: ProductID,
-    /// Name of this product.
-    pub name: Option<String>,
-    /// Short description for this product.
-    pub description: Option<String>,
-    /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
-    pub r#type: CatalogType,
-    /// Tax category for this product. Used for charging the correct rate of tax. Selected tax category must be enabled on your Paddle account.
-    pub tax_category: TaxCategory,
-    /// Image for this product. Included in the checkout and on some customer documents.
-    pub image_url: Option<String>,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
-}
-
 /// Represents a product (preview) entity.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ProductPreview {
@@ -1206,25 +953,6 @@ pub struct ProductPreview {
     pub created_at: String,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
     pub updated_at: String,
-}
-
-/// Represents a product entity when updating products.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ProductUpdate {
-    /// Name of this product.
-    pub name: Option<String>,
-    /// Short description for this product.
-    pub description: Option<String>,
-    /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
-    pub r#type: CatalogType,
-    /// Tax category for this product. Used for charging the correct rate of tax. Selected tax category must be enabled on your Paddle account.
-    pub tax_category: TaxCategory,
-    /// Image for this product. Included in the checkout and on some customer documents.
-    pub image_url: Option<String>,
-    /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
-    /// Whether this entity can be used in Paddle.
-    pub status: Status,
 }
 
 /// Represents a report entity.
