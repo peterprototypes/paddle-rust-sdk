@@ -1,4 +1,9 @@
 # Paddle Rust SDK
+
+[![crates.io](https://img.shields.io/crates/v/paddle-rust-sdk?label=latest)](https://crates.io/crates/paddle-rust-sdk)
+[![Docs](https://docs.rs/paddle-rust-sdk/badge.svg)](https://docs.rs/paddle-rust-sdk)
+![License](https://img.shields.io/crates/l/paddle-rust-sdk.svg)
+
 Rust SDK for working with the Paddle API in server-side apps. (Unofficial)
 
 ## Paddle API Coverage
@@ -10,7 +15,7 @@ The following list outlines the current coverage of the Paddle API in this SDK. 
 - ✅ Discounts
 - ✅ Customers
 - ✅ Addresses
-- 🚧 Businesses
+- 👷 Businesses
 - 🚧 Payment methods
 - 🚧 Customer portal sessions
 - 🚧 Transactions
