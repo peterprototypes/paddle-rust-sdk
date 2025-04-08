@@ -23,7 +23,7 @@ pub mod products;
 pub mod response;
 
 use enums::{CountryCodeSupported, CurrencyCode, DiscountType, TaxCategory};
-use ids::{AddressID, CustomerID, DiscountID, PriceID, ProductID};
+use ids::{AddressID, BusinessID, CustomerID, DiscountID, PriceID, ProductID};
 
 use response::{ErrorResponse, Response, SuccessResponse};
 
@@ -431,6 +431,22 @@ impl Paddle {
         name: impl Into<String>,
     ) -> businesses::BusinessCreate {
         businesses::BusinessCreate::new(self, customer_id, name)
+    }
+
+    /// Returns a request builder for getting a business for a customer using its ID and related customer ID.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.business_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "biz_01jr85bypq4d3w139m53zw2559").send().await.unwrap();
+    /// ```
+    pub fn business_get(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        business_id: impl Into<BusinessID>,
+    ) -> businesses::BusinessGet {
+        businesses::BusinessGet::new(self, customer_id, business_id)
     }
 
     async fn send<T: DeserializeOwned>(

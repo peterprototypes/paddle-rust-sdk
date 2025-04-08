@@ -171,3 +171,44 @@ impl<'a> BusinessCreate<'a> {
             .await
     }
 }
+
+/// Request builder for fetching a single business from Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct BusinessGet<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    customer_id: CustomerID,
+    #[serde(skip)]
+    business_id: BusinessID,
+}
+
+impl<'a> BusinessGet<'a> {
+    pub fn new(
+        client: &'a Paddle,
+        customer_id: impl Into<CustomerID>,
+        business_id: impl Into<BusinessID>,
+    ) -> Self {
+        Self {
+            client,
+            customer_id: customer_id.into(),
+            business_id: business_id.into(),
+        }
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Business> {
+        self.client
+            .send(
+                self,
+                Method::GET,
+                &format!(
+                    "/customers/{}/businesses/{}",
+                    self.customer_id.as_ref(),
+                    self.business_id.as_ref()
+                ),
+            )
+            .await
+    }
+}
