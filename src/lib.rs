@@ -390,7 +390,7 @@ impl Paddle {
     /// ```
     /// use paddle::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let customers = client.address_update("add_01hv8gwdfkw5z6d1yy6pa3xyrz", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").first_line("Test").send().await.unwrap();
+    /// let customers = client.address_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").first_line("Test").send().await.unwrap();
     /// ```
     pub fn address_update(
         &self,
@@ -447,6 +447,22 @@ impl Paddle {
         business_id: impl Into<BusinessID>,
     ) -> businesses::BusinessGet {
         businesses::BusinessGet::new(self, customer_id, business_id)
+    }
+
+    /// Returns a request builder for updating a business for a customer using its ID and related customer ID.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.business_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "biz_01jr85bypq4d3w139m53zw2559").first_line("Test").send().await.unwrap();
+    /// ```
+    pub fn business_update(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        business_id: impl Into<BusinessID>,
+    ) -> businesses::BusinessUpdate {
+        businesses::BusinessUpdate::new(self, customer_id, business_id)
     }
 
     async fn send<T: DeserializeOwned>(

@@ -15,19 +15,16 @@ The following list outlines the current coverage of the Paddle API in this SDK. 
 - ✅ Discounts
 - ✅ Customers
 - ✅ Addresses
-- 👷 Businesses
-- 🚧 Payment methods
+- ✅ Businesses
+- 👷 Payment methods
 - 🚧 Customer portal sessions
 - 🚧 Transactions
 - 🚧 Subscriptions
 - 🚧 Adjustments
 - 🚧 Pricing preview
 - 🚧 Reports
-- 🚧 Event types
 - 🚧 Events
-- 🚧 Notification settings
 - 🚧 Notifications
-- 🚧 Notification logs
 - 🚧 Simulations
 
 ## Running examples

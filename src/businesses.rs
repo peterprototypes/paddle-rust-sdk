@@ -212,3 +212,84 @@ impl<'a> BusinessGet<'a> {
             .await
     }
 }
+
+/// Request builder for updating a business in Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct BusinessUpdate<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    customer_id: CustomerID,
+    #[serde(skip)]
+    business_id: BusinessID,
+    name: Option<String>,
+    company_number: Option<String>,
+    tax_identifier: Option<String>,
+    contacts: Option<Vec<Contact>>,
+    custom_data: Option<HashMap<String, String>>,
+}
+
+impl<'a> BusinessUpdate<'a> {
+    pub fn new(
+        client: &'a Paddle,
+        customer_id: impl Into<CustomerID>,
+        business_id: impl Into<BusinessID>,
+    ) -> Self {
+        Self {
+            client,
+            customer_id: customer_id.into(),
+            business_id: business_id.into(),
+            name: None,
+            company_number: None,
+            tax_identifier: None,
+            contacts: None,
+            custom_data: None,
+        }
+    }
+
+    /// Name of this business.
+    pub fn name(&mut self, name: impl Into<String>) -> &mut Self {
+        self.name = Some(name.into());
+        self
+    }
+
+    /// Company number for this business.
+    pub fn company_number(&mut self, company_number: impl Into<String>) -> &mut Self {
+        self.company_number = Some(company_number.into());
+        self
+    }
+
+    /// Tax identifier for this business.
+    pub fn tax_identifier(&mut self, tax_identifier: impl Into<String>) -> &mut Self {
+        self.tax_identifier = Some(tax_identifier.into());
+        self
+    }
+
+    /// Contact information for this business.
+    pub fn contacts(&mut self, contacts: impl IntoIterator<Item = Contact>) -> &mut Self {
+        self.contacts = Some(contacts.into_iter().collect());
+        self
+    }
+
+    /// Custom data for this business.
+    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
+        self.custom_data = Some(custom_data);
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Business> {
+        self.client
+            .send(
+                self,
+                Method::PATCH,
+                &format!(
+                    "/customers/{}/businesses/{}",
+                    self.customer_id.as_ref(),
+                    self.business_id.as_ref()
+                ),
+            )
+            .await
+    }
+}
