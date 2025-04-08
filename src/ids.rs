@@ -60,6 +60,18 @@ pub struct AdjustmentItemID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BusinessID(String);
 
+impl<T: Display> From<T> for BusinessID {
+    fn from(value: T) -> Self {
+        BusinessID(value.to_string())
+    }
+}
+
+impl AsRef<str> for BusinessID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this payment method entity, prefixed with `paymtd_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PaymentMethodID(String);

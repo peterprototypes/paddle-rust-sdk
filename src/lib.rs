@@ -400,6 +400,23 @@ impl Paddle {
         addresses::AddressUpdate::new(self, customer_id, address_id)
     }
 
+    /// Returns a request builder for fetching customers businesses.
+    ///
+    /// By default, Paddle returns addresses that are `active`. Use the status query parameter to return businesses that are archived.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.businesses_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
+    /// ```
+    pub fn businesses_list(
+        &self,
+        customer_id: impl Into<CustomerID>,
+    ) -> businesses::BusinessesList {
+        businesses::BusinessesList::new(self, customer_id)
+    }
+
     /// Returns a request builder for creating a new customer business.
     ///
     /// # Example:

@@ -4,7 +4,7 @@
 [![Docs](https://docs.rs/paddle-rust-sdk/badge.svg)](https://docs.rs/paddle-rust-sdk)
 ![License](https://img.shields.io/crates/l/paddle-rust-sdk.svg)
 
-Rust SDK for working with the Paddle API in server-side apps. (Unofficial)
+Rust SDK for working with the [Paddle](https://www.paddle.com/) API in server-side apps. (Unofficial)
 
 ## Paddle API Coverage
 
