@@ -421,15 +421,15 @@ pub struct PaymentMethod {
     /// Type of payment method saved.
     pub r#type: SavedPaymentMethodType,
     /// Information about the credit or debit card saved. `null` unless `type` is `card`.
-    pub card: Card,
+    pub card: Option<Card>,
     /// Information about the PayPal payment method saved. `null` unless `type` is `paypal`.
     pub paypal: Option<PayPal>,
     /// Describes how this payment method was saved.
     pub origin: PaymentMethodOrigin,
     /// RFC 3339 datetime string of when this entity was saved. Set automatically by Paddle.
-    pub saved_at: String,
+    pub saved_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
 }
 
 /// Authenticated customer portal deep links that aren't associated with a specific entity.

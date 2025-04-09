@@ -76,6 +76,18 @@ impl AsRef<str> for BusinessID {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PaymentMethodID(String);
 
+impl<T: Display> From<T> for PaymentMethodID {
+    fn from(value: T) -> Self {
+        PaymentMethodID(value.to_string())
+    }
+}
+
+impl AsRef<str> for PaymentMethodID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this customer portal session entity, prefixed with `cpls_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CustomerPortalSessionID(String);

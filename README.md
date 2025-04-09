@@ -16,8 +16,8 @@ The following list outlines the current coverage of the Paddle API in this SDK. 
 - ✅ Customers
 - ✅ Addresses
 - ✅ Businesses
-- 👷 Payment methods
-- 🚧 Customer portal sessions
+- ✅ Payment methods
+- 👷 Customer portal sessions
 - 🚧 Transactions
 - 🚧 Subscriptions
 - 🚧 Adjustments

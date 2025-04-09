@@ -669,6 +669,7 @@ pub enum Interval {
 /// Type of credit or debit card used to pay.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum CardType {
     /// American Express
     AmericanExpress,
@@ -717,6 +718,7 @@ pub enum CollectionMode {
 /// Type of payment method saved.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum SavedPaymentMethodType {
     /// Alipay, popular in China.
     Alipay,
@@ -733,6 +735,7 @@ pub enum SavedPaymentMethodType {
 /// Describes how this payment method was saved.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOrigin {
     /// The customer chose to save this payment method while purchasing a one-time item.
     SavedDuringPurchase,

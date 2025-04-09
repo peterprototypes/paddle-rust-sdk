@@ -5,7 +5,7 @@
 use std::fmt::Display;
 
 use entities::CustomerAuthenticationToken;
-use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, Url};
+use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
 pub mod entities;
@@ -17,13 +17,14 @@ pub mod addresses;
 pub mod businesses;
 pub mod customers;
 pub mod discounts;
+pub mod payment_methods;
 pub mod prices;
 pub mod products;
 
 pub mod response;
 
 use enums::{CountryCodeSupported, CurrencyCode, DiscountType, TaxCategory};
-use ids::{AddressID, BusinessID, CustomerID, DiscountID, PriceID, ProductID};
+use ids::{AddressID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID, ProductID};
 
 use response::{ErrorResponse, Response, SuccessResponse};
 
@@ -463,6 +464,68 @@ impl Paddle {
         business_id: impl Into<BusinessID>,
     ) -> businesses::BusinessUpdate {
         businesses::BusinessUpdate::new(self, customer_id, business_id)
+    }
+
+    /// Returns a request builder for querying customer saved payment methods.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.payment_methods_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
+    /// ```
+    pub fn payment_methods_list(
+        &self,
+        customer_id: impl Into<CustomerID>,
+    ) -> payment_methods::PaymentMethodsList {
+        payment_methods::PaymentMethodsList::new(self, customer_id)
+    }
+
+    /// Returns a request builder for getting a saved payment for a customer using its ID and related customer ID.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.payment_method_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").send().await.unwrap();
+    /// ```
+    pub fn payment_method_get(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        payment_method_id: impl Into<PaymentMethodID>,
+    ) -> payment_methods::PaymentMethodGet {
+        payment_methods::PaymentMethodGet::new(self, customer_id, payment_method_id)
+    }
+
+    ///
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.payment_method_delete("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").send().await.unwrap();
+    /// ```
+    pub async fn payment_method_delete(
+        &self,
+        customer_id: impl Into<CustomerID>,
+        payment_method_id: impl Into<PaymentMethodID>,
+    ) -> std::result::Result<bool, Error> {
+        let client = reqwest::Client::new();
+
+        let url = format!(
+            "{}customers/{}/payment-methods/{}",
+            self.base_url,
+            customer_id.into().as_ref(),
+            payment_method_id.into().as_ref()
+        );
+
+        let response = client
+            .delete(url)
+            .bearer_auth(self.api_key.clone())
+            .send()
+            .await?;
+
+        Ok(response.status() == StatusCode::NO_CONTENT)
     }
 
     async fn send<T: DeserializeOwned>(
