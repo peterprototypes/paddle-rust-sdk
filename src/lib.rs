@@ -497,13 +497,17 @@ impl Paddle {
         payment_methods::PaymentMethodGet::new(self, customer_id, payment_method_id)
     }
 
+    /// Deletes a customer payment method using its ID.
     ///
+    /// When you delete a customer payment method, it's permanently removed from that customer.
+    ///
+    /// There's no way to recover a deleted payment method.
     ///
     /// # Example:
     /// ```
     /// use paddle::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let customers = client.payment_method_delete("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").send().await.unwrap();
+    /// client.payment_method_delete("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").await.unwrap();
     /// ```
     pub async fn payment_method_delete(
         &self,
@@ -526,6 +530,31 @@ impl Paddle {
             .await?;
 
         Ok(response.status() == StatusCode::NO_CONTENT)
+    }
+
+    /// Creates a customer portal session for a customer.
+    ///
+    /// You can use this to generate authenticated links for a customer so that they're automatically signed in to the portal. Typically used when linking to the customer portal from your app where customers are already authenticated.
+    ///
+    /// You can include an array of subscription_ids to generate authenticated portal links that let customers make changes to their subscriptions. You can use these links as part of subscription management workflows rather than building your own billing screens.
+    ///
+    /// Customer portal sessions are temporary and shouldn't be cached.
+    ///
+    /// The customer portal is fully hosted by Paddle. For security and the best customer experience, don't embed the customer portal in an iframe.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let session = client.create_portal_session("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
+    /// dbg!(session.data.urls.general.overview);
+    /// dbg!(session.data.urls.subscriptions);
+    /// ```
+    pub fn create_portal_session(
+        &self,
+        customer_id: impl Into<CustomerID>,
+    ) -> customers::PortalSessionCreate {
+        customers::PortalSessionCreate::new(self, customer_id)
     }
 
     async fn send<T: DeserializeOwned>(

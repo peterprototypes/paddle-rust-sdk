@@ -8,9 +8,9 @@ use reqwest::Method;
 use serde::Serialize;
 use serde_with::skip_serializing_none;
 
-use crate::entities::{CreditBalance, Customer};
+use crate::entities::{CreditBalance, Customer, CustomerPortalSession};
 use crate::enums::Status;
-use crate::ids::CustomerID;
+use crate::ids::{CustomerID, SubscriptionID};
 use crate::{Paddle, Result};
 
 /// Request builder for fetching customers from Paddle API.
@@ -275,6 +275,47 @@ impl<'a> CustomerCreditBalances<'a> {
                 self,
                 Method::GET,
                 &format!("/customers/{}/credit-balances", self.customer_id.as_ref()),
+            )
+            .await
+    }
+}
+
+/// Request builder for creating customer portal sessions
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct PortalSessionCreate<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    customer_id: CustomerID,
+    subscription_ids: Option<Vec<SubscriptionID>>,
+}
+
+impl<'a> PortalSessionCreate<'a> {
+    pub fn new(client: &'a Paddle, customer_id: impl Into<CustomerID>) -> Self {
+        Self {
+            client,
+            customer_id: customer_id.into(),
+            subscription_ids: None,
+        }
+    }
+
+    /// List of subscriptions to create authenticated customer portal deep links for.
+    pub fn subscription_ids(
+        &mut self,
+        subscription_ids: impl IntoIterator<Item = impl Into<SubscriptionID>>,
+    ) -> &mut Self {
+        self.subscription_ids = Some(subscription_ids.into_iter().map(Into::into).collect());
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<CustomerPortalSession> {
+        self.client
+            .send(
+                self,
+                Method::POST,
+                &format!("/customers/{}/portal-sessions", self.customer_id.as_ref()),
             )
             .await
     }

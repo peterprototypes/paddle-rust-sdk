@@ -48,6 +48,18 @@ pub struct TransactionID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SubscriptionID(String);
 
+impl<T: Display> From<T> for SubscriptionID {
+    fn from(value: T) -> Self {
+        SubscriptionID(value.to_string())
+    }
+}
+
+impl AsRef<str> for SubscriptionID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this transaction item, prefixed with `txnitm_`. Used when working with [adjustments](https://developer.paddle.com/build/transactions/create-transaction-adjustments).
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionItemID(String);

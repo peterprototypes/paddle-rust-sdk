@@ -474,14 +474,7 @@ pub struct CustomerPortalSession {
     /// Authenticated customer portal deep links. For security, the `token` appended to each link is temporary. You shouldn't store these links.
     pub urls: CustomerPortalSessionUrls,
     /// RFC 3339 datetime string.
-    pub created_at: String,
-}
-
-/// Represents a customer portal session creation request.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CustomerPortalSessionCreate {
-    /// List of subscriptions to create authenticated customer portal deep links for.
-    pub subscription_ids: Vec<SubscriptionID>,
+    pub created_at: DateTime<Utc>,
 }
 
 /// Represents a customer authentication token.
