@@ -44,8 +44,8 @@ impl<'a> DiscountsList<'a> {
     }
 
     /// Return entities after the specified Paddle ID when working with paginated endpoints. Used in the `meta.pagination.next` URL in responses for list operations.
-    pub fn after(&mut self, discount_id: DiscountID) -> &mut Self {
-        self.after = Some(discount_id);
+    pub fn after(&mut self, discount_id: impl Into<DiscountID>) -> &mut Self {
+        self.after = Some(discount_id.into());
         self
     }
 

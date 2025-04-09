@@ -45,8 +45,8 @@ impl<'a> AddressesList<'a> {
     }
 
     /// Return entities after the specified Paddle ID when working with paginated endpoints. Used in the `meta.pagination.next` URL in responses for list operations.
-    pub fn after(&mut self, address_id: AddressID) -> &mut Self {
-        self.after = Some(address_id);
+    pub fn after(&mut self, address_id: impl Into<AddressID>) -> &mut Self {
+        self.after = Some(address_id.into());
         self
     }
 
