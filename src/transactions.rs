@@ -2,15 +2,13 @@
 //!
 //! See the [Paddle API](https://developer.paddle.com/api-reference/transactions/overview) documentation for more information.
 
-use std::collections::HashMap;
-
 use chrono::{DateTime, Utc};
 use reqwest::Method;
 use serde::Serialize;
 use serde_with::skip_serializing_none;
 
 use crate::entities::Transaction;
-use crate::enums::{CollectionMode, Status, TransactionOrigin, TransactionStatus};
+use crate::enums::{CollectionMode, TransactionOrigin, TransactionStatus};
 use crate::ids::{CustomerID, SubscriptionID, TransactionID};
 use crate::{Paddle, Result};
 

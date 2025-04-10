@@ -41,7 +41,7 @@ pub struct Address {
     /// Supported two-letter ISO 3166-1 alpha-2 country code.
     pub country_code: CountryCodeSupported,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
@@ -334,7 +334,7 @@ pub struct Business {
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
     pub updated_at: DateTime<Utc>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: Option<ImportMeta>,
 }
@@ -389,7 +389,7 @@ pub struct Customer {
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Valid IETF BCP 47 short form locale tag. If omitted, defaults to `en`.
     pub locale: String,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
@@ -522,7 +522,7 @@ pub struct Discount {
     /// Expired discounts can't be redeemed against transactions or checkouts, but can be applied when updating subscriptions.
     pub expires_at: Option<DateTime<Utc>>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// How many times this discount has been redeemed. Automatically incremented by Paddle.
     ///
     /// Paddle counts a usage as a redemption on a checkout, transaction, or subscription. Transactions created for subscription renewals, midcycle changes, and one-time charges aren't considered a redemption.
@@ -663,7 +663,7 @@ pub struct Price {
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: Option<ImportMeta>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
@@ -688,7 +688,7 @@ pub struct Product {
     /// Image for this product. Included in the checkout and on some customer documents.
     pub image_url: Option<String>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Import information for this entity. `null` if this entity is not imported.
@@ -911,7 +911,7 @@ pub struct PricePreview {
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: ImportMeta,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
@@ -937,7 +937,7 @@ pub struct ProductPreview {
     /// Image for this product. Included in the checkout and on some customer documents.
     pub image_url: Option<String>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Import information for this entity. `null` if this entity is not imported.
@@ -1208,7 +1208,7 @@ pub struct Subscription {
     /// List of items on this subscription. Only recurring items are returned.
     pub items: Vec<SubscriptionItem>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Import information for this entity. `null` if this entity is not imported.
     pub import_meta: ImportMeta,
 }
@@ -1397,7 +1397,7 @@ pub struct SubscriptionPreview {
     /// List of items on this subscription. Only recurring items are returned.
     pub items: Vec<SubscriptionItem>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Preview of the immediate transaction created as a result of changes to the subscription. Returns a complete object where `proration_billing_mode` is `prorated_immediately` or `full_immediately`; `null` otherwise.
     pub immediate_transaction: Option<NextTransaction>,
     /// Preview of the next transaction for this subscription. Includes charges created where `proration_billing_mode` is `prorated_next_billing_period` or `full_next_billing_period`, as well as one-time charges. `null` if the subscription is scheduled to cancel or pause.
@@ -1443,7 +1443,7 @@ pub struct SubscriptionUpdate {
     /// List of items on this subscription. Only recurring items may be added. Send the complete list of items that should be on this subscription, including existing items to retain.
     pub items: Vec<SubscriptionChargeItem>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// How Paddle should handle proration calculation for changes made to a subscription or its items. Required when making
     /// changes that impact billing.
     ///
@@ -1471,7 +1471,7 @@ pub struct SubscriptionChargeCreateWithPricePrice {
     pub unit_price_overrides: Vec<UnitPriceOverride>,
     pub quantity: PriceQuantity,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
 }
 
 /// Price object for a non-catalog item to charge for. Include a `product` object to create a non-catalog product for this non-catalog price.
@@ -1489,7 +1489,7 @@ pub struct SubscriptionChargeCreateWithPriceAndProduct {
     pub unit_price_overrides: Vec<UnitPriceOverride>,
     pub quantity: PriceQuantity,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Product object for a non-catalog item to charge for.
     pub product: TransactionSubscriptionProductCreate,
 }
@@ -1520,7 +1520,7 @@ pub struct TransactionPriceCreateWithProductId {
     pub unit_price_overrides: Vec<UnitPriceOverride>,
     pub quantity: PriceQuantity,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Paddle ID for the product that this price is for, prefixed with `pro_`.
     pub product_id: ProductID,
 }
@@ -1689,7 +1689,7 @@ pub struct Transaction {
     /// Paddle ID of the business that this transaction is for, prefixed with `biz_`.
     pub business_id: Option<BusinessID>,
     /// Your own structured key-value data.
-    //pub custom_data: Option<HashMap<String, String>>,
+    //pub custom_data: Option<serde_json::Value>,
     pub custom_data: Option<serde_json::Value>,
     /// Supported three-letter ISO 4217 currency code.
     pub currency_code: CurrencyCode,
@@ -1741,7 +1741,7 @@ pub struct TransactionCreate {
     /// Paddle ID of the business that this transaction is for, prefixed with `biz_`. Requires `customer_id`.
     pub business_id: BusinessID,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Supported three-letter ISO 4217 currency code. Must be `USD`, `EUR`, or `GBP` if `collection_mode` is `manual`.
     pub currency_code: CurrencyCode,
     /// Describes how this transaction was created.
@@ -1875,7 +1875,7 @@ pub struct TransactionPriceCreateBase {
     pub unit_price_overrides: Vec<UnitPriceOverride>,
     pub quantity: PriceQuantity,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
 }
 
 /// Represents a customer information revision for a transaction.
@@ -1900,7 +1900,7 @@ pub struct TransactionSubscriptionProductCreate {
     /// Image for this product. Included in the checkout and on some customer documents.
     pub image_url: Option<String>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
 }
 
 /// Represents a transaction entity when updating transactions.
@@ -1917,7 +1917,7 @@ pub struct TransactionUpdate {
     /// Paddle ID of the business that this transaction is for, prefixed with `biz_`.
     pub business_id: BusinessID,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Supported three-letter ISO 4217 currency code. Must be `USD`, `EUR`, or `GBP` if `collection_mode` is `manual`.
     pub currency_code: CurrencyCode,
     /// Describes how this transaction was created.
