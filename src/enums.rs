@@ -791,6 +791,7 @@ pub enum Type {
 /// Reason why a payment attempt failed. Returns `null` if payment captured successfully.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum ErrorCode {
     /// Cancellation not possible because the amount has already been canceled. Not typically returned for payments.
     AlreadyCanceled,
@@ -991,6 +992,7 @@ impl AsRef<str> for TaxCategory {
 /// Type of payment method used for this payment attempt.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum PaymentMethodType {
     /// Alipay, popular in China.
     Alipay,
@@ -1072,6 +1074,7 @@ pub enum FilterOperator {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum TransactionOrigin {
     /// Transaction created via the Paddle API.
     Api,
@@ -1238,6 +1241,7 @@ pub enum SimulationKind {
 /// Status of this payment attempt.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum PaymentAttemptStatus {
     /// Authorized but not captured. Payment attempt is incomplete.
     Authorized,
@@ -1280,6 +1284,7 @@ pub enum SubscriptionStatus {
 /// Status of this transaction. You may set a transaction to `billed` or `canceled`, other statuses are set automatically by Paddle. Automatically-collected transactions may return `completed` if payment is captured successfully, or `past_due` if payment failed.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum TransactionStatus {
     /// Transaction is missing required fields. Typically the first stage of a checkout before customer details are captured.
     Draft,

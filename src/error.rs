@@ -36,6 +36,7 @@ pub enum Error {
     Request(reqwest::Error),
     Url(url::ParseError),
     Paddle(ErrorResponse),
+    QueryString(serde_qs::Error),
 }
 
 impl fmt::Display for Error {
@@ -44,6 +45,7 @@ impl fmt::Display for Error {
             Self::Request(err) => write!(f, "Request error: {}", err),
             Self::Url(err) => write!(f, "URL error: {}", err),
             Self::Paddle(err) => write!(f, "Paddle error: {}", err.error.detail),
+            Self::QueryString(err) => write!(f, "Query string error: {}", err),
         }
     }
 }
@@ -54,6 +56,7 @@ impl error::Error for Error {
             Self::Request(err) => Some(err),
             Self::Url(err) => Some(err),
             Self::Paddle(_) => None,
+            Self::QueryString(err) => Some(err),
         }
     }
 }
@@ -67,5 +70,11 @@ impl From<reqwest::Error> for Error {
 impl From<url::ParseError> for Error {
     fn from(err: url::ParseError) -> Self {
         Self::Url(err)
+    }
+}
+
+impl From<serde_qs::Error> for Error {
+    fn from(err: serde_qs::Error) -> Self {
+        Self::QueryString(err)
     }
 }

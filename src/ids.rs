@@ -44,6 +44,17 @@ pub struct AdjustmentID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionID(String);
 
+impl<T: Display> From<T> for TransactionID {
+    fn from(value: T) -> Self {
+        TransactionID(value.to_string())
+    }
+}
+
+impl AsRef<str> for TransactionID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
 /// Unique Paddle ID for this subscription entity, prefixed with `sub_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SubscriptionID(String);

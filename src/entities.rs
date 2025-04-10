@@ -96,7 +96,7 @@ pub struct ChargebackFee {
     /// Chargeback fee converted into the payout currency.
     pub amount: String,
     /// Chargeback fee before conversion to the payout currency. `null` when the chargeback fee is the same as the payout currency.
-    pub original: Original,
+    pub original: Option<Original>,
 }
 
 /// Breakdown of how this adjustment affects your payout balance.
@@ -222,9 +222,9 @@ pub struct AdjustmentCreate {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TimePeriod {
     /// RFC 3339 datetime string.
-    pub starts_at: String,
+    pub starts_at: DateTime<Utc>,
     /// RFC 3339 datetime string.
-    pub ends_at: String,
+    pub ends_at: DateTime<Utc>,
 }
 
 /// How proration was calculated for this item. Populated when a transaction is created from a subscription change, where `proration_billing_mode` was `prorated_immediately` or `prorated_next_billing_period`. Set automatically by Paddle.
@@ -752,7 +752,7 @@ pub struct MethodDetails {
     /// Type of payment method used for this payment attempt.
     pub r#type: PaymentMethodType,
     /// Information about the credit or debit card used to pay. `null` unless `type` is `card`.
-    pub card: Card,
+    pub card: Option<Card>,
 }
 
 /// Notification payload. Includes the new or changed event.
@@ -1247,7 +1247,7 @@ pub struct Totals {
     /// Total discount as a result of any discounts applied.
     ///
     /// Except for percentage discounts, Paddle applies tax to discounts based on the line item `price.tax_mode`. If `price.tax_mode` for a line item is `internal`, Paddle removes tax from the discount applied.
-    pub discount: Discount,
+    pub discount: String,
     /// Total tax on the subtotal.
     pub tax: String,
     /// Total after discount and tax.
@@ -1270,7 +1270,7 @@ pub struct TransactionTotals {
     /// Total discount as a result of any discounts applied.
     ///
     /// Except for percentage discounts, Paddle applies tax to discounts based on the line item `price.tax_mode`. If `price.tax_mode` for a line item is `internal`, Paddle removes tax from the discount applied.
-    pub discount: Discount,
+    pub discount: String,
     /// Total tax on the subtotal.
     pub tax: String,
     /// Total after discount and tax.
@@ -1561,14 +1561,12 @@ pub struct TotalsWithoutDiscount {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionItem {
-    /// Unique Paddle ID for this price, prefixed with `pri_`.
-    pub price_id: PriceID,
     /// Represents a price entity.
     pub price: Price,
     /// Quantity of this item on the transaction.
     pub quantity: i64,
     /// How proration was calculated for this item. Populated when a transaction is created from a subscription change, where `proration_billing_mode` was `prorated_immediately` or `prorated_next_billing_period`. Set automatically by Paddle.
-    pub proration: Proration,
+    pub proration: Option<Proration>,
 }
 
 /// Breakdown of the totals for a transaction after adjustments.
@@ -1620,7 +1618,7 @@ pub struct TransactionLineItemWithId {
     /// Quantity of this transaction line item.
     pub quantity: i64,
     /// How proration was calculated for this item. Populated when a transaction is created from a subscription change, where `proration_billing_mode` was `prorated_immediately` or `prorated_next_billing_period`. Set automatically by Paddle.
-    pub proration: Proration,
+    pub proration: Option<Proration>,
     /// Rate used to calculate tax for this transaction line item.
     pub tax_rate: String,
     /// Breakdown of a charge in the lowest denomination of a currency (e.g. cents for USD).
@@ -1635,7 +1633,7 @@ pub struct TransactionLineItemWithId {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionDetails {
     /// List of tax rates applied for this transaction.
-    pub tax_rates_used: TaxRatesUsed,
+    pub tax_rates_used: Vec<TaxRatesUsed>,
     /// Breakdown of the total for a transaction. These numbers can be negative when dealing with subscription updates that result in credit.
     pub totals: TransactionTotals,
     /// Breakdown of the totals for a transaction after adjustments.
@@ -1661,7 +1659,7 @@ pub struct TransactionPaymentAttempt {
     /// Status of this payment attempt.
     pub status: PaymentAttemptStatus,
     /// Reason why a payment attempt failed. Returns `null` if payment captured successfully.
-    pub error_code: ErrorCode,
+    pub error_code: Option<ErrorCode>,
     /// Information about the payment method used for a payment attempt.
     pub method_details: MethodDetails,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
@@ -1689,17 +1687,18 @@ pub struct Transaction {
     /// Paddle ID of the address that this transaction is for, prefixed with `add_`.
     pub address_id: Option<AddressID>,
     /// Paddle ID of the business that this transaction is for, prefixed with `biz_`.
-    pub business_id: BusinessID,
+    pub business_id: Option<BusinessID>,
     /// Your own structured key-value data.
-    pub custom_data: Option<HashMap<String, String>>,
+    //pub custom_data: Option<HashMap<String, String>>,
+    pub custom_data: Option<serde_json::Value>,
     /// Supported three-letter ISO 4217 currency code.
     pub currency_code: CurrencyCode,
     /// Describes how this transaction was created.
     pub origin: TransactionOrigin,
     /// Paddle ID of the subscription that this transaction is for, prefixed with `sub_`.
-    pub subscription_id: SubscriptionID,
+    pub subscription_id: Option<SubscriptionID>,
     /// Paddle ID of the invoice that this transaction is related to, prefixed with `inv_`. Used for compatibility with the Paddle Invoice API, which is now deprecated. This field is scheduled to be removed in the next version of the Paddle API.
-    pub invoice_id: InvoiceId,
+    pub invoice_id: Option<InvoiceId>,
     /// Invoice number for this transaction. Automatically generated by Paddle when you mark a transaction as `billed` where `collection_mode` is `manual`.
     pub invoice_number: Option<String>,
     /// How payment is collected. `automatic` for checkout, `manual` for invoices.
@@ -1707,7 +1706,7 @@ pub struct Transaction {
     /// Paddle ID of the discount applied to this transaction, prefixed with `dsc_`.
     pub discount_id: Option<DiscountID>,
     /// Details for invoicing. Required if `collection_mode` is `manual`.
-    pub billing_details: BillingDetails,
+    pub billing_details: Option<BillingDetails>,
     /// Time period that this transaction is for. Set automatically by Paddle for subscription renewals to describe the period that charges are for.
     pub billing_period: Option<TimePeriod>,
     /// List of items on this transaction. For calculated totals, use `details.line_items`.
@@ -1719,13 +1718,13 @@ pub struct Transaction {
     /// Paddle Checkout details for this transaction. Returned for automatically-collected transactions and where `billing_details.enable_checkout` is `true` for manually-collected transactions; `null` otherwise.
     pub checkout: TransactionCheckout,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: DateTime<FixedOffset>,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: DateTime<FixedOffset>,
+    pub updated_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this transaction was marked as `billed`. `null` for transactions that aren't `billed` or `completed`. Set automatically by Paddle.
-    pub billed_at: Option<DateTime<FixedOffset>>,
+    pub billed_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when a transaction was revised. Revisions describe an update to customer information for a billed or completed transaction. `null` if not revised. Set automatically by Paddle.
-    pub revised_at: Option<DateTime<FixedOffset>>,
+    pub revised_at: Option<DateTime<Utc>>,
 }
 
 /// Represents a transaction entity when creating transactions.
@@ -1991,7 +1990,7 @@ pub struct TransactionPayoutTotals {
     pub subtotal: String,
     /// Total discount as a result of any discounts applied.
     /// Except for percentage discounts, Paddle applies tax to discounts based on the line item `price.tax_mode`. If `price.tax_mode` for a line item is `internal`, Paddle removes tax from the discount applied.
-    pub discount: Discount,
+    pub discount: String,
     /// Total tax on the subtotal.
     pub tax: String,
     /// Total after tax.

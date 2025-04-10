@@ -20,6 +20,7 @@ pub mod discounts;
 pub mod payment_methods;
 pub mod prices;
 pub mod products;
+pub mod transactions;
 
 pub mod response;
 
@@ -557,14 +558,32 @@ impl Paddle {
         customers::PortalSessionCreate::new(self, customer_id)
     }
 
+    /// Returns a request builder for querying transactions.
+    ///
+    /// Use the include method on the builder to include related entities in the response.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let customers = client.transactions_list().send().await.unwrap();
+    /// ```
+    pub fn transactions_list(&self) -> transactions::TransactionsList {
+        transactions::TransactionsList::new(self)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
         method: Method,
         path: &str,
     ) -> Result<T> {
-        let url = self.base_url.join(path)?;
+        let mut url = self.base_url.join(path)?;
         let client = reqwest::Client::new();
+
+        if method == reqwest::Method::GET {
+            url.set_query(Some(&serde_qs::to_string(&req)?));
+        }
 
         let mut builder = client
             .request(method.clone(), url)
@@ -572,7 +591,6 @@ impl Paddle {
             .header(CONTENT_TYPE, "application/json; charset=utf-8");
 
         builder = match method {
-            reqwest::Method::GET => builder.query(&req),
             reqwest::Method::POST | reqwest::Method::PUT | reqwest::Method::PATCH => {
                 builder.json(&req)
             }
@@ -614,20 +632,26 @@ where
     }
 }
 
-// fn comma_separated_enum<S, T>(
-//     values: &Vec<T>,
-//     serializer: S,
-// ) -> std::result::Result<S::Ok, S::Error>
-// where
-//     S: serde::Serializer,
-//     T: Serialize,
-// {
-//     let mut serialized = vec![];
+fn comma_separated_enum<S, T>(
+    values: &Option<Vec<T>>,
+    serializer: S,
+) -> std::result::Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+    T: Serialize,
+{
+    match values {
+        Some(values) => {
+            let mut serialized = vec![];
 
-//     for val in values {
-//         let serialized_value = serde_json::to_string(val).map_err(serde::ser::Error::custom)?;
-//         serialized.push(serialized_value);
-//     }
+            for val in values {
+                let serialized_value =
+                    serde_json::to_string(val).map_err(serde::ser::Error::custom)?;
+                serialized.push(serialized_value);
+            }
 
-//     serializer.serialize_str(serialized.join(",").as_str())
-// }
+            serializer.serialize_str(serialized.join(",").as_str())
+        }
+        None => serializer.serialize_none(),
+    }
+}
