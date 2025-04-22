@@ -6,6 +6,7 @@ use chrono::DateTime;
 use chrono::FixedOffset;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 use crate::enums::*;
 use crate::ids::*;
@@ -2084,4 +2085,142 @@ pub struct PricePreviewItem {
     pub price_id: PriceID,
     /// Quantity of the item to preview.
     pub quantity: i64,
+}
+
+/// Price object for a non-catalog item to charge for.
+///
+/// Can be for existing products, or you can pass a product object as part of your price to charge for a non-catalog product.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct TransactionItemNonCatalogPrice {
+    description: String,
+    name: Option<String>,
+    billing_cycle: Option<Duration>,
+    trial_period: Option<Duration>,
+    tax_mode: Option<TaxMode>,
+    unit_price: Money,
+    unit_price_overrides: Option<Vec<UnitPriceOverride>>,
+    quantity: Option<PriceQuantity>,
+    custom_data: Option<serde_json::Value>,
+    product_id: Option<ProductID>,
+    product: Option<TransactionSubscriptionProductCreate>,
+}
+
+impl TransactionItemNonCatalogPrice {
+    /// Create new price object for non-catalog item.
+    ///
+    /// - `description` - Internal description for this price, not shown to customers. Typically notes for your team.
+    /// - `amount` - Amount in the lowest denomination for the currency, e.g. 10 USD = 1000 (cents). Although represented as a string, this value must be a valid integer.
+    /// - `currency` - Currency code.
+    pub fn new(description: impl Into<String>, amount: u64, currency: CurrencyCode) -> Self {
+        Self {
+            description: description.into(),
+            name: None,
+            billing_cycle: None,
+            trial_period: None,
+            tax_mode: None,
+            unit_price: Money {
+                amount: amount.to_string(),
+                currency_code: currency,
+            },
+            unit_price_overrides: None,
+            quantity: None,
+            custom_data: None,
+            product_id: None,
+            product: None,
+        }
+    }
+
+    /// Name of this price, shown to customers at checkout and on invoices. Typically describes how often the related product bills.
+    pub fn name(mut self, name: impl Into<String>) -> Self {
+        self.name = Some(name.into());
+        self
+    }
+
+    /// How often this price should be charged.
+    pub fn billing_cycle(mut self, billing_cycle: Duration) -> Self {
+        self.billing_cycle = Some(billing_cycle);
+        self
+    }
+
+    /// Trial period for the product related to this price. The billing cycle begins once the trial period is over.
+    pub fn trial_period(mut self, trial_period: Duration) -> Self {
+        self.trial_period = Some(trial_period);
+        self
+    }
+
+    /// How tax is calculated for this price.
+    pub fn tax_mode(mut self, tax_mode: TaxMode) -> Self {
+        self.tax_mode = Some(tax_mode);
+        self
+    }
+
+    /// Use to override the base price with a custom price and currency for a country or group of countries.
+    /// See [UnitPriceOverride] for more information.
+    /// See [CountryCodeSupported] for more information.
+    /// See [Money] for more information.
+    /// See [CurrencyCode] for more information.
+    pub fn add_unit_price_override(
+        mut self,
+        country_codes: impl IntoIterator<Item = CountryCodeSupported>,
+        amount: u64,
+        currency: CurrencyCode,
+    ) -> Self {
+        if self.unit_price_overrides.is_none() {
+            self.unit_price_overrides = Some(vec![]);
+        }
+
+        self.unit_price_overrides
+            .as_mut()
+            .unwrap()
+            .push(UnitPriceOverride {
+                country_codes: country_codes.into_iter().collect(),
+                unit_price: Money {
+                    amount: amount.to_string(),
+                    currency_code: currency,
+                },
+            });
+
+        self
+    }
+
+    /// Use to override the base price with a custom price and currency for a country or group of countries.
+    /// This will replace any existing overrides.
+    /// Use `add_unit_price_override` to add additional overrides.
+    /// See [UnitPriceOverride] for more information.
+    /// See [CountryCodeSupported] for more information.
+    /// See [Money] for more information.
+    /// See [CurrencyCode] for more information.
+    pub fn set_unit_price_overrides(mut self, overrides: Vec<UnitPriceOverride>) -> Self {
+        self.unit_price_overrides = Some(overrides);
+        self
+    }
+
+    /// Limits on how many times the related product can be purchased at this price. Useful for discount campaigns. If omitted, defaults to 1-100.
+    pub fn quantity(mut self, quantity: PriceQuantity) -> Self {
+        self.quantity = Some(quantity);
+        self
+    }
+
+    /// Your own structured key-value data.
+    pub fn custom_data(mut self, custom_data: serde_json::Value) -> Self {
+        self.custom_data = Some(custom_data);
+        self
+    }
+
+    /// Paddle ID of the product that this price is for, prefixed with `prd_`.
+    pub fn product_id(mut self, product_id: impl Into<ProductID>) -> Self {
+        self.product_id = Some(product_id.into());
+        self.product = None;
+        self
+    }
+
+    /// Product object for a non-catalog item to charge for.
+    ///
+    /// Setting a non-catalog product to this price will override the catalog product id.
+    pub fn product(mut self, product: TransactionSubscriptionProductCreate) -> Self {
+        self.product = Some(product);
+        self.product_id = None;
+        self
+    }
 }

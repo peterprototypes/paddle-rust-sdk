@@ -572,6 +572,10 @@ impl Paddle {
         transactions::TransactionsList::new(self)
     }
 
+    pub fn transaction_create(&self) -> transactions::TransactionCreate {
+        transactions::TransactionCreate::new(self)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
