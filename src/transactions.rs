@@ -10,8 +10,7 @@ use serde::Serialize;
 use serde_with::skip_serializing_none;
 
 use crate::entities::{
-    BillingDetails, Price, TimePeriod, Transaction, TransactionCheckout,
-    TransactionItemNonCatalogPrice,
+    BillingDetails, TimePeriod, Transaction, TransactionCheckout, TransactionItemNonCatalogPrice,
 };
 use crate::enums::{CollectionMode, CurrencyCode, TransactionOrigin, TransactionStatus};
 use crate::ids::{
@@ -392,7 +391,7 @@ impl<'a> TransactionCreate<'a> {
 
     /// Include related entities in the response.
     ///
-    /// Valid values are:
+    /// ## Valid values are:
     ///
     /// - `address`
     /// - `adjustments`
@@ -523,5 +522,59 @@ impl<'a> TransactionCreate<'a> {
         };
 
         self.client.send(self, Method::POST, url).await
+    }
+}
+
+/// Request builder for fetching a specific product from Paddle API.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct TransactionGet<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    transaction_id: TransactionID,
+    #[serde(serialize_with = "crate::comma_separated")]
+    include: Option<Vec<String>>,
+}
+
+impl<'a> TransactionGet<'a> {
+    pub fn new(client: &'a Paddle, transaction_id: impl Into<TransactionID>) -> Self {
+        Self {
+            client,
+            transaction_id: transaction_id.into(),
+            include: None,
+        }
+    }
+
+    /// Include related entities in the response.
+    ///
+    /// ## Valid values are:
+    ///
+    /// - `address`
+    /// - `adjustments`
+    /// - `adjustments_totals`
+    /// - `available_payment_methods`
+    /// - `business`
+    /// - `customer`
+    /// - `discount`
+    pub fn include(&mut self, entities: impl IntoIterator<Item = impl AsRef<str>>) -> &mut Self {
+        self.include = Some(
+            entities
+                .into_iter()
+                .map(|s| s.as_ref().to_string())
+                .collect(),
+        );
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Transaction> {
+        self.client
+            .send(
+                self,
+                Method::GET,
+                &format!("/transactions/{}", self.transaction_id.as_ref()),
+            )
+            .await
     }
 }

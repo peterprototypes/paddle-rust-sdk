@@ -25,7 +25,10 @@ pub mod transactions;
 pub mod response;
 
 use enums::{CountryCodeSupported, CurrencyCode, DiscountType, TaxCategory};
-use ids::{AddressID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID, ProductID};
+use ids::{
+    AddressID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID, ProductID,
+    TransactionID,
+};
 
 use response::{ErrorResponse, Response, SuccessResponse};
 
@@ -572,8 +575,41 @@ impl Paddle {
         transactions::TransactionsList::new(self)
     }
 
+    /// Returns a request builder for creating a transaction.
+    ///
+    /// See [Create Transaction](https://developer.paddle.com/api-reference/transactions/create-transaction) for more information.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    ///
+    /// let transaction = client.transaction_create()
+    ///     .append_catalog_item("pri_01jqxvdyjkp961jzv4me7ezg4d", 1)
+    ///     .send()
+    ///     .await
+    ///     .unwrap();
+    ///
+    /// dbg!(transaction);
+    /// ```
     pub fn transaction_create(&self) -> transactions::TransactionCreate {
         transactions::TransactionCreate::new(self)
+    }
+
+    /// Returns a request builder for fetching a transaction using its ID.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let transaction = client.transaction_get("txn_01hv8wptq8987qeep44cyrewp9").send().await.unwrap();
+    /// dbg!(transaction);
+    /// ```
+    pub fn transaction_get(
+        &self,
+        transaction_id: impl Into<TransactionID>,
+    ) -> transactions::TransactionGet {
+        transactions::TransactionGet::new(self, transaction_id)
     }
 
     async fn send<T: DeserializeOwned>(
