@@ -53,7 +53,7 @@ impl Paddle {
     ///
     /// Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// ```
     #[allow(clippy::result_large_err)]
@@ -74,7 +74,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let products = client.products_list().send().await.unwrap();
     /// ```
@@ -86,8 +86,8 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
-    /// use paddle::enums::TaxCategory;
+    /// use paddle_rust_sdk::Paddle;
+    /// use paddle_rust_sdk::enums::TaxCategory;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.products_create("My Product", TaxCategory::Standard).send().await.unwrap();
     /// ```
@@ -103,7 +103,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.product_get("pro_01jqx9rd...").send().await.unwrap();
     /// ```
@@ -115,8 +115,8 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
-    /// use paddle::enums::TaxCategory;
+    /// use paddle_rust_sdk::Paddle;
+    /// use paddle_rust_sdk::enums::TaxCategory;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.product_update("pro_01jqx9rd...").name("My New Name").send().await.unwrap();
     /// ```
@@ -128,7 +128,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let prices = client.prices_list().send().await.unwrap();
     /// ```
@@ -145,7 +145,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let price = client.price_create("pro_01jqx9rd...", "Low price", 19.99, CurrencyCode::USD).send().await.unwrap();
     /// ```
@@ -163,7 +163,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let price = client.price_get("price_01jqx9rd...").send().await.unwrap();
     /// ```
@@ -175,8 +175,8 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
-    /// use paddle::enums::TaxCategory;
+    /// use paddle_rust_sdk::Paddle;
+    /// use paddle_rust_sdk::enums::TaxCategory;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let price = client.price_update("pri_01jqxv...").name("Updated Name").send().await.unwrap();
     /// ```
@@ -188,7 +188,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discounts = client.discounts_list().send().await.unwrap();
     /// ```
@@ -200,7 +200,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_create("15", "Winter Holidays", DiscountType::Percentage).send().await.unwrap();
     /// ```
@@ -217,7 +217,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_get("dsc_01jqzpbmnq...").send().await.unwrap();
     /// ```
@@ -229,7 +229,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_update("dsc_01jqzpbmnq...").amount("18").send().await.unwrap();
     /// ```
@@ -243,7 +243,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.customers_list().send().await.unwrap();
     /// ```
@@ -255,7 +255,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.customer_create("test@example.com").send().await.unwrap();
     /// ```
@@ -267,7 +267,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// ```
@@ -279,7 +279,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd").email("new_email@example.com").send().await.unwrap();
     /// ```
@@ -305,7 +305,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_credit_balances("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// ```
@@ -349,7 +349,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.addresses_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// ```
@@ -361,7 +361,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.address_create("ctm_01jqztc78e1xfdgwhcgjzdrvgd", CountryCodeSupported::US).send().await.unwrap();
     /// ```
@@ -377,7 +377,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.address_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").send().await.unwrap();
     /// ```
@@ -393,7 +393,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.address_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").first_line("Test").send().await.unwrap();
     /// ```
@@ -411,7 +411,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.businesses_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// ```
@@ -426,7 +426,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.business_create("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "Company Inc.").send().await.unwrap();
     /// ```
@@ -442,7 +442,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.business_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "biz_01jr85bypq4d3w139m53zw2559").send().await.unwrap();
     /// ```
@@ -458,7 +458,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.business_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "biz_01jr85bypq4d3w139m53zw2559").first_line("Test").send().await.unwrap();
     /// ```
@@ -474,7 +474,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.payment_methods_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// ```
@@ -489,7 +489,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.payment_method_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").send().await.unwrap();
     /// ```
@@ -509,7 +509,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// client.payment_method_delete("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").await.unwrap();
     /// ```
@@ -548,7 +548,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let session = client.create_portal_session("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// dbg!(session.data.urls.general.overview);
@@ -567,7 +567,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.transactions_list().send().await.unwrap();
     /// ```
@@ -581,7 +581,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     ///
     /// let transaction = client.transaction_create()
@@ -600,7 +600,7 @@ impl Paddle {
     ///
     /// # Example:
     /// ```
-    /// use paddle::Paddle;
+    /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let transaction = client.transaction_get("txn_01hv8wptq8987qeep44cyrewp9").send().await.unwrap();
     /// dbg!(transaction);
@@ -610,6 +610,21 @@ impl Paddle {
         transaction_id: impl Into<TransactionID>,
     ) -> transactions::TransactionGet {
         transactions::TransactionGet::new(self, transaction_id)
+    }
+
+    /// Returns a request builder for updating a transaction.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::{enums::TransactionStatus, Paddle};
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// client.transaction_update("txn_01hv8wptq8987qeep44cyrewp9").status(TransactionStatus::Billed).send().await.unwrap();
+    /// ```
+    pub fn transaction_update(
+        &self,
+        transaction_id: impl Into<TransactionID>,
+    ) -> transactions::TransactionUpdate {
+        transactions::TransactionUpdate::new(self, transaction_id)
     }
 
     async fn send<T: DeserializeOwned>(

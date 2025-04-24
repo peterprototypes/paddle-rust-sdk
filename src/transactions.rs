@@ -336,7 +336,7 @@ impl<'a> TransactionsList<'a> {
 #[derive(Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
-enum TransactionItem {
+pub enum TransactionItem {
     CatalogItem {
         price_id: PriceID,
         quantity: u32,
@@ -508,6 +508,10 @@ impl<'a> TransactionCreate<'a> {
 
     /// Paddle Checkout URL for creating or updating an automatically-collected transaction, or when creating or updating a manually-collected transaction
     /// where `billing_details.enable_checkout` is `true`.
+    ///
+    /// Pass the URL for an approved domain, or null to set to your default payment URL.
+    ///
+    /// Paddle returns a unique payment link composed of the URL passed or your default payment URL + ?_ptxn= and the Paddle ID for this transaction.
     pub fn checkout_url(&mut self, url: String) -> &mut Self {
         self.checkout = Some(TransactionCheckout { url: Some(url) });
         self
@@ -525,7 +529,7 @@ impl<'a> TransactionCreate<'a> {
     }
 }
 
-/// Request builder for fetching a specific product from Paddle API.
+/// Request builder for fetching a specific transaction.
 #[skip_serializing_none]
 #[derive(Serialize)]
 pub struct TransactionGet<'a> {
@@ -576,5 +580,161 @@ impl<'a> TransactionGet<'a> {
                 &format!("/transactions/{}", self.transaction_id.as_ref()),
             )
             .await
+    }
+}
+
+/// Request builder for updating a transaction.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct TransactionUpdate<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    transaction_id: TransactionID,
+    #[serde(skip)]
+    include: Option<Vec<String>>,
+    status: Option<TransactionStatus>,
+    customer_id: Option<CustomerID>,
+    address_id: Option<AddressID>,
+    business_id: Option<BusinessID>,
+    custom_data: Option<HashMap<String, String>>,
+    currency_code: Option<CurrencyCode>,
+    collection_mode: Option<CollectionMode>,
+    discount_id: Option<DiscountID>,
+    billing_details: Option<BillingDetails>,
+    billing_period: Option<TimePeriod>,
+    items: Option<Vec<TransactionItem>>,
+    checkout: Option<TransactionCheckout>,
+}
+
+impl<'a> TransactionUpdate<'a> {
+    pub fn new(client: &'a Paddle, transaction_id: impl Into<TransactionID>) -> Self {
+        Self {
+            client,
+            transaction_id: transaction_id.into(),
+            include: None,
+            status: None,
+            customer_id: None,
+            address_id: None,
+            business_id: None,
+            custom_data: None,
+            currency_code: None,
+            collection_mode: None,
+            discount_id: None,
+            billing_details: None,
+            billing_period: None,
+            items: None,
+            checkout: None,
+        }
+    }
+
+    /// Include related entities in the response.
+    ///
+    /// ## Valid values are:
+    ///
+    /// - `address`
+    /// - `adjustments`
+    /// - `adjustments_totals`
+    /// - `available_payment_methods`
+    /// - `business`
+    /// - `customer`
+    /// - `discount`
+    pub fn include(&mut self, entities: impl IntoIterator<Item = impl AsRef<str>>) -> &mut Self {
+        self.include = Some(
+            entities
+                .into_iter()
+                .map(|s| s.as_ref().to_string())
+                .collect(),
+        );
+        self
+    }
+
+    /// Status of this transaction. You may set a transaction to billed or canceled. Billed transactions cannot be changed.
+    ///
+    /// For manually-collected transactions, marking as billed is essentially issuing an invoice.
+    pub fn status(&mut self, status: TransactionStatus) -> &mut Self {
+        self.status = Some(status);
+        self
+    }
+
+    /// Paddle ID of the customer that this transaction is for.
+    pub fn customer_id(&mut self, customer_id: impl Into<CustomerID>) -> &mut Self {
+        self.customer_id = Some(customer_id.into());
+        self
+    }
+
+    /// Paddle ID of the address that this transaction is for.
+    pub fn address_id(&mut self, address_id: impl Into<AddressID>) -> &mut Self {
+        self.address_id = Some(address_id.into());
+        self
+    }
+
+    /// Paddle ID of the business that this transaction is for.
+    pub fn business_id(&mut self, business_id: impl Into<BusinessID>) -> &mut Self {
+        self.business_id = Some(business_id.into());
+        self
+    }
+
+    /// Your own structured key-value data.
+    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
+        self.custom_data = Some(custom_data);
+        self
+    }
+
+    /// Supported three-letter currency code. Must be `USD`, `EUR`, or `GBP` if `collection_mode` is `manual`.
+    pub fn currency_code(&mut self, currency_code: CurrencyCode) -> &mut Self {
+        self.currency_code = Some(currency_code);
+        self
+    }
+
+    /// How payment is collected for this transaction. `automatic` for checkout, `manual` for invoices.
+    pub fn collection_mode(&mut self, mode: CollectionMode) -> &mut Self {
+        self.collection_mode = Some(mode);
+        self
+    }
+
+    /// Paddle ID of the discount applied to this transaction.
+    pub fn discount_id(&mut self, discount_id: impl Into<DiscountID>) -> &mut Self {
+        self.discount_id = Some(discount_id.into());
+        self
+    }
+
+    /// Details for invoicing. Required if `collection_mode` is `manual`.
+    pub fn billing_details(&mut self, billing_details: BillingDetails) -> &mut Self {
+        self.billing_details = Some(billing_details);
+        self
+    }
+
+    /// Time period that this transaction is for. Set automatically by Paddle for subscription renewals to describe the period that charges are for.
+    pub fn billing_period(&mut self, billing_period: TimePeriod) -> &mut Self {
+        self.billing_period = Some(billing_period);
+        self
+    }
+
+    pub fn items(&mut self, items: impl IntoIterator<Item = TransactionItem>) -> &mut Self {
+        self.items = Some(items.into_iter().collect());
+        self
+    }
+
+    /// Paddle Checkout URL for creating or updating an automatically-collected transaction, or when creating or updating a manually-collected transaction
+    /// where `billing_details.enable_checkout` is `true`.
+    ///
+    /// Pass the URL for an approved domain, or null to set to your default payment URL.
+    ///
+    /// Paddle returns a unique payment link composed of the URL passed or your default payment URL + ?_ptxn= and the Paddle ID for this transaction.
+    pub fn checkout_url(&mut self, url: String) -> &mut Self {
+        self.checkout = Some(TransactionCheckout { url: Some(url) });
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Transaction> {
+        let mut url = format!("/transactions/{}", self.transaction_id.as_ref());
+
+        if let Some(include) = self.include.as_ref() {
+            url.push_str(&format!("?include={}", include.join(",")));
+        }
+
+        self.client.send(self, Method::PATCH, &url).await
     }
 }
