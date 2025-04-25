@@ -926,7 +926,7 @@ pub struct PricePreview {
 pub struct ProductPreview {
     /// Unique Paddle ID for this product, prefixed with `pro_`.
     /// The value is null for custom products being previewed.
-    pub id: ProductID,
+    pub id: Option<ProductID>,
     /// Name of this product.
     pub name: String,
     /// Short description for this product.
@@ -942,11 +942,11 @@ pub struct ProductPreview {
     /// Whether this entity can be used in Paddle.
     pub status: Status,
     /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
+    pub import_meta: Option<ImportMeta>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
 }
 
 /// Represents a report entity.
@@ -1676,6 +1676,13 @@ pub struct TransactionCheckout {
     pub url: Option<String>,
 }
 
+/// Contains an invoice PDF url for a transaction.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct TransactionInvoice {
+    /// URL of the requested resource.
+    pub url: Option<String>,
+}
+
 /// Represents a transaction entity.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Transaction {
@@ -1796,14 +1803,14 @@ pub struct TransactionLineItemPreview {
     /// Represents a product (preview) entity.
     pub product: ProductPreview,
     /// How proration was calculated for this item.
-    pub proration: Proration,
+    pub proration: Option<Proration>,
 }
 
 /// Calculated totals for a transaction preview, including discounts, tax, and currency conversion. Considered the source of truth for totals on a transaction preview.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionDetailsPreview {
     /// List of tax rates applied to this transaction preview.
-    pub tax_rates_used: TaxRatesUsed,
+    pub tax_rates_used: Vec<TaxRatesUsed>,
     /// Breakdown of the total for a transaction. These numbers can be negative when dealing with subscription updates that result in credit.
     pub totals: TransactionTotals,
     /// Information about line items for this transaction preview. Different from transaction preview `items` as they include totals calculated by Paddle. Considered the source of truth for line item totals.
@@ -1814,25 +1821,25 @@ pub struct TransactionDetailsPreview {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionPreview {
     /// Paddle ID of the customer that this transaction preview is for, prefixed with `ctm_`.
-    pub customer_id: CustomerID,
+    pub customer_id: Option<CustomerID>,
     /// Paddle ID of the address that this transaction preview is for, prefixed with `add_`. Send one of `address_id`, `customer_ip_address`, or the `address` object when previewing.
-    pub address_id: AddressID,
+    pub address_id: Option<AddressID>,
     /// Paddle ID of the business that this transaction preview is for, prefixed with `biz_`.
-    pub business_id: BusinessID,
+    pub business_id: Option<BusinessID>,
     /// Supported three-letter ISO 4217 currency code.
     pub currency_code: CurrencyCode,
     /// Paddle ID of the discount applied to this transaction preview, prefixed with `dsc_`.
-    pub discount_id: DiscountID,
+    pub discount_id: Option<DiscountID>,
     /// IP address for this transaction preview. Send one of `address_id`, `customer_ip_address`, or the `address` object when previewing.
     pub customer_ip_address: Option<String>,
     /// Address for this transaction preview. Send one of `address_id`, `customer_ip_address`, or the `address` object when previewing.
-    pub address: Address,
+    pub address: Option<AddressPreview>,
     /// Whether trials should be ignored for transaction preview calculations.
     ///
     /// By default, recurring items with trials are considered to have a zero charge when previewing. Set to `true` to disable this.
     pub ignore_trials: bool,
     /// List of items to preview transaction calculations for.
-    pub items: Vec<HashMap<String, String>>,
+    pub items: Vec<TransactionItemPreviewBase>,
     /// Calculated totals for a transaction preview, including discounts, tax, and currency conversion. Considered the source of truth for totals on a transaction preview.
     pub details: TransactionDetailsPreview,
     pub available_payment_methods: Vec<PaymentMethodType>,
@@ -2019,7 +2026,7 @@ pub struct TransactionItemPreviewBase {
     /// Whether this item should be included in totals for this transaction preview. Typically used to exclude one-time charges from calculations.
     pub include_in_totals: bool,
     /// How proration was calculated for this item. `null` for transaction previews.
-    pub proration: Proration,
+    pub proration: Option<Proration>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

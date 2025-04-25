@@ -10,7 +10,8 @@ use serde::Serialize;
 use serde_with::skip_serializing_none;
 
 use crate::entities::{
-    BillingDetails, TimePeriod, Transaction, TransactionCheckout, TransactionItemNonCatalogPrice,
+    AddressPreview, BillingDetails, TimePeriod, Transaction, TransactionCheckout,
+    TransactionItemNonCatalogPrice,
 };
 use crate::enums::{CollectionMode, CurrencyCode, TransactionOrigin, TransactionStatus};
 use crate::ids::{
@@ -736,5 +737,127 @@ impl<'a> TransactionUpdate<'a> {
         }
 
         self.client.send(self, Method::PATCH, &url).await
+    }
+}
+
+/// Request builder for generating a transaction preview without creating a transaction entity.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct TransactionPreview<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    items: Vec<TransactionItem>,
+    address: Option<AddressPreview>,
+    customer_ip_address: Option<String>,
+    address_id: Option<AddressID>,
+    business_id: Option<BusinessID>,
+    customer_id: Option<CustomerID>,
+    currency_code: Option<CurrencyCode>,
+    discount_id: Option<DiscountID>,
+    ignore_trials: bool,
+}
+
+impl<'a> TransactionPreview<'a> {
+    pub fn new(client: &'a Paddle) -> Self {
+        Self {
+            client,
+            items: Vec::default(),
+            address: None,
+            customer_ip_address: None,
+            address_id: None,
+            business_id: None,
+            customer_id: None,
+            currency_code: None,
+            discount_id: None,
+            ignore_trials: false,
+        }
+    }
+
+    /// Append to the list of items to charge for.
+    ///
+    /// You can charge for items that you've added to your catalog by passing the Paddle ID of an existing price entity,
+    ///
+    /// To charge for non-catalog items see append_non_catalog_item.
+    pub fn append_catalog_item(
+        &mut self,
+        price_id: impl Into<PriceID>,
+        quantity: u32,
+    ) -> &mut Self {
+        self.items.push(TransactionItem::CatalogItem {
+            price_id: price_id.into(),
+            quantity,
+        });
+
+        self
+    }
+
+    /// Append to the list of items to charge for.
+    ///
+    /// You can charge for non-catalog items by passing a `TransactionItemNonCatalogPrice` object.
+    pub fn append_non_catalog_item(
+        &mut self,
+        price: TransactionItemNonCatalogPrice,
+        quantity: u32,
+    ) -> &mut Self {
+        self.items
+            .push(TransactionItem::NonCatalogItem { price, quantity });
+        self
+    }
+
+    /// Address to charge tax for.
+    pub fn address(&mut self, address: AddressPreview) -> &mut Self {
+        self.address = Some(address);
+        self
+    }
+
+    /// IP address of the customer. Paddle fetches location using this IP address to calculate totals.
+    pub fn customer_ip_address(&mut self, ip: String) -> &mut Self {
+        self.customer_ip_address = Some(ip);
+        self
+    }
+
+    /// Paddle ID of the address that this transaction preview is for.
+    pub fn address_id(&mut self, address_id: impl Into<AddressID>) -> &mut Self {
+        self.address_id = Some(address_id.into());
+        self
+    }
+
+    /// Paddle ID of the business that this transaction is for.
+    pub fn business_id(&mut self, business_id: impl Into<BusinessID>) -> &mut Self {
+        self.business_id = Some(business_id.into());
+        self
+    }
+
+    /// Paddle ID of the customer that this transaction is for.
+    pub fn customer_id(&mut self, customer_id: impl Into<CustomerID>) -> &mut Self {
+        self.customer_id = Some(customer_id.into());
+        self
+    }
+
+    /// Supported three-letter currency code.
+    pub fn currency_code(&mut self, currency_code: CurrencyCode) -> &mut Self {
+        self.currency_code = Some(currency_code);
+        self
+    }
+
+    /// Paddle ID of the discount applied to this transaction.
+    pub fn discount_id(&mut self, discount_id: impl Into<DiscountID>) -> &mut Self {
+        self.discount_id = Some(discount_id.into());
+        self
+    }
+
+    /// Whether trials should be ignored for transaction preview calculations.
+    ///
+    /// By default, recurring items with trials are considered to have a zero charge when previewing. Set to `true` to disable this.
+    pub fn ignore_trials(&mut self, ignore_trials: bool) -> &mut Self {
+        self.ignore_trials = ignore_trials;
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<crate::entities::TransactionPreview> {
+        self.client
+            .send(self, Method::POST, "/transactions/preview")
+            .await
     }
 }

@@ -4,7 +4,7 @@
 
 use std::fmt::Display;
 
-use entities::CustomerAuthenticationToken;
+use entities::{CustomerAuthenticationToken, TransactionInvoice};
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -24,7 +24,7 @@ pub mod transactions;
 
 pub mod response;
 
-use enums::{CountryCodeSupported, CurrencyCode, DiscountType, TaxCategory};
+use enums::{CountryCodeSupported, CurrencyCode, DiscountType, Disposition, TaxCategory};
 use ids::{
     AddressID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID, ProductID,
     TransactionID,
@@ -625,6 +625,54 @@ impl Paddle {
         transaction_id: impl Into<TransactionID>,
     ) -> transactions::TransactionUpdate {
         transactions::TransactionUpdate::new(self, transaction_id)
+    }
+
+    /// Returns a link to an invoice PDF for a transaction.
+    ///
+    /// Invoice PDFs are available for both automatically and manually-collected transactions:
+    ///   - The PDF for manually-collected transactions includes payment terms, purchase order number, and notes for your customer. It's a demand for payment from your customer. It's available for transactions that are `billed` or `completed`.
+    ///   - The PDF for automatically-collected transactions lets your customer know that payment was taken successfully. Customers may require this for for tax-reporting purposes. It's available for transactions that are `completed`.
+    ///
+    /// Invoice PDFs aren't available for zero-value transactions.
+    ///
+    /// The link returned is not a permanent link. It expires after an hour.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::{enums::Disposition, Paddle};
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.transaction_invoice("txn_01hv8wptq8987qeep44cyrewp9", Disposition::Inline).await.unwrap();
+    /// dbg!(res.data.url)
+    /// ```
+    pub async fn transaction_invoice(
+        &self,
+        transaction_id: impl Into<TransactionID>,
+        disposition: Disposition,
+    ) -> Result<TransactionInvoice> {
+        let transaction_id = transaction_id.into();
+
+        let url = format!("/transactions/{}/invoice", transaction_id.as_ref());
+        let params = ("disposition", disposition);
+
+        self.send(params, Method::GET, &url).await
+    }
+
+    /// Returns a request builder for generating a transaction preview without creating a transaction entity. Typically used for creating more advanced, dynamic pricing pages where users can build their own plans.
+    ///
+    /// You can provide location information when previewing a transaction. You must provide this if you want Paddle to calculate tax or automatically localize prices. You can provide one of:
+    ///   - `customer_ip_address`: Paddle fetches location using the IP address to calculate totals.
+    ///   - `address`: Paddle uses the country and ZIP code (where supplied) to calculate totals.
+    ///   - `customer_id`, `address_id`, `business_id`: Paddle uses existing customer data to calculate totals. Typically used for logged-in customers.
+    ///
+    /// When supplying items, you can exclude items from the total calculation using the `include_in_totals` boolean.
+    ///
+    /// By default, recurring items with trials are considered to have a zero charge when previewing. Set `ignore_trials` to true to ignore trial periods against prices for transaction preview calculations.
+    ///
+    /// If successful, your response includes the data you sent with a details object that includes totals for the supplied prices.
+    ///
+    /// Transaction previews don't create transactions, so no `id` is returned.
+    pub fn transaction_preview(&self) -> transactions::TransactionPreview {
+        transactions::TransactionPreview::new(self)
     }
 
     async fn send<T: DeserializeOwned>(

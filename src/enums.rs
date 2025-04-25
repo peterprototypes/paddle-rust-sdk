@@ -1367,3 +1367,14 @@ pub enum SubscriptionOnResume {
     /// When resuming, start a new billing period. The `current_billing_period.starts_at` date is set to the resume date, and Paddle immediately charges the full amount for the new billing period.
     StartNewBillingPeriod,
 }
+
+/// Determine whether the generated URL should download the PDF as an attachment saved locally, or open it inline in the browser.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[non_exhaustive]
+#[serde(rename_all = "lowercase")]
+pub enum Disposition {
+    /// Generated URL downloads the PDF as an attachment. Browsers typically automatically save the PDF.
+    Attachment,
+    /// Generated URL displays the PDF inline in the browser. Browsers typically open the PDF in the current tab.
+    Inline,
+}
