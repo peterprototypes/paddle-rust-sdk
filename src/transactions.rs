@@ -861,3 +861,101 @@ impl<'a> TransactionPreview<'a> {
             .await
     }
 }
+
+#[derive(Serialize)]
+struct RevisedCustomer {
+    name: String,
+}
+
+#[derive(Serialize, Default)]
+#[skip_serializing_none]
+struct RevisedBusiness {
+    name: Option<String>,
+    tax_identifier: Option<String>,
+}
+
+#[derive(Serialize, Default)]
+#[skip_serializing_none]
+struct RevisedAddress {
+    first_line: Option<String>,
+    second_line: Option<String>,
+    city: Option<String>,
+    region: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct TransactionRevise<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    transaction_id: TransactionID,
+    customer: Option<RevisedCustomer>,
+    business: Option<RevisedBusiness>,
+    address: Option<RevisedAddress>,
+}
+
+impl<'a> TransactionRevise<'a> {
+    pub fn new(client: &'a Paddle, transaction_id: impl Into<TransactionID>) -> Self {
+        Self {
+            client,
+            transaction_id: transaction_id.into(),
+            customer: None,
+            business: None,
+            address: None,
+        }
+    }
+
+    /// Revised name of the customer for this transaction.
+    pub fn customer_name(&mut self, name: impl Into<String>) -> &mut Self {
+        self.customer = Some(RevisedCustomer { name: name.into() });
+        self
+    }
+
+    /// Revised name of the business for this transaction.
+    pub fn business_name(&mut self, name: impl Into<String>) -> &mut Self {
+        self.business.get_or_insert_default().name = Some(name.into());
+        self
+    }
+
+    /// Revised tax or VAT number for this transaction.
+    ///
+    /// You can't remove a valid tax or VAT number, only replace it with another valid one.
+    ///
+    /// Paddle automatically creates an adjustment to refund any tax where applicable.
+    pub fn business_tax_identifier(&mut self, tax_identifier: impl Into<String>) -> &mut Self {
+        self.business.get_or_insert_default().tax_identifier = Some(tax_identifier.into());
+        self
+    }
+
+    /// Revised first line of the address for this transaction.
+    pub fn address_first_line(&mut self, first_line: impl Into<String>) -> &mut Self {
+        self.address.get_or_insert_default().first_line = Some(first_line.into());
+        self
+    }
+
+    /// Revised second line of the address for this transaction.
+    pub fn address_second_line(&mut self, second_line: impl Into<String>) -> &mut Self {
+        self.address.get_or_insert_default().second_line = Some(second_line.into());
+        self
+    }
+
+    /// Revised city of the address for this transaction.
+    pub fn address_city(&mut self, city: impl Into<String>) -> &mut Self {
+        self.address.get_or_insert_default().city = Some(city.into());
+        self
+    }
+
+    /// Revised region of the address for this transaction.
+    pub fn address_region(&mut self, region: impl Into<String>) -> &mut Self {
+        self.address.get_or_insert_default().region = Some(region.into());
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Transaction> {
+        let url = format!("/transactions/{}/revise", self.transaction_id.as_ref());
+
+        self.client.send(self, Method::POST, &url).await
+    }
+}
