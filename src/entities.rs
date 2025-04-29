@@ -710,9 +710,9 @@ pub struct SubscriptionItem {
     /// Whether this is a recurring item. `false` if one-time.
     pub recurring: bool,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this item was last billed.
     pub previously_billed_at: Option<DateTime<FixedOffset>>,
     /// RFC 3339 datetime string of when this item is next scheduled to be billed.
@@ -1180,25 +1180,25 @@ pub struct Subscription {
     /// Supported three-letter ISO 4217 currency code.
     pub currency_code: CurrencyCode,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this subscription started. This may be different from `first_billed_at` if the subscription started in trial.
-    pub started_at: Option<DateTime<FixedOffset>>,
+    pub started_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when this subscription was first billed. This may be different from `started_at` if the subscription started in trial.
-    pub first_billed_at: Option<DateTime<FixedOffset>>,
+    pub first_billed_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when this subscription is next scheduled to be billed.
-    pub next_billed_at: DateTime<FixedOffset>,
+    pub next_billed_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this subscription was paused. Set automatically by Paddle when the pause subscription operation is used. `null` if not paused.
-    pub paused_at: Option<DateTime<FixedOffset>>,
+    pub paused_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when this subscription was canceled. Set automatically by Paddle when the cancel subscription operation is used. `null` if not canceled.
-    pub canceled_at: Option<DateTime<FixedOffset>>,
+    pub canceled_at: Option<DateTime<Utc>>,
     /// Details of the discount applied to this subscription.
-    pub discount: Discount,
+    pub discount: Option<Discount>,
     /// How payment is collected. `automatic` for checkout, `manual` for invoices.
     pub collection_mode: CollectionMode,
     /// Details for invoicing. Required if `collection_mode` is `manual`.
-    pub billing_details: BillingDetails,
+    pub billing_details: Option<BillingDetails>,
     /// Current billing period for this subscription. Set automatically by Paddle based on the billing cycle. `null` for `paused` and `canceled` subscriptions.
     pub current_billing_period: Option<TimePeriod>,
     pub billing_cycle: Duration,
@@ -1211,7 +1211,7 @@ pub struct Subscription {
     /// Your own structured key-value data.
     pub custom_data: Option<serde_json::Value>,
     /// Import information for this entity. `null` if this entity is not imported.
-    pub import_meta: ImportMeta,
+    pub import_meta: Option<ImportMeta>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

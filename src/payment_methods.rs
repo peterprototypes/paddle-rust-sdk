@@ -39,7 +39,7 @@ impl<'a> PaymentMethodsList<'a> {
         }
     }
 
-    /// Return entities related to the specified address. Use a comma-separated list to specify multiple address IDs.
+    /// Return entities related to the specified addresses.
     pub fn address_ids(
         &mut self,
         address_ids: impl IntoIterator<Item = impl Into<AddressID>>,

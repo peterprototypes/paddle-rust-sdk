@@ -926,6 +926,7 @@ pub enum EventTypeName {
 /// Status of this subscription item. Set automatically by Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "lowercase")]
 pub enum SubscriptionItemStatus {
     /// This item is active. It is not in trial and Paddle bills for it.
     Active,
@@ -1268,6 +1269,7 @@ pub enum PaymentAttemptStatus {
 /// Status of this subscription. Set automatically by Paddle. Use the pause subscription or cancel subscription operations to change.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum SubscriptionStatus {
     /// Subscription is active. Paddle is billing for this subscription and related transactions aren't past due.
     Active,
@@ -1305,6 +1307,7 @@ pub enum TransactionStatus {
 /// Kind of change that's scheduled to be applied to this subscription.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "lowercase")]
 pub enum ScheduledChangeAction {
     /// Subscription is scheduled to cancel. Its status changes to `canceled` on the `effective_at` date.
     Cancel,

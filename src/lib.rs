@@ -20,6 +20,7 @@ pub mod discounts;
 pub mod payment_methods;
 pub mod prices;
 pub mod products;
+pub mod subscriptions;
 pub mod transactions;
 
 pub mod response;
@@ -569,7 +570,7 @@ impl Paddle {
     /// ```
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let customers = client.transactions_list().send().await.unwrap();
+    /// let transactions = client.transactions_list().send().await.unwrap();
     /// ```
     pub fn transactions_list(&self) -> transactions::TransactionsList {
         transactions::TransactionsList::new(self)
@@ -584,13 +585,13 @@ impl Paddle {
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     ///
-    /// let transaction = client.transaction_create()
+    /// let res = client.transaction_create()
     ///     .append_catalog_item("pri_01jqxvdyjkp961jzv4me7ezg4d", 1)
     ///     .send()
     ///     .await
     ///     .unwrap();
     ///
-    /// dbg!(transaction);
+    /// dbg!(res.data);
     /// ```
     pub fn transaction_create(&self) -> transactions::TransactionCreate {
         transactions::TransactionCreate::new(self)
@@ -602,8 +603,8 @@ impl Paddle {
     /// ```
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let transaction = client.transaction_get("txn_01hv8wptq8987qeep44cyrewp9").send().await.unwrap();
-    /// dbg!(transaction);
+    /// let res = client.transaction_get("txn_01hv8wptq8987qeep44cyrewp9").send().await.unwrap();
+    /// dbg!(res.data);
     /// ```
     pub fn transaction_get(
         &self,
@@ -698,6 +699,18 @@ impl Paddle {
         transactions::TransactionRevise::new(self, transaction_id)
     }
 
+    /// Returns a request builder for querying subscriptions.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let subscriptions = client.subscriptions_list().send().await.unwrap();
+    /// ```
+    pub fn subscriptions_list(&self) -> subscriptions::SubscriptionsList {
+        subscriptions::SubscriptionsList::new(self)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
@@ -708,6 +721,7 @@ impl Paddle {
         let client = reqwest::Client::new();
 
         if method == reqwest::Method::GET {
+            dbg!(&serde_qs::to_string(&req)?);
             url.set_query(Some(&serde_qs::to_string(&req)?));
         }
 
@@ -771,8 +785,12 @@ where
             let mut serialized = vec![];
 
             for val in values {
-                let serialized_value =
-                    serde_json::to_string(val).map_err(serde::ser::Error::custom)?;
+                let serde_value = serde_json::to_value(val).map_err(serde::ser::Error::custom)?;
+                let serialized_value = serde_value
+                    .as_str()
+                    .ok_or(serde::ser::Error::custom("Failed to serialize enum"))?
+                    .to_string();
+
                 serialized.push(serialized_value);
             }
 

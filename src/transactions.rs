@@ -57,7 +57,8 @@ pub struct TransactionsList<'a> {
     #[serde(serialize_with = "crate::comma_separated_enum")]
     origin: Option<Vec<TransactionOrigin>>,
     order_by: Option<String>,
-    status: Option<TransactionStatus>,
+    #[serde(serialize_with = "crate::comma_separated_enum")]
+    status: Option<Vec<TransactionStatus>>,
     #[serde(serialize_with = "crate::comma_separated")]
     subscription_id: Option<Vec<SubscriptionID>>,
     per_page: Option<usize>,
@@ -259,8 +260,8 @@ impl<'a> TransactionsList<'a> {
     }
 
     /// Return entities that match the specified status.
-    pub fn status(&mut self, status: TransactionStatus) -> &mut Self {
-        self.status = Some(status);
+    pub fn status(&mut self, statuses: impl IntoIterator<Item = TransactionStatus>) -> &mut Self {
+        self.status = Some(statuses.into_iter().collect());
         self
     }
 
