@@ -138,3 +138,53 @@ impl<'a> SubscriptionsList<'a> {
         self.client.send(self, Method::GET, "/subscriptions").await
     }
 }
+
+/// Request builder for fetching a specific transaction.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct SubscriptionGet<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    subscription_id: SubscriptionID,
+    #[serde(serialize_with = "crate::comma_separated")]
+    include: Option<Vec<String>>,
+}
+
+impl<'a> SubscriptionGet<'a> {
+    pub fn new(client: &'a Paddle, subscription_id: impl Into<SubscriptionID>) -> Self {
+        Self {
+            client,
+            subscription_id: subscription_id.into(),
+            include: None,
+        }
+    }
+
+    /// Include related entities in the response.
+    ///
+    /// ## Valid values are:
+    ///
+    /// - `next_transaction` - Include an object with a preview of the next transaction for this subscription. May include prorated charges that aren't yet billed and one-time charges.
+    /// - `recurring_transaction_details` - Include an object with a preview of the recurring transaction for this subscription. This is what the customer can expect to be billed when there are no prorated or one-time charges.
+    ///
+    pub fn include(&mut self, entities: impl IntoIterator<Item = impl AsRef<str>>) -> &mut Self {
+        self.include = Some(
+            entities
+                .into_iter()
+                .map(|s| s.as_ref().to_string())
+                .collect(),
+        );
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Subscription> {
+        self.client
+            .send(
+                self,
+                Method::GET,
+                &format!("/subscriptions/{}", self.subscription_id.as_ref()),
+            )
+            .await
+    }
+}

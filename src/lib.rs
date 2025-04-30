@@ -28,7 +28,7 @@ pub mod response;
 use enums::{CountryCodeSupported, CurrencyCode, DiscountType, Disposition, TaxCategory};
 use ids::{
     AddressID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID, ProductID,
-    TransactionID,
+    SubscriptionID, TransactionID,
 };
 
 use response::{ErrorResponse, Response, SuccessResponse};
@@ -709,6 +709,22 @@ impl Paddle {
     /// ```
     pub fn subscriptions_list(&self) -> subscriptions::SubscriptionsList {
         subscriptions::SubscriptionsList::new(self)
+    }
+
+    /// Returns a request builder for fetching a subscription using its ID.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.subscription_get("sub_01hv8y5ehszzq0yv20ttx3166y").send().await.unwrap();
+    /// dbg!(res.data);
+    /// ```
+    pub fn subscription_get(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionGet {
+        subscriptions::SubscriptionGet::new(self, subscription_id)
     }
 
     async fn send<T: DeserializeOwned>(
