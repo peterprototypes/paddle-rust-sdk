@@ -771,6 +771,7 @@ pub enum DiscountType {
 /// `scheduled_change` to apply the subscription change at the end of the billing period.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum EffectiveFrom {
     /// Takes effect on the next billing period.
     NextBillingPeriod,
@@ -1320,6 +1321,7 @@ pub enum ScheduledChangeAction {
 /// How Paddle should handle changes made to a subscription or its items if the payment fails during update. If omitted, defaults to `prevent_change`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum SubscriptionOnPaymentFailure {
     /// In case of payment failure, prevent the change to the subscription from applying.
     PreventChange,
@@ -1330,6 +1332,7 @@ pub enum SubscriptionOnPaymentFailure {
 /// Whether the subscription change results in a prorated credit or a charge.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "lowercase")]
 pub enum UpdateSummaryResultAction {
     /// Changes to the subscription results in a prorated credit.
     Credit,
@@ -1344,6 +1347,7 @@ pub enum UpdateSummaryResultAction {
 /// collects for payment immediately is used.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum ProrationBillingMode {
     /// Paddle calculates the prorated amount for the subscription changes based on the current billing cycle, then
     /// creates a transaction to collect immediately.

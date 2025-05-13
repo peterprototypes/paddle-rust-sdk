@@ -727,6 +727,28 @@ impl Paddle {
         subscriptions::SubscriptionGet::new(self, subscription_id)
     }
 
+    /// Returns a request builder for getting a preview of changes to a subscription without actually applying them.
+    ///
+    /// Typically used for previewing proration before making changes to a subscription.
+    ///
+    /// If successful, your response includes `immediate_transaction`, `next_transaction`, and `recurring_transaction_details` so you can see expected transactions for the changes.
+    ///
+    /// The `update_summary` object contains details of prorated credits and charges created, along with the overall result of the update.
+    ///
+    /// /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.subscription_get("sub_01hv8y5ehszzq0yv20ttx3166y").send().await.unwrap();
+    /// dbg!(res.data);
+    /// ```
+    pub fn subscription_preview_update(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionPreviewUpdate {
+        subscriptions::SubscriptionPreviewUpdate::new(self, subscription_id)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
@@ -753,8 +775,18 @@ impl Paddle {
             _ => builder,
         };
 
+        // Uncomment this to see the raw text response
         // let text = builder.send().await?.text().await?;
         // println!("{}", text);
+        // todo!();
+
+        // Uncomment this to attempt to deserialize the response into an entity
+        // Needed due to https://github.com/serde-rs/serde/issues/2157
+
+        // let res: serde_json::Value = builder.send().await?.json().await?;
+        // let data_json = serde_json::to_string(&res["data"]).unwrap();
+        // let res: entities::SubscriptionPreview = serde_json::from_str(&data_json).unwrap();
+        // // println!("{}", serde_json::to_string(&res["data"]).unwrap());
         // todo!();
 
         let res: Response<_> = builder.send().await?.json().await?;
