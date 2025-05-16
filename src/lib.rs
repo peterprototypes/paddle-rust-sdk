@@ -815,6 +815,22 @@ impl Paddle {
         subscriptions::SubscriptionOneTimeChargePreview::new(self, subscription_id)
     }
 
+    /// Get a request builder for creating a new one-time charge for a subscription. Use to bill non-recurring items to a subscription. Non-recurring items are price entities where the `billing_cycle` is `null`.
+    ///
+    /// If successful, Paddle responds with the updated subscription entity. However, one-time charges aren't held against the subscription entity, so the charges billed aren't returned in the response.
+    ///
+    /// Once created, to get details of a one-time charge:
+    /// - When created with `effective_from` as `next_billing_period`, get the subscription the charge was billed to and use the `include` query parameter with the `next_transaction` value.
+    /// - When created with `effective_from` as `immediately`, list transactions and use the `subscription_id` query parameter with the subscription ID of the subscription the charge was billed to.
+    ///
+    /// When an update results in an immediate charge, responses may take longer than usual while a payment attempt is processed.
+    pub fn subscription_one_time_charge(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionOneTimeCharge {
+        subscriptions::SubscriptionOneTimeCharge::new(self, subscription_id)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
