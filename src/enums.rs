@@ -1368,6 +1368,7 @@ pub enum ProrationBillingMode {
 /// How Paddle should set the billing period for the subscription when resuming. If omitted, defaults to `start_new_billing_period`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum SubscriptionOnResume {
     /// When resuming, continue the existing billing period. If the customer resumes before the end date of the existing billing period, there's no immediate charge. If after, an error is returned.
     ContinueExistingBillingPeriod,

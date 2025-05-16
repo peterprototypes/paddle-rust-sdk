@@ -2,9 +2,7 @@
 //!
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
-use std::fmt::Display;
-
-use entities::{CustomerAuthenticationToken, Transaction, TransactionInvoice};
+use entities::{CustomerAuthenticationToken, Subscription, Transaction, TransactionInvoice};
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -324,11 +322,17 @@ impl Paddle {
     /// Authentication tokens are temporary and shouldn't be cached. They're valid until the expires_at date returned in the response.
     pub async fn generate_auth_token(
         &self,
-        customer_id: impl Display,
+        customer_id: impl Into<CustomerID>,
     ) -> Result<CustomerAuthenticationToken> {
         let client = reqwest::Client::new();
 
-        let url = format!("{}customers/{}/auth-token", self.base_url, customer_id);
+        let customer_id = customer_id.into();
+
+        let url = format!(
+            "{}customers/{}/auth-token",
+            self.base_url,
+            customer_id.as_ref()
+        );
 
         let res: Response<_> = client
             .post(url)
@@ -831,6 +835,69 @@ impl Paddle {
         subscriptions::SubscriptionOneTimeCharge::new(self, subscription_id)
     }
 
+    /// Activates a trialing subscription using its ID. Only automatically-collected subscriptions where the status is trialing can be activated.
+    ///
+    /// On activation, Paddle bills for a subscription immediately. Subscription billing dates are recalculated based on the activation date (the time the activation request is made).
+    ///
+    /// If successful, Paddle returns a copy of the updated subscription entity. The subscription status is `active`, and billing dates are updated to reflect the activation date.
+    ///
+    /// This operation results in an immediate charge, so responses may take longer than usual while a payment attempt is processed.
+    pub async fn subscription_activate(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> Result<Subscription> {
+        let subscription_id = subscription_id.into();
+
+        let url = format!("/subscriptions/{}/activate", subscription_id.as_ref());
+
+        self.send(serde_json::json!({}), Method::POST, &url).await
+    }
+
+    /// Get a request builder for pausing a subscription using its ID.
+    ///
+    /// By default, subscriptions are paused at the end of the billing period. When you send a request to pause, Paddle creates a `scheduled_change` against the subscription entity to say that it should pause at the end of the current billing period. Its `status` remains `active` until after the effective date of the scheduled change, at which point it changes to `paused`.
+    ///
+    /// To set a resume date, include the `resume_at` field in your request. The subscription remains paused until the resume date, or until you send a resume request. Omit to create an open-ended pause. The subscription remains paused indefinitely, until you send a resume request.
+    pub fn subscription_pause(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionPause {
+        subscriptions::SubscriptionPause::new(self, subscription_id)
+    }
+
+    /// Resumes a paused subscription using its ID. Only `paused` subscriptions can be resumed. If an `active` subscription has a scheduled change to pause in the future, use this operation to set or change the resume date.
+    ///
+    /// You can't resume a `canceled` subscription.
+    ///
+    /// On resume, Paddle bills for a subscription immediately by default. Subscription billing dates are recalculated based on the resume date. Use the `on_resume` field to change this behavior.
+    ///
+    /// If successful, Paddle returns a copy of the updated subscription entity:
+    /// - When resuming a `paused` subscription immediately, the subscription status is `active`, and billing dates are updated to reflect the resume date.
+    /// - When scheduling a `paused` subscription to resume on a date in the future, the subscription status is `paused`, and `scheduled_change.resume_at` is updated to reflect the scheduled resume date.
+    /// - When changing the resume date for an `active` subscription that's scheduled to pause, the subscription status is `active` and `scheduled_change.resume_at` is updated to reflect the scheduled resume date.
+    ///
+    /// This operation may result in an immediate charge, so responses may take longer than usual while a payment attempt is processed.
+    pub fn subscription_resume(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionResume {
+        subscriptions::SubscriptionResume::new(self, subscription_id)
+    }
+
+    /// Get a request builder for canceling a subscription.
+    ///
+    /// By default, active subscriptions are canceled at the end of the billing period. When you send a request to cancel, Paddle creates a `scheduled_change` against the subscription entity to say that it should cancel at the end of the current billing period. Its `status` remains `active` until after the effective date of the scheduled change, at which point it changes to `canceled`.
+    ///
+    /// You can cancel a subscription right away by including `effective_from` in your request, setting the value to `immediately`. If successful, your response includes a copy of the updated subscription entity with the `status` of `canceled`. Canceling immediately is the default behavior for paused subscriptions.
+    ///
+    /// You can't reinstate a canceled subscription.
+    pub fn subscription_cancel(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionCancel {
+        subscriptions::SubscriptionCancel::new(self, subscription_id)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
@@ -866,7 +933,7 @@ impl Paddle {
 
         // let res: serde_json::Value = builder.send().await?.json().await?;
         // let data_json = serde_json::to_string(&res["data"]).unwrap();
-        // let res: entities::SubscriptionPreview = serde_json::from_str(&data_json).unwrap();
+        // let res: entities::Subscription = serde_json::from_str(&data_json).unwrap();
         // // println!("{}", serde_json::to_string(&res["data"]).unwrap());
         // todo!();
 

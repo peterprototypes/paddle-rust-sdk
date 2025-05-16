@@ -12,7 +12,7 @@ use crate::entities::{
 };
 use crate::enums::{
     CollectionMode, CurrencyCode, EffectiveFrom, ProrationBillingMode, ScheduledChangeAction,
-    SubscriptionOnPaymentFailure, SubscriptionStatus,
+    SubscriptionOnPaymentFailure, SubscriptionOnResume, SubscriptionStatus,
 };
 use crate::ids::{AddressID, BusinessID, CustomerID, PriceID, SubscriptionID};
 use crate::transactions::TransactionItem;
@@ -560,6 +560,151 @@ impl<'a> SubscriptionOneTimeCharge<'a> {
                 self,
                 Method::POST,
                 &format!("/subscriptions/{}/charge", self.subscription_id.as_ref()),
+            )
+            .await
+    }
+}
+
+/// Request builder for pausing a subscription.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct SubscriptionPause<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    subscription_id: SubscriptionID,
+    effective_from: Option<EffectiveFrom>,
+    resume_at: Option<DateTime<Utc>>,
+    on_resume: Option<SubscriptionOnResume>,
+}
+
+impl<'a> SubscriptionPause<'a> {
+    pub fn new(client: &'a Paddle, subscription_id: impl Into<SubscriptionID>) -> Self {
+        Self {
+            client,
+            subscription_id: subscription_id.into(),
+            effective_from: None,
+            resume_at: None,
+            on_resume: None,
+        }
+    }
+
+    /// When this subscription change should take effect from.
+    ///
+    /// Defaults to `next_billing_period` for active subscriptions, which creates a `scheduled_change` to apply the subscription change at the end of the billing period.
+    pub fn effective_from(&mut self, effective_from: EffectiveFrom) -> &mut Self {
+        self.effective_from = Some(effective_from);
+        self
+    }
+
+    /// Datetime of when the paused subscription should resume. Omit to pause indefinitely until resumed.
+    pub fn resume_at(&mut self, datetime: DateTime<Utc>) -> &mut Self {
+        self.resume_at = Some(datetime);
+        self
+    }
+
+    /// How Paddle should set the billing period for the subscription when resuming. If omitted, defaults to `start_new_billing_period`.
+    pub fn on_resume(&mut self, value: SubscriptionOnResume) -> &mut Self {
+        self.on_resume = Some(value);
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Subscription> {
+        self.client
+            .send(
+                self,
+                Method::POST,
+                &format!("/subscriptions/{}/pause", self.subscription_id.as_ref()),
+            )
+            .await
+    }
+}
+
+/// Request builder for resuming a subscription.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct SubscriptionResume<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    subscription_id: SubscriptionID,
+    // Defaults to `immediately` if omitted.
+    effective_from: Option<DateTime<Utc>>,
+    on_resume: Option<SubscriptionOnResume>,
+}
+
+impl<'a> SubscriptionResume<'a> {
+    pub fn new(client: &'a Paddle, subscription_id: impl Into<SubscriptionID>) -> Self {
+        Self {
+            client,
+            subscription_id: subscription_id.into(),
+            effective_from: None,
+            on_resume: None,
+        }
+    }
+
+    /// When this subscription change should take effect from.
+    ///
+    /// Defaults to `next_billing_period` for active subscriptions, which creates a `scheduled_change` to apply the subscription change at the end of the billing period.
+    pub fn effective_from(&mut self, effective_from: DateTime<Utc>) -> &mut Self {
+        self.effective_from = Some(effective_from);
+        self
+    }
+
+    /// How Paddle should set the billing period for the subscription when resuming. If omitted, defaults to `start_new_billing_period`.
+    pub fn on_resume(&mut self, value: SubscriptionOnResume) -> &mut Self {
+        self.on_resume = Some(value);
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Subscription> {
+        self.client
+            .send(
+                self,
+                Method::POST,
+                &format!("/subscriptions/{}/resume", self.subscription_id.as_ref()),
+            )
+            .await
+    }
+}
+
+/// Request builder for resuming a subscription.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct SubscriptionCancel<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    subscription_id: SubscriptionID,
+    effective_from: Option<EffectiveFrom>,
+}
+
+impl<'a> SubscriptionCancel<'a> {
+    pub fn new(client: &'a Paddle, subscription_id: impl Into<SubscriptionID>) -> Self {
+        Self {
+            client,
+            subscription_id: subscription_id.into(),
+            effective_from: None,
+        }
+    }
+
+    /// When this subscription change should take effect from.
+    ///
+    /// Defaults to `next_billing_period` for active subscriptions, which creates a `scheduled_change` to apply the subscription change at the end of the billing period.
+    pub fn effective_from(&mut self, effective_from: EffectiveFrom) -> &mut Self {
+        self.effective_from = Some(effective_from);
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<Subscription> {
+        self.client
+            .send(
+                self,
+                Method::POST,
+                &format!("/subscriptions/{}/cancel", self.subscription_id.as_ref()),
             )
             .await
     }

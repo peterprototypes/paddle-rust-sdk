@@ -1188,7 +1188,7 @@ pub struct Subscription {
     /// RFC 3339 datetime string of when this subscription was first billed. This may be different from `started_at` if the subscription started in trial.
     pub first_billed_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when this subscription is next scheduled to be billed.
-    pub next_billed_at: DateTime<Utc>,
+    pub next_billed_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when this subscription was paused. Set automatically by Paddle when the pause subscription operation is used. `null` if not paused.
     pub paused_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when this subscription was canceled. Set automatically by Paddle when the cancel subscription operation is used. `null` if not canceled.
