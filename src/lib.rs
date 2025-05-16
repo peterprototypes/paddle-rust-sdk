@@ -789,7 +789,7 @@ impl Paddle {
     /// You can use the returned `checkout.url`, or pass the returned transaction ID to Paddle.js to open a checkout to present customers with a way of updating their payment details.
     ///
     /// The `customer`, `address`, `business`, `discount`, `adjustments` and `adjustments_totals` properties are only returned in the response if the API key has read permissions for those related entities.
-    pub async fn subscription_payment_method_transaction(
+    pub async fn subscription_update_payment_method_transaction(
         &self,
         subscription_id: impl Into<SubscriptionID>,
     ) -> Result<Transaction> {
@@ -801,6 +801,18 @@ impl Paddle {
         );
 
         self.send((), Method::GET, &url).await
+    }
+
+    /// Get a request builder for previewing creating a one-time charge for a subscription without billing that charge. Typically used for previewing calculations before making changes to a subscription.
+    ///
+    /// One-time charges are non-recurring items. These are price entities where the `billing_cycle` is `null`.
+    ///
+    /// If successful, your response includes `immediate_transaction`, `next_transaction`, and `recurring_transaction_details` so you can see expected transactions for the changes.
+    pub fn subscription_preview_one_time_charge(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionOneTimeChargePreview {
+        subscriptions::SubscriptionOneTimeChargePreview::new(self, subscription_id)
     }
 
     async fn send<T: DeserializeOwned>(

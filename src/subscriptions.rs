@@ -12,7 +12,7 @@ use crate::entities::{
     Transaction,
 };
 use crate::enums::{
-    CollectionMode, CurrencyCode, ProrationBillingMode, ScheduledChangeAction,
+    CollectionMode, CurrencyCode, EffectiveFrom, ProrationBillingMode, ScheduledChangeAction,
     SubscriptionOnPaymentFailure, SubscriptionStatus,
 };
 use crate::ids::{AddressID, BusinessID, CustomerID, PriceID, SubscriptionID};
@@ -442,6 +442,67 @@ impl<'a> SubscriptionUpdate<'a> {
                 &self.data,
                 Method::PATCH,
                 &format!("/subscriptions/{}", self.subscription_id.as_ref()),
+            )
+            .await
+    }
+}
+
+/// Request builder for creating a preview of one-time charge for a subscription without billing that charge.
+#[skip_serializing_none]
+#[derive(Serialize)]
+pub struct SubscriptionOneTimeChargePreview<'a> {
+    #[serde(skip)]
+    client: &'a Paddle,
+    #[serde(skip)]
+    subscription_id: SubscriptionID,
+    effective_from: Option<EffectiveFrom>,
+    items: Vec<TransactionItem>,
+    on_payment_failure: Option<SubscriptionOnPaymentFailure>,
+}
+
+impl<'a> SubscriptionOneTimeChargePreview<'a> {
+    pub fn new(client: &'a Paddle, subscription_id: impl Into<SubscriptionID>) -> Self {
+        Self {
+            client,
+            subscription_id: subscription_id.into(),
+            effective_from: None,
+            items: Vec::default(),
+            on_payment_failure: None,
+        }
+    }
+
+    /// When one-time charges should be billed.
+    pub fn effective_from(&mut self, effective_from: EffectiveFrom) -> &mut Self {
+        self.effective_from = Some(effective_from);
+        self
+    }
+
+    /// List of one-time charges to bill for. Only prices where the `billing_cycle` is `null` may be added.
+    ///
+    /// You can charge for items that you've added to your catalog by passing the Paddle ID of an existing price entity, or you can charge for non-catalog items by passing a price object.
+    ///
+    /// Non-catalog items can be for existing products, or you can pass a product object as part of your price to charge for a non-catalog product.
+    pub fn items(&mut self, items: impl IntoIterator<Item = TransactionItem>) -> &mut Self {
+        self.items = items.into_iter().collect();
+        self
+    }
+
+    /// How Paddle should handle changes made to a subscription or its items if the payment fails during update. If omitted, defaults to `prevent_change`.
+    pub fn on_payment_failure(&mut self, mode: SubscriptionOnPaymentFailure) -> &mut Self {
+        self.on_payment_failure = Some(mode);
+        self
+    }
+
+    /// Send the request to Paddle and return the response.
+    pub async fn send(&self) -> Result<SubscriptionPreview> {
+        self.client
+            .send(
+                self,
+                Method::POST,
+                &format!(
+                    "/subscriptions/{}/charge/preview",
+                    self.subscription_id.as_ref()
+                ),
             )
             .await
     }
