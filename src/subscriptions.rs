@@ -9,6 +9,7 @@ use serde_with::skip_serializing_none;
 
 use crate::entities::{
     BillingDetails, Subscription, SubscriptionDiscountEffectiveFrom, SubscriptionPreview,
+    Transaction,
 };
 use crate::enums::{
     CollectionMode, CurrencyCode, ProrationBillingMode, ScheduledChangeAction,
@@ -18,7 +19,7 @@ use crate::ids::{AddressID, BusinessID, CustomerID, PriceID, SubscriptionID};
 use crate::transactions::TransactionItem;
 use crate::{Paddle, Result};
 
-/// Request builder for fetching transactions from Paddle API.
+/// Request builder for fetching subscriptions from Paddle API.
 #[skip_serializing_none]
 #[derive(Serialize)]
 pub struct SubscriptionsList<'a> {
@@ -146,7 +147,7 @@ impl<'a> SubscriptionsList<'a> {
     }
 }
 
-/// Request builder for fetching a specific transaction.
+/// Request builder for fetching a specific subscription.
 #[skip_serializing_none]
 #[derive(Serialize)]
 pub struct SubscriptionGet<'a> {

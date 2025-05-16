@@ -4,7 +4,7 @@
 
 use std::fmt::Display;
 
-use entities::{CustomerAuthenticationToken, TransactionInvoice};
+use entities::{CustomerAuthenticationToken, Transaction, TransactionInvoice};
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -780,6 +780,29 @@ impl Paddle {
         subscriptions::SubscriptionUpdate::new(self, subscription_id)
     }
 
+    /// Returns a transaction that you can pass to a checkout to let customers update their payment details. Only for subscriptions where collection_mode is automatic.
+    ///
+    /// The transaction returned depends on the status of the related subscription:
+    /// - Where a subscription is `past_due`, it returns the most recent `past_due` transaction.
+    /// - Where a subscription is `active`, it creates a new zero amount transaction for the items on a subscription.
+    ///
+    /// You can use the returned `checkout.url`, or pass the returned transaction ID to Paddle.js to open a checkout to present customers with a way of updating their payment details.
+    ///
+    /// The `customer`, `address`, `business`, `discount`, `adjustments` and `adjustments_totals` properties are only returned in the response if the API key has read permissions for those related entities.
+    pub async fn subscription_payment_method_transaction(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> Result<Transaction> {
+        let subscription_id = subscription_id.into();
+
+        let url = format!(
+            "/subscriptions/{}/update-payment-method-transaction",
+            subscription_id.as_ref()
+        );
+
+        self.send((), Method::GET, &url).await
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
@@ -790,7 +813,6 @@ impl Paddle {
         let client = reqwest::Client::new();
 
         if method == reqwest::Method::GET {
-            dbg!(&serde_qs::to_string(&req)?);
             url.set_query(Some(&serde_qs::to_string(&req)?));
         }
 
