@@ -68,7 +68,7 @@ impl Paddle {
         })
     }
 
-    /// Returns a request builder for fetching products. Use the after method to page through results.
+    /// Get a request builder for fetching products. Use the after method to page through results.
     ///
     /// By default, Paddle returns products that are active. Use the status method to return products that are archived.
     /// Use the include method to include related price entities in the response.
@@ -83,7 +83,7 @@ impl Paddle {
         products::ProductsList::new(self)
     }
 
-    /// Returns a request builder for creating a new product.
+    /// Get a request builder for creating a new product.
     ///
     /// # Example:
     /// ```
@@ -100,7 +100,7 @@ impl Paddle {
         products::ProductCreate::new(self, name, tax_category)
     }
 
-    /// Returns a request builder for fetching a specific product.
+    /// Get a request builder for fetching a specific product.
     ///
     /// # Example:
     /// ```
@@ -112,7 +112,7 @@ impl Paddle {
         products::ProductGet::new(self, product_id)
     }
 
-    /// Returns a request builder for updating a specific product.
+    /// Get a request builder for updating a specific product.
     ///
     /// # Example:
     /// ```
@@ -125,7 +125,7 @@ impl Paddle {
         products::ProductUpdate::new(self, product_id)
     }
 
-    /// Returns a request builder listing prices
+    /// Get a request builder listing prices
     ///
     /// # Example:
     /// ```
@@ -137,7 +137,7 @@ impl Paddle {
         prices::PricesList::new(self)
     }
 
-    /// Returns a request builder for creating a new price.
+    /// Get a request builder for creating a new price.
     ///
     /// * `product_id` - Paddle ID for the product that this price is for.
     /// * `description` - Internal description for this price, not shown to customers. Typically notes for your team.
@@ -160,7 +160,7 @@ impl Paddle {
         prices::PricesCreate::new(self, product_id, description, amount, currency)
     }
 
-    /// Returns a request builder for fetching a specific price by id.
+    /// Get a request builder for fetching a specific price by id.
     ///
     /// # Example:
     /// ```
@@ -172,7 +172,7 @@ impl Paddle {
         prices::PriceGet::new(self, price_id)
     }
 
-    /// Returns a request builder for updating a specific price.
+    /// Get a request builder for updating a specific price.
     ///
     /// # Example:
     /// ```
@@ -185,7 +185,7 @@ impl Paddle {
         prices::PriceUpdate::new(self, price_id)
     }
 
-    /// Returns a request builder for fetching discounts.
+    /// Get a request builder for fetching discounts.
     ///
     /// # Example:
     /// ```
@@ -197,7 +197,7 @@ impl Paddle {
         discounts::DiscountsList::new(self)
     }
 
-    /// Returns a request builder for creating discounts.
+    /// Get a request builder for creating discounts.
     ///
     /// # Example:
     /// ```
@@ -214,7 +214,7 @@ impl Paddle {
         discounts::DiscountCreate::new(self, amount, description, discount_type)
     }
 
-    /// Returns a request builder for fetching a specific discount by id.
+    /// Get a request builder for fetching a specific discount by id.
     ///
     /// # Example:
     /// ```
@@ -226,7 +226,7 @@ impl Paddle {
         discounts::DiscountGet::new(self, discount_id)
     }
 
-    /// Returns a request builder for creating discounts.
+    /// Get a request builder for creating discounts.
     ///
     /// # Example:
     /// ```
@@ -238,7 +238,7 @@ impl Paddle {
         discounts::DiscountUpdate::new(self, discount_id)
     }
 
-    /// Returns a request builder for fetching customers. Use the after method to page through results.
+    /// Get a request builder for fetching customers. Use the after method to page through results.
     ///
     /// By default, Paddle returns customers that are `active`. Use the status query parameter to return customers that are archived.
     ///
@@ -252,7 +252,7 @@ impl Paddle {
         customers::CustomersList::new(self)
     }
 
-    /// Returns a request builder for creating a new customer.
+    /// Get a request builder for creating a new customer.
     ///
     /// # Example:
     /// ```
@@ -264,7 +264,7 @@ impl Paddle {
         customers::CustomerCreate::new(self, email.into())
     }
 
-    /// Returns a request builder for fetching a specific customer by id.
+    /// Get a request builder for fetching a specific customer by id.
     ///
     /// # Example:
     /// ```
@@ -276,7 +276,7 @@ impl Paddle {
         customers::CustomerGet::new(self, customer_id)
     }
 
-    /// Returns a request builder for updating customer data.
+    /// Get a request builder for updating customer data.
     ///
     /// # Example:
     /// ```
@@ -288,7 +288,7 @@ impl Paddle {
         customers::CustomerUpdate::new(self, customer_id)
     }
 
-    /// Returns a request builder for fetching a list of credit balances for each currency for a customer.
+    /// Get a request builder for fetching a list of credit balances for each currency for a customer.
     ///
     /// Each balance has three totals:
     ///
@@ -344,7 +344,7 @@ impl Paddle {
         }
     }
 
-    /// Returns a request builder for fetching customers addresses.
+    /// Get a request builder for fetching customers addresses.
     ///
     /// By default, Paddle returns addresses that are `active`. Use the status query parameter to return addresses that are archived.
     ///
@@ -358,7 +358,7 @@ impl Paddle {
         addresses::AddressesList::new(self, customer_id)
     }
 
-    /// Returns a request builder for creating a new customer address.
+    /// Get a request builder for creating a new customer address.
     ///
     /// # Example:
     /// ```
@@ -374,7 +374,7 @@ impl Paddle {
         addresses::AddressCreate::new(self, customer_id, country_code)
     }
 
-    /// Returns a request builder for getting an address for a customer using its ID and related customer ID.
+    /// Get a request builder for getting an address for a customer using its ID and related customer ID.
     ///
     /// # Example:
     /// ```
@@ -390,7 +390,7 @@ impl Paddle {
         addresses::AddressGet::new(self, customer_id, address_id)
     }
 
-    /// Returns a request builder for updating an address for a customer using its ID and related customer ID.
+    /// Get a request builder for updating an address for a customer using its ID and related customer ID.
     ///
     /// # Example:
     /// ```
@@ -406,7 +406,7 @@ impl Paddle {
         addresses::AddressUpdate::new(self, customer_id, address_id)
     }
 
-    /// Returns a request builder for fetching customers businesses.
+    /// Get a request builder for fetching customers businesses.
     ///
     /// By default, Paddle returns addresses that are `active`. Use the status query parameter to return businesses that are archived.
     ///
@@ -423,7 +423,7 @@ impl Paddle {
         businesses::BusinessesList::new(self, customer_id)
     }
 
-    /// Returns a request builder for creating a new customer business.
+    /// Get a request builder for creating a new customer business.
     ///
     /// # Example:
     /// ```
@@ -439,7 +439,7 @@ impl Paddle {
         businesses::BusinessCreate::new(self, customer_id, name)
     }
 
-    /// Returns a request builder for getting a business for a customer using its ID and related customer ID.
+    /// Get a request builder for getting a business for a customer using its ID and related customer ID.
     ///
     /// # Example:
     /// ```
@@ -455,7 +455,7 @@ impl Paddle {
         businesses::BusinessGet::new(self, customer_id, business_id)
     }
 
-    /// Returns a request builder for updating a business for a customer using its ID and related customer ID.
+    /// Get a request builder for updating a business for a customer using its ID and related customer ID.
     ///
     /// # Example:
     /// ```
@@ -471,7 +471,7 @@ impl Paddle {
         businesses::BusinessUpdate::new(self, customer_id, business_id)
     }
 
-    /// Returns a request builder for querying customer saved payment methods.
+    /// Get a request builder for querying customer saved payment methods.
     ///
     /// # Example:
     /// ```
@@ -486,7 +486,7 @@ impl Paddle {
         payment_methods::PaymentMethodsList::new(self, customer_id)
     }
 
-    /// Returns a request builder for getting a saved payment for a customer using its ID and related customer ID.
+    /// Get a request builder for getting a saved payment for a customer using its ID and related customer ID.
     ///
     /// # Example:
     /// ```
@@ -562,7 +562,7 @@ impl Paddle {
         customers::PortalSessionCreate::new(self, customer_id)
     }
 
-    /// Returns a request builder for querying transactions.
+    /// Get a request builder for querying transactions.
     ///
     /// Use the include method on the builder to include related entities in the response.
     ///
@@ -576,7 +576,7 @@ impl Paddle {
         transactions::TransactionsList::new(self)
     }
 
-    /// Returns a request builder for creating a transaction.
+    /// Get a request builder for creating a transaction.
     ///
     /// See [Create Transaction](https://developer.paddle.com/api-reference/transactions/create-transaction) for more information.
     ///
@@ -597,7 +597,7 @@ impl Paddle {
         transactions::TransactionCreate::new(self)
     }
 
-    /// Returns a request builder for fetching a transaction using its ID.
+    /// Get a request builder for fetching a transaction using its ID.
     ///
     /// # Example:
     /// ```
@@ -613,7 +613,7 @@ impl Paddle {
         transactions::TransactionGet::new(self, transaction_id)
     }
 
-    /// Returns a request builder for updating a transaction.
+    /// Get a request builder for updating a transaction.
     ///
     /// # Example:
     /// ```
@@ -658,7 +658,7 @@ impl Paddle {
         self.send(params, Method::GET, &url).await
     }
 
-    /// Returns a request builder for generating a transaction preview without creating a transaction entity. Typically used for creating more advanced, dynamic pricing pages where users can build their own plans.
+    /// Get a request builder for generating a transaction preview without creating a transaction entity. Typically used for creating more advanced, dynamic pricing pages where users can build their own plans.
     ///
     /// You can provide location information when previewing a transaction. You must provide this if you want Paddle to calculate tax or automatically localize prices. You can provide one of:
     ///   - `customer_ip_address`: Paddle fetches location using the IP address to calculate totals.
@@ -676,7 +676,7 @@ impl Paddle {
         transactions::TransactionPreview::new(self)
     }
 
-    /// Returns a request builder to revise customer information for a billed or completed transaction.
+    /// Get a request builder to revise customer information for a billed or completed transaction.
     ///
     /// Revise a transaction to rectify incorrect customer, address, or business information on invoice documents generated by Paddle.
     ///
@@ -699,7 +699,7 @@ impl Paddle {
         transactions::TransactionRevise::new(self, transaction_id)
     }
 
-    /// Returns a request builder for querying subscriptions.
+    /// Get a request builder for querying subscriptions.
     ///
     /// # Example:
     /// ```
@@ -711,7 +711,7 @@ impl Paddle {
         subscriptions::SubscriptionsList::new(self)
     }
 
-    /// Returns a request builder for fetching a subscription using its ID.
+    /// Get a request builder for fetching a subscription using its ID.
     ///
     /// # Example:
     /// ```
@@ -727,7 +727,7 @@ impl Paddle {
         subscriptions::SubscriptionGet::new(self, subscription_id)
     }
 
-    /// Returns a request builder for getting a preview of changes to a subscription without actually applying them.
+    /// Get a request builder for getting a preview of changes to a subscription without actually applying them.
     ///
     /// Typically used for previewing proration before making changes to a subscription.
     ///
@@ -739,7 +739,14 @@ impl Paddle {
     /// ```
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let res = client.subscription_get("sub_01hv8y5ehszzq0yv20ttx3166y").send().await.unwrap();
+    ///
+    /// let res = client.subscription_preview_update("sub_01hv8y5ehszzq0yv20ttx3166y")
+    ///     .next_billed_at(Utc::now() + Days::new(10))
+    ///     .proration_billing_mode(ProrationBillingMode::ProratedImmediately)
+    ///     .send()
+    ///     .await
+    ///     .unwrap();
+    ///
     /// dbg!(res.data);
     /// ```
     pub fn subscription_preview_update(
@@ -747,6 +754,30 @@ impl Paddle {
         subscription_id: impl Into<SubscriptionID>,
     ) -> subscriptions::SubscriptionPreviewUpdate {
         subscriptions::SubscriptionPreviewUpdate::new(self, subscription_id)
+    }
+
+    /// Get a request builder for updating a subscription using its ID.
+    ///
+    /// When making changes to items or the next billing date for a subscription, you must include the `proration_billing_mode` field to tell Paddle how to bill for those changes.
+    ///
+    /// Send the complete list of items that you'd like to be on a subscription — including existing items. If you omit items, they're removed from the subscription.
+    ///
+    /// For each item, send `price_id` and `quantity`. Paddle responds with the full price object for each price. If you're updating an existing item, you can omit the `quantity` if you don't want to update it.
+    ///
+    /// If successful, your response includes a copy of the updated subscription entity. When an update results in an immediate charge, responses may take longer than usual while a payment attempt is processed.
+    ///
+    /// /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.subscription_get("sub_01hv8y5ehszzq0yv20ttx3166y").send().await.unwrap();
+    /// dbg!(res.data);
+    /// ```
+    pub fn subscription_update(
+        &self,
+        subscription_id: impl Into<SubscriptionID>,
+    ) -> subscriptions::SubscriptionUpdate {
+        subscriptions::SubscriptionUpdate::new(self, subscription_id)
     }
 
     async fn send<T: DeserializeOwned>(
