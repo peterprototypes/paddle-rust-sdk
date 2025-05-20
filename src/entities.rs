@@ -112,7 +112,7 @@ pub struct AdjustmentPayoutTotals {
     /// Adjusted Paddle fee.
     pub fee: String,
     /// Chargeback fees incurred for this adjustment. Only returned when the adjustment `action` is `chargeback` or `chargeback_warning`.
-    pub chargeback_fee: ChargebackFee,
+    pub chargeback_fee: Option<ChargebackFee>,
     /// Adjusted payout earnings. This is the adjustment total plus adjusted Paddle fees, excluding chargeback fees.
     pub earnings: String,
     /// Supported three-letter ISO 4217 currency code for payouts from Paddle.
@@ -175,9 +175,9 @@ pub struct Adjustment {
     /// List of tax rates applied for this adjustment.
     pub tax_rates_used: Vec<AdjustmentTaxRateUsed>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: String,
+    pub updated_at: DateTime<Utc>,
 }
 
 /// Represents an adjustment entity when creating adjustments.
@@ -260,6 +260,17 @@ pub struct AdjustmentItem {
     pub proration: Option<Proration>,
     /// Breakdown of the total for an adjustment item.
     pub totals: AdjustmentItemTotals,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AdjustmentItemInput {
+    /// Unique Paddle ID for this transaction item, prefixed with `txnitm_`. Used when working with [adjustments](https://developer.paddle.com/build/transactions/create-transaction-adjustments).
+    pub item_id: TransactionItemID,
+    /// Type of adjustment for this transaction item. `tax` adjustments are automatically created by Paddle.
+    /// Include `amount` when creating a `partial` adjustment.
+    pub r#type: AdjustmentItemType,
+    /// Amount adjusted for this transaction item. Required when item type is `partial`.
+    pub amount: Option<String>,
 }
 
 /// Represents an adjustment entity when previewing adjustments.

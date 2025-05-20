@@ -12,6 +12,7 @@ pub mod error;
 pub mod ids;
 
 pub mod addresses;
+pub mod adjustments;
 pub mod businesses;
 pub mod customers;
 pub mod discounts;
@@ -23,10 +24,12 @@ pub mod transactions;
 
 pub mod response;
 
-use enums::{CountryCodeSupported, CurrencyCode, DiscountType, Disposition, TaxCategory};
+use enums::{
+    AdjustmentAction, CountryCodeSupported, CurrencyCode, DiscountType, Disposition, TaxCategory,
+};
 use ids::{
-    AddressID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID, ProductID,
-    SubscriptionID, TransactionID,
+    AddressID, AdjustmentID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID,
+    ProductID, SubscriptionID, TransactionID,
 };
 
 use response::{ErrorResponse, Response, SuccessResponse};
@@ -770,7 +773,7 @@ impl Paddle {
     ///
     /// If successful, your response includes a copy of the updated subscription entity. When an update results in an immediate charge, responses may take longer than usual while a payment attempt is processed.
     ///
-    /// /// # Example:
+    /// # Example:
     /// ```
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
@@ -898,6 +901,83 @@ impl Paddle {
         subscriptions::SubscriptionCancel::new(self, subscription_id)
     }
 
+    /// Get a request builder for retrieving adjustments from Paddle.
+    ///
+    /// Use the builder parameters to filter and page through results.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::Paddle;
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.adjustments_list().send().await.unwrap();
+    /// dbg!(res.data);
+    /// ```
+    pub fn adjustments_list(&self) -> adjustments::AdjustmentsList {
+        adjustments::AdjustmentsList::new(self)
+    }
+
+    /// Get a request builder for creating an adjustment for one or more transaction items.
+    ///
+    /// You can create adjustments to refund or credit all or part of a transaction and its items:
+    /// - Refunds return an amount to a customer's original payment method. You can create refund adjustments for transactions that are `completed`.
+    /// - Credits reduce the amount that a customer has to pay for a transaction. You can create credit adjustments for manually-collected transactions that are `billed` or `past_due`.
+    ///
+    /// You can create adjustments to refund transactions that are `completed`, or to reduce the amount to due on manually-collected transactions that are `billed` or `past_due`. Most refunds for live accounts are created with the status of `pending_approval` until reviewed by Paddle, but some are automatically approved. For sandbox accounts, Paddle automatically approves refunds every ten minutes.
+    ///
+    /// Adjustments can apply to some or all items on a transaction. You'll need the Paddle ID of the transaction to create a refund or credit for, along with the Paddle ID of any transaction items `(details.line_items[].id)`.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::{
+    ///     enums::{AdjustmentAction, AdjustmentType},
+    ///     Paddle,
+    /// };
+    ///
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    ///
+    /// let res = client.adjustment_create("txn_01jkfx8v9z4pee0p5bd35x95bp", AdjustmentAction::Refund, "Refund reason")
+    ///     .r#type(AdjustmentType::Full)
+    ///     .send()
+    ///     .await
+    ///     .unwrap();
+    ///
+    /// dbg!(res.data);
+    /// ```
+    pub fn adjustment_create(
+        &self,
+        transaction_id: impl Into<TransactionID>,
+        action: AdjustmentAction,
+        reason: impl Into<String>,
+    ) -> adjustments::AdjustmentCreate {
+        adjustments::AdjustmentCreate::new(self, transaction_id, action, reason)
+    }
+
+    /// Returns a link to a credit note PDF for an adjustment.
+    ///
+    /// Credit note PDFs are created for refunds and credits as a record of an adjustment.
+    ///
+    /// The link returned is not a permanent link. It expires after an hour.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::{enums::Disposition, Paddle};
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.adjustment_credit_note("txn_01hv8wptq8987qeep44cyrewp9", Disposition::Inline).await.unwrap();
+    /// dbg!(res.data.url)
+    /// ```
+    pub async fn adjustment_credit_note(
+        &self,
+        adjustment_id: impl Into<AdjustmentID>,
+        disposition: Disposition,
+    ) -> Result<TransactionInvoice> {
+        let adjustment_id = adjustment_id.into();
+
+        let url = format!("/adjustments/{}/credit-note", adjustment_id.as_ref());
+        let params = ("disposition", disposition);
+
+        self.send(params, Method::GET, &url).await
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
@@ -933,7 +1013,7 @@ impl Paddle {
 
         // let res: serde_json::Value = builder.send().await?.json().await?;
         // let data_json = serde_json::to_string(&res["data"]).unwrap();
-        // let res: entities::Subscription = serde_json::from_str(&data_json).unwrap();
+        // let res: Vec<entities::Adjustment> = serde_json::from_str(&data_json).unwrap();
         // // println!("{}", serde_json::to_string(&res["data"]).unwrap());
         // todo!();
 

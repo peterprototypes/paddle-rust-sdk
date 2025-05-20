@@ -40,6 +40,18 @@ impl AsRef<str> for CustomerID {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AdjustmentID(String);
 
+impl<T: Display> From<T> for AdjustmentID {
+    fn from(value: T) -> Self {
+        AdjustmentID(value.to_string())
+    }
+}
+
+impl AsRef<str> for AdjustmentID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this transaction entity, prefixed with `txn_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionID(String);

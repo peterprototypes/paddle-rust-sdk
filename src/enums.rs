@@ -481,6 +481,7 @@ pub enum Status {
 /// How this adjustment impacts the related transaction.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum AdjustmentAction {
     /// Credits some or all the related transaction.
     Credit,
@@ -499,6 +500,7 @@ pub enum AdjustmentAction {
 /// Type of adjustment. Use `full` to adjust the grand total for the related transaction. Include an `items` array when creating a `partial` adjustment. If omitted, defaults to `partial`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "lowercase")]
 pub enum AdjustmentType {
     /// The grand total for the related transaction is adjusted.
     Full,
@@ -581,6 +583,7 @@ pub enum CurrencyCode {
 /// Credit adjustments don't require approval from Paddle, so they're created as `approved`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum AdjustmentStatus {
     /// Adjustment is pending approval by Paddle. Most refunds for live accounts must be approved by Paddle.
     PendingApproval,
@@ -644,6 +647,7 @@ pub enum CurrencyCodePayouts {
 /// Include `amount` when creating a `partial` adjustment.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "lowercase")]
 pub enum AdjustmentItemType {
     /// Full total for this transaction item is adjusted.
     Full,
