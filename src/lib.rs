@@ -2,7 +2,9 @@
 //!
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
-use entities::{CustomerAuthenticationToken, Subscription, Transaction, TransactionInvoice};
+use entities::{
+    CustomerAuthenticationToken, PricePreviewItem, Subscription, Transaction, TransactionInvoice,
+};
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -18,6 +20,7 @@ pub mod customers;
 pub mod discounts;
 pub mod payment_methods;
 pub mod prices;
+pub mod pricing_preview;
 pub mod products;
 pub mod subscriptions;
 pub mod transactions;
@@ -976,6 +979,38 @@ impl Paddle {
         let params = ("disposition", disposition);
 
         self.send(params, Method::GET, &url).await
+    }
+
+    /// Get a request builder for fetching pricing previews for one or more prices. Typically used for building pricing pages.
+    ///
+    /// You can provide location information when previewing prices. You must provide this if you want Paddle to calculate tax or automatically localize prices. You can provide one of:
+    /// - `customer_ip_address`: Paddle fetches location using the IP address to calculate totals.
+    /// - `address`: Paddle uses the country and ZIP code (where supplied) to calculate totals.
+    /// - `customer_id`, `address_id`, `business_id`: Paddle uses existing customer data to calculate totals. Typically used for logged-in customers.
+    ///
+    /// If successful, your response includes the data you sent with a details object that includes totals for the supplied prices.
+    ///
+    /// Each line item includes `formatted_unit_totals` and `formatted_totals` objects that return totals formatted for the country or region you're working with, including the currency symbol.
+    ///
+    /// You can work with the preview prices operation using the Paddle.PricePreview() method in Paddle.js. When working with Paddle.PricePreview(), request and response fields are camelCase rather than snake_case.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::{enums::Disposition, Paddle};
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    ///
+    /// let res = client.pricing_preview()
+    ///     .send([PricePreviewItem { price_id: "pri_01jqxvdyjkp961jzv4me7ezg4d".into(), quantity: 1, }])
+    ///     .await
+    ///     .unwrap();
+    ///
+    /// dbg!(res.data)
+    /// ```
+    pub fn pricing_preview(
+        &self,
+        items: impl IntoIterator<Item = PricePreviewItem>,
+    ) -> pricing_preview::PricingPreview {
+        pricing_preview::PricingPreview::new(self, items)
     }
 
     async fn send<T: DeserializeOwned>(

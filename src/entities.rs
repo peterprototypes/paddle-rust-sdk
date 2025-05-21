@@ -1856,6 +1856,28 @@ pub struct TransactionPreview {
     pub available_payment_methods: Vec<PaymentMethodType>,
 }
 
+/// Represents an entity for previewing prices.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PricingPreview {
+    /// Paddle ID of the customer that this transaction preview is for, prefixed with `ctm_`.
+    pub customer_id: Option<CustomerID>,
+    /// Paddle ID of the address that this transaction preview is for, prefixed with `add_`. Send one of `address_id`, `customer_ip_address`, or the `address` object when previewing.
+    pub address_id: Option<AddressID>,
+    /// Paddle ID of the business that this transaction preview is for, prefixed with `biz_`.
+    pub business_id: Option<BusinessID>,
+    /// Supported three-letter ISO 4217 currency code.
+    pub currency_code: CurrencyCode,
+    /// Paddle ID of the discount applied to this transaction preview, prefixed with `dsc_`.
+    pub discount_id: Option<DiscountID>,
+    /// Address for this transaction preview. Send one of `address_id`, `customer_ip_address`, or the `address` object when previewing.
+    pub address: Option<AddressPreview>,
+    /// IP address for this transaction preview. Send one of `address_id`, `customer_ip_address`, or the `address` object when previewing.
+    pub customer_ip_address: Option<String>,
+    /// Calculated totals for a transaction preview, including discounts, tax, and currency conversion. Considered the source of truth for totals on a transaction preview.
+    pub details: PricePreviewDetails,
+    pub available_payment_methods: Vec<PaymentMethodType>,
+}
+
 /// Represents a transaction entity when previewing.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TransactionPreviewCreate {
