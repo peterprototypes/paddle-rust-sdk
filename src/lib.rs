@@ -3,8 +3,10 @@
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
 use entities::{
-    CustomerAuthenticationToken, PricePreviewItem, Subscription, Transaction, TransactionInvoice,
+    CustomerAuthenticationToken, PricePreviewItem, ReportBase, Subscription, Transaction,
+    TransactionInvoice,
 };
+use reports::ReportType;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -22,6 +24,7 @@ pub mod payment_methods;
 pub mod prices;
 pub mod pricing_preview;
 pub mod products;
+pub mod reports;
 pub mod subscriptions;
 pub mod transactions;
 
@@ -31,8 +34,8 @@ use enums::{
     AdjustmentAction, CountryCodeSupported, CurrencyCode, DiscountType, Disposition, TaxCategory,
 };
 use ids::{
-    AddressID, AdjustmentID, BusinessID, CustomerID, DiscountID, PaymentMethodID, PriceID,
-    ProductID, SubscriptionID, TransactionID,
+    AddressID, AdjustmentID, BusinessID, CustomerID, DiscountID, PaddleID, PaymentMethodID,
+    PriceID, ProductID, SubscriptionID, TransactionID,
 };
 
 use response::{ErrorResponse, Response, SuccessResponse};
@@ -1013,6 +1016,50 @@ impl Paddle {
         pricing_preview::PricingPreview::new(self, items)
     }
 
+    /// Get a request builder for fetching a single report in Paddle.
+    pub fn reports_list<'a>(&'a self) -> reports::ReportsList<'a> {
+        reports::ReportsList::new(self)
+    }
+
+    /// Returns a report using its ID.
+    pub async fn report_get(&self, report_id: impl Into<PaddleID>) -> Result<ReportBase> {
+        let report_id = report_id.into();
+
+        let url = format!("/reports/{}", report_id.as_ref());
+
+        self.send((), Method::GET, &url).await
+    }
+
+    /// Returns a link to a CSV file for a report.
+    ///
+    /// Only returned for reports that are ready. This means Paddle has completed processing the report and it's ready to download.
+    ///
+    /// The link returned is not a permanent link. It expires after 3 minutes.
+    pub async fn report_download_url(
+        &self,
+        report_id: impl Into<PaddleID>,
+    ) -> Result<TransactionInvoice> {
+        let report_id = report_id.into();
+
+        let url = format!("/reports/{}/download-url", report_id.as_ref());
+
+        self.send((), Method::GET, &url).await
+    }
+
+    /// Get a request builder for creating reports in Paddle.
+    ///
+    /// Reports are created as `pending` initially while Paddle generates your report. They move to `ready` when they're ready to download.
+    ///
+    /// You can download a report when it's ready using the get a CSV file for a report operation.
+    ///
+    /// If successful, your response includes a copy of the new report entity.
+    pub fn report_create<'a, T: ReportType + DeserializeOwned>(
+        &'a self,
+        report_type: T,
+    ) -> reports::ReportCreate<'a, T> {
+        reports::ReportCreate::new(self, report_type)
+    }
+
     async fn send<T: DeserializeOwned>(
         &self,
         req: impl Serialize,
@@ -1048,7 +1095,7 @@ impl Paddle {
 
         // let res: serde_json::Value = builder.send().await?.json().await?;
         // let data_json = serde_json::to_string(&res["data"]).unwrap();
-        // let res: Vec<entities::Adjustment> = serde_json::from_str(&data_json).unwrap();
+        // let res: Vec<entities::ReportBase> = serde_json::from_str(&data_json).unwrap();
         // // println!("{}", serde_json::to_string(&res["data"]).unwrap());
         // todo!();
 

@@ -4,6 +4,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::reports::ReportType;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum CountryCodeSupported {
@@ -1071,6 +1073,7 @@ pub enum TrafficSource {
 /// Operator to use when filtering.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "lowercase")]
 pub enum FilterOperator {
     /// Less than.
     Lt,
@@ -1101,6 +1104,7 @@ pub enum TransactionOrigin {
 /// Reports are created as `pending` initially, then move to `ready` when they're available to download.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum ReportStatus {
     /// Report created, but Paddle is processing it. It's not yet ready for download.
     Pending,
@@ -1115,6 +1119,7 @@ pub enum ReportStatus {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum AdjustmentsReportFilterName {
     /// Filter by adjustment action. Pass an array of strings containing any valid value for the `action` field against an adjustment.
     Action,
@@ -1129,6 +1134,7 @@ pub enum AdjustmentsReportFilterName {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum DiscountsReportFilterName {
     /// Filter by discount type. Pass an array of strings containing any valid value for the `type` field against a discount.
     Type,
@@ -1141,6 +1147,16 @@ pub enum DiscountsReportFilterName {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
+pub enum BalanceReportFilterName {
+    /// Filter by discount updated date. Pass an RFC 3339 datetime string.
+    UpdatedAt,
+}
+
+/// Field name to filter by.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum ProductPricesReportFilterName {
     /// Filter by product status. Pass an array of strings containing any valid value for the `status` field against a product.
     ProductStatus,
@@ -1159,6 +1175,7 @@ pub enum ProductPricesReportFilterName {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum TransactionsReportFilterName {
     /// Filter by collection mode. Pass an array of strings containing any valid value for the `collection_mode` field against a transaction.
     CollectionMode,
@@ -1175,6 +1192,7 @@ pub enum TransactionsReportFilterName {
 /// Type of report.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum AdjustmentsReportType {
     /// Adjustments reports contain information about refunds, credits, and chargebacks.
     Adjustments,
@@ -1182,14 +1200,62 @@ pub enum AdjustmentsReportType {
     AdjustmentLineItems,
 }
 
+impl ReportType for AdjustmentsReportType {
+    type FilterName = AdjustmentsReportFilterName;
+}
+
 /// Type of report.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(rename_all = "snake_case")]
 pub enum TransactionsReportType {
     /// Transactions reports contain information about revenue received, past due invoices, draft and issued invoices, and canceled transactions.
     Transactions,
     /// Transactions reports contain information about revenue received, past due invoices, draft and issued invoices, and canceled transactions. The report is broken down by line item level.
     TransactionLineItems,
+}
+
+impl ReportType for TransactionsReportType {
+    type FilterName = TransactionsReportFilterName;
+}
+
+/// Type of report.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[non_exhaustive]
+#[serde(rename_all = "snake_case")]
+pub enum ProductsAndPricesReportType {
+    /// Products and prices reports contain information about your products and prices. May include non-catalog products and prices.
+    ProductsPrices,
+}
+
+impl ReportType for ProductsAndPricesReportType {
+    type FilterName = ProductPricesReportFilterName;
+}
+
+/// Type of report.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[non_exhaustive]
+#[serde(rename_all = "snake_case")]
+pub enum DiscountsReportType {
+    /// Discounts reports contain information about your product and checkout discounts.
+    Discounts,
+}
+
+impl ReportType for DiscountsReportType {
+    type FilterName = DiscountsReportFilterName;
+}
+
+/// Type of report.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[non_exhaustive]
+#[serde(rename_all = "snake_case")]
+pub enum BalanceReportType {
+    /// Balance reports contain information about your account balance activity, including all movements of funds in and out of your balance.
+    Balance,
+}
+
+impl ReportType for BalanceReportType {
+    type FilterName = BalanceReportFilterName;
 }
 
 /// Status of this simulation run log.

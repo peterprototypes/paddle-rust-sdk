@@ -200,9 +200,22 @@ pub struct NotificationLogID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EndpointSecretKey(String);
 
-/// Unique Paddle ID for this entity.
+/// Just a Paddle ID. I've noticed this used in reports.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PaddleID(String);
+
+impl<T: Display> From<T> for PaddleID {
+    fn from(value: T) -> Self {
+        PaddleID(value.to_string())
+    }
+}
+
+// Needed for serialization to comma separated values
+impl AsRef<str> for PaddleID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
 
 /// Unique Paddle ID for this simulation event, prefixed with `ntfsimevt_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]

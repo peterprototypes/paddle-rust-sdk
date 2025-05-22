@@ -22,8 +22,8 @@ The following list outlines the current coverage of the Paddle API in this SDK. 
 - ✅ Subscriptions
 - ✅ Adjustments
 - ✅ Pricing preview
-- 👷 Reports
-- 🚧 Events
+- ✅ Reports
+- 👷 Events
 - 🚧 Notifications
 - 🚧 Simulations
 

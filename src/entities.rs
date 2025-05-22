@@ -10,6 +10,7 @@ use serde_with::skip_serializing_none;
 
 use crate::enums::*;
 use crate::ids::*;
+use crate::reports::ReportType;
 
 /// Import information for this entity. `null` if this entity is not imported.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -960,11 +961,30 @@ pub struct ProductPreview {
     pub updated_at: DateTime<Utc>,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ReportFilterValue {
+    String(String),
+    Array(Vec<String>),
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ReportFilter<T: Serialize> {
+    /// Field name to filter by.
+    pub name: T,
+    /// Operator to use when filtering. Valid when filtering by `updated_at`, `null` otherwise.
+    pub operator: Option<FilterOperator>,
+    /// Value to filter by. Check the allowed values descriptions for the `name` field to see valid values for a field.
+    pub value: ReportFilterValue,
+}
+
 /// Represents a report entity.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReportBase {
     /// Unique Paddle ID for this entity.
     pub id: PaddleID,
+    pub r#type: String,
+    pub filters: Vec<serde_json::Value>,
     /// Status of this report. Set automatically by Paddle.
     ///
     /// Reports are created as `pending` initially, then move to `ready` when they're available to download.
@@ -972,28 +992,11 @@ pub struct ReportBase {
     /// Number of records in this report. `null` if the report is `pending`.
     pub rows: Option<i64>,
     /// RFC 3339 datetime string of when this report expires. The report is no longer available to download after this date.
-    pub expires_at: Option<DateTime<FixedOffset>>,
+    pub expires_at: Option<DateTime<Utc>>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
-    pub updated_at: DateTime<FixedOffset>,
+    pub updated_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
-    pub created_at: DateTime<FixedOffset>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum ReportFilterValue {
-    String(String),
-    Array(Vec<String>),
-}
-
-/// Filter criteria for this report. If omitted when creating, reports are filtered to include data updated in the last 30 days. This means `updated_at` is greater than or equal to (`gte`) the date 30 days ago from the time the report was generated.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ReportFilters {
-    /// Field name to filter by.
-    pub name: AdjustmentsReportFilterName,
-    /// Operator to use when filtering. Valid when filtering by `updated_at`, `null` otherwise.
-    pub operator: Option<FilterOperator>,
-    /// Value to filter by. Check the allowed values descriptions for the `name` field to see valid values for a field.
-    pub value: ReportFilterValue,
+    pub created_at: DateTime<Utc>,
 }
 
 /// Information about the request. Sent by Paddle as part of the simulation.
