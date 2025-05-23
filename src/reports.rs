@@ -4,18 +4,12 @@
 
 use reqwest::Method;
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_with::skip_serializing_none;
 
-use crate::entities::{
-    self, AddressPreview, PricePreviewItem, ReportBase, ReportFilter, ReportFilterValue,
-};
-use crate::enums::{
-    AdjustmentsReportFilterName, AdjustmentsReportType, CurrencyCode, FilterOperator,
-    ProductPricesReportFilterName, ProductsAndPricesReportType, ReportStatus,
-    TransactionsReportFilterName, TransactionsReportType,
-};
-use crate::ids::{AddressID, BusinessID, CustomerID, DiscountID, PaddleID};
+use crate::entities::{ReportBase, ReportFilter, ReportFilterValue};
+use crate::enums::{FilterOperator, ReportStatus};
+use crate::ids::PaddleID;
 use crate::{Paddle, Result};
 
 pub trait ReportType: Serialize {

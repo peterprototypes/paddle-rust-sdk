@@ -10,7 +10,6 @@ use serde_with::skip_serializing_none;
 
 use crate::enums::*;
 use crate::ids::*;
-use crate::reports::ReportType;
 
 /// Import information for this entity. `null` if this entity is not imported.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -603,7 +602,7 @@ pub struct Event {
     /// Unique Paddle ID for this event, prefixed with `evt_`.
     pub event_id: EventID,
     /// Type of event sent by Paddle, in the format `entity.event_type`.
-    pub event_type: EventTypeName,
+    pub event_type: String, // EventTypeName,
     /// RFC 3339 datetime string.
     pub occurred_at: String,
     /// New or changed entity.
@@ -614,7 +613,7 @@ pub struct Event {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EventType {
     /// Type of event sent by Paddle, in the format `entity.event_type`.
-    pub name: EventTypeName,
+    pub name: String, // EventTypeName,
     /// Short description of this event type.
     pub description: String,
     /// Group for this event type. Typically the entity that this event relates to.

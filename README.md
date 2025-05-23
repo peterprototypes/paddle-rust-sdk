@@ -8,7 +8,7 @@ Rust SDK for working with the [Paddle](https://www.paddle.com/) API in server-si
 
 ## Paddle API Coverage
 
-The following list outlines the current coverage of the Paddle API in this SDK. Everything in green is usable. Contributions are welcome!
+The following list outlines the current coverage of the Paddle API in this SDK. Everything in green is usable.
 
 - ✅ Products
 - ✅ Prices
@@ -23,7 +23,7 @@ The following list outlines the current coverage of the Paddle API in this SDK. 
 - ✅ Adjustments
 - ✅ Pricing preview
 - ✅ Reports
-- 👷 Events
+- ✅ Events
 - 🚧 Notifications
 - 🚧 Simulations
 

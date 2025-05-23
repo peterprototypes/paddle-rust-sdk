@@ -3,8 +3,8 @@
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
 
 use entities::{
-    CustomerAuthenticationToken, PricePreviewItem, ReportBase, Subscription, Transaction,
-    TransactionInvoice,
+    CustomerAuthenticationToken, EventType, PricePreviewItem, ReportBase, Subscription,
+    Transaction, TransactionInvoice,
 };
 use reports::ReportType;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
@@ -20,6 +20,7 @@ pub mod adjustments;
 pub mod businesses;
 pub mod customers;
 pub mod discounts;
+pub mod events;
 pub mod payment_methods;
 pub mod prices;
 pub mod pricing_preview;
@@ -1058,6 +1059,36 @@ impl Paddle {
         report_type: T,
     ) -> reports::ReportCreate<'a, T> {
         reports::ReportCreate::new(self, report_type)
+    }
+
+    /// Returns a list of event types.
+    ///
+    /// The response is not paginated.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::{enums::Disposition, Paddle};
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.event_types_list().await.unwrap();
+    /// dbg!(res.data)
+    /// ```
+    pub async fn event_types_list(&self) -> Result<Vec<EventType>> {
+        self.send((), Method::GET, "/event-types").await
+    }
+
+    /// Returns a list of event types.
+    ///
+    /// The response is not paginated.
+    ///
+    /// # Example:
+    /// ```
+    /// use paddle_rust_sdk::{enums::Disposition, Paddle};
+    /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
+    /// let res = client.events_list().send().await.unwrap();
+    /// dbg!(res.data)
+    /// ```
+    pub fn events_list(&self) -> events::EventsList {
+        events::EventsList::new(self)
     }
 
     async fn send<T: DeserializeOwned>(
