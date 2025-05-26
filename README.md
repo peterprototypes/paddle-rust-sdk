@@ -8,7 +8,7 @@ Rust SDK for working with the [Paddle](https://www.paddle.com/) API in server-si
 
 ## Paddle API Coverage
 
-The following list outlines the current coverage of the Paddle API in this SDK. Everything in green is usable.
+The following list outlines the current coverage of the Paddle API in this crate.
 
 - ✅ Products
 - ✅ Prices
@@ -26,6 +26,55 @@ The following list outlines the current coverage of the Paddle API in this SDK. 
 - ✅ Events
 - 🚧 Notifications
 - 🚧 Simulations
+
+## Webhook signature verification
+
+This crate provides a method to verify that received events are genuinely sent from Paddle.
+
+Example verifying the signature of an incoming request (Actix web):
+
+```rust
+use actix_web::{post, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use paddle_rust_sdk::{webhooks::MaximumVariance, Paddle};
+
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().service(paddle_callback))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
+}
+
+/// http://127.0.0.1:8080/paddle-callback
+#[post("/paddle-callback")]
+async fn paddle_callback(request_body: String, req: HttpRequest) -> impl Responder {
+    let maybe_signature = req
+        .headers()
+        .get("paddle-signature")
+        .and_then(|h| h.to_str().ok());
+
+    let Some(signature) = maybe_signature else {
+        return HttpResponse::BadRequest();
+    };
+
+    let key = "...";
+
+    match Paddle::verify(request_body, key, signature, MaximumVariance::default()) {
+        Ok(_) => {
+            // Proccess the request asynchronously
+            actix_web::rt::spawn(async { dbg!("here") });
+        }
+        Err(e) => {
+            println!("{:?}", e);
+            return HttpResponse::BadRequest();
+        }
+    };
+
+    // Respond as soon as possible
+    HttpResponse::Ok()
+}
+
+```
 
 ## Running examples
 

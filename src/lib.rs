@@ -1,11 +1,10 @@
+#![allow(clippy::result_large_err)]
+
 //! # Paddle API Client
 //!
 //! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
+//!
 
-use entities::{
-    CustomerAuthenticationToken, EventType, PricePreviewItem, ReportBase, Subscription,
-    Transaction, TransactionInvoice,
-};
 use reports::ReportType;
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
@@ -14,6 +13,7 @@ pub mod entities;
 pub mod enums;
 pub mod error;
 pub mod ids;
+pub mod webhooks;
 
 pub mod addresses;
 pub mod adjustments;
@@ -31,6 +31,10 @@ pub mod transactions;
 
 pub mod response;
 
+use entities::{
+    CustomerAuthenticationToken, EventType, PricePreviewItem, ReportBase, Subscription,
+    Transaction, TransactionInvoice,
+};
 use enums::{
     AdjustmentAction, CountryCodeSupported, CurrencyCode, DiscountType, Disposition, TaxCategory,
 };
@@ -38,10 +42,10 @@ use ids::{
     AddressID, AdjustmentID, BusinessID, CustomerID, DiscountID, PaddleID, PaymentMethodID,
     PriceID, ProductID, SubscriptionID, TransactionID,
 };
+use webhooks::{MaximumVariance, Signature};
 
+use error::{Error, PaddleApiError};
 use response::{ErrorResponse, Response, SuccessResponse};
-
-use error::{Error, PaddleError};
 
 type Result<T> = std::result::Result<SuccessResponse<T>, Error>;
 
@@ -61,11 +65,11 @@ impl Paddle {
     /// Creates a new Paddle client instance.
     ///
     /// Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// ```
-    #[allow(clippy::result_large_err)]
     pub fn new(
         api_key: impl Into<String>,
         base_url: impl IntoUrl,
@@ -76,13 +80,27 @@ impl Paddle {
         })
     }
 
+    /// Validates the integrity of a Paddle webhook request
+    pub fn verify(
+        request_body: String,
+        secret_key: impl AsRef<str>,
+        signature: impl AsRef<str>,
+        maximum_variance: MaximumVariance,
+    ) -> std::result::Result<(), Error> {
+        let signature: Signature = signature.as_ref().parse()?;
+        signature.verify(&request_body, secret_key, maximum_variance)?;
+
+        Ok(())
+    }
+
     /// Get a request builder for fetching products. Use the after method to page through results.
     ///
     /// By default, Paddle returns products that are active. Use the status method to return products that are archived.
     /// Use the include method to include related price entities in the response.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let products = client.products_list().send().await.unwrap();
@@ -94,7 +112,8 @@ impl Paddle {
     /// Get a request builder for creating a new product.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// use paddle_rust_sdk::enums::TaxCategory;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
@@ -111,7 +130,8 @@ impl Paddle {
     /// Get a request builder for fetching a specific product.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.product_get("pro_01jqx9rd...").send().await.unwrap();
@@ -123,7 +143,8 @@ impl Paddle {
     /// Get a request builder for updating a specific product.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// use paddle_rust_sdk::enums::TaxCategory;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
@@ -136,7 +157,8 @@ impl Paddle {
     /// Get a request builder listing prices
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let prices = client.prices_list().send().await.unwrap();
@@ -153,7 +175,8 @@ impl Paddle {
     /// * `currency` - Currency code for the price. Use the [CurrencyCode] enum to specify the currency.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let price = client.price_create("pro_01jqx9rd...", "Low price", 19.99, CurrencyCode::USD).send().await.unwrap();
@@ -171,7 +194,8 @@ impl Paddle {
     /// Get a request builder for fetching a specific price by id.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let price = client.price_get("price_01jqx9rd...").send().await.unwrap();
@@ -183,7 +207,8 @@ impl Paddle {
     /// Get a request builder for updating a specific price.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// use paddle_rust_sdk::enums::TaxCategory;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
@@ -196,7 +221,8 @@ impl Paddle {
     /// Get a request builder for fetching discounts.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discounts = client.discounts_list().send().await.unwrap();
@@ -208,7 +234,8 @@ impl Paddle {
     /// Get a request builder for creating discounts.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_create("15", "Winter Holidays", DiscountType::Percentage).send().await.unwrap();
@@ -225,7 +252,8 @@ impl Paddle {
     /// Get a request builder for fetching a specific discount by id.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_get("dsc_01jqzpbmnq...").send().await.unwrap();
@@ -237,7 +265,8 @@ impl Paddle {
     /// Get a request builder for creating discounts.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_update("dsc_01jqzpbmnq...").amount("18").send().await.unwrap();
@@ -251,7 +280,8 @@ impl Paddle {
     /// By default, Paddle returns customers that are `active`. Use the status query parameter to return customers that are archived.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.customers_list().send().await.unwrap();
@@ -263,7 +293,8 @@ impl Paddle {
     /// Get a request builder for creating a new customer.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.customer_create("test@example.com").send().await.unwrap();
@@ -275,7 +306,8 @@ impl Paddle {
     /// Get a request builder for fetching a specific customer by id.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
@@ -287,7 +319,8 @@ impl Paddle {
     /// Get a request builder for updating customer data.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd").email("new_email@example.com").send().await.unwrap();
@@ -313,7 +346,8 @@ impl Paddle {
     /// The response is not paginated.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_credit_balances("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
@@ -354,7 +388,7 @@ impl Paddle {
 
         match res {
             Response::Success(success) => Ok(success),
-            Response::Error(error) => Err(Error::Paddle(error)),
+            Response::Error(error) => Err(Error::PaddleApi(error)),
         }
     }
 
@@ -363,7 +397,8 @@ impl Paddle {
     /// By default, Paddle returns addresses that are `active`. Use the status query parameter to return addresses that are archived.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.addresses_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
@@ -375,7 +410,8 @@ impl Paddle {
     /// Get a request builder for creating a new customer address.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.address_create("ctm_01jqztc78e1xfdgwhcgjzdrvgd", CountryCodeSupported::US).send().await.unwrap();
@@ -391,7 +427,8 @@ impl Paddle {
     /// Get a request builder for getting an address for a customer using its ID and related customer ID.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.address_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").send().await.unwrap();
@@ -407,7 +444,8 @@ impl Paddle {
     /// Get a request builder for updating an address for a customer using its ID and related customer ID.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.address_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "add_01hv8gwdfkw5z6d1yy6pa3xyrz").first_line("Test").send().await.unwrap();
@@ -425,7 +463,8 @@ impl Paddle {
     /// By default, Paddle returns addresses that are `active`. Use the status query parameter to return businesses that are archived.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.businesses_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
@@ -440,7 +479,8 @@ impl Paddle {
     /// Get a request builder for creating a new customer business.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.business_create("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "Company Inc.").send().await.unwrap();
@@ -456,7 +496,8 @@ impl Paddle {
     /// Get a request builder for getting a business for a customer using its ID and related customer ID.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.business_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "biz_01jr85bypq4d3w139m53zw2559").send().await.unwrap();
@@ -472,7 +513,8 @@ impl Paddle {
     /// Get a request builder for updating a business for a customer using its ID and related customer ID.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.business_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "biz_01jr85bypq4d3w139m53zw2559").first_line("Test").send().await.unwrap();
@@ -488,7 +530,8 @@ impl Paddle {
     /// Get a request builder for querying customer saved payment methods.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.payment_methods_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
@@ -503,7 +546,8 @@ impl Paddle {
     /// Get a request builder for getting a saved payment for a customer using its ID and related customer ID.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.payment_method_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").send().await.unwrap();
@@ -523,7 +567,8 @@ impl Paddle {
     /// There's no way to recover a deleted payment method.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// client.payment_method_delete("ctm_01jqztc78e1xfdgwhcgjzdrvgd", "paymtd_01j2jff1m3es31sdkejpaym164").await.unwrap();
@@ -562,7 +607,8 @@ impl Paddle {
     /// The customer portal is fully hosted by Paddle. For security and the best customer experience, don't embed the customer portal in an iframe.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let session = client.create_portal_session("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
@@ -581,7 +627,8 @@ impl Paddle {
     /// Use the include method on the builder to include related entities in the response.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let transactions = client.transactions_list().send().await.unwrap();
@@ -595,7 +642,8 @@ impl Paddle {
     /// See [Create Transaction](https://developer.paddle.com/api-reference/transactions/create-transaction) for more information.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     ///
@@ -614,7 +662,8 @@ impl Paddle {
     /// Get a request builder for fetching a transaction using its ID.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.transaction_get("txn_01hv8wptq8987qeep44cyrewp9").send().await.unwrap();
@@ -630,7 +679,8 @@ impl Paddle {
     /// Get a request builder for updating a transaction.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::{enums::TransactionStatus, Paddle};
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// client.transaction_update("txn_01hv8wptq8987qeep44cyrewp9").status(TransactionStatus::Billed).send().await.unwrap();
@@ -653,7 +703,8 @@ impl Paddle {
     /// The link returned is not a permanent link. It expires after an hour.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::{enums::Disposition, Paddle};
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.transaction_invoice("txn_01hv8wptq8987qeep44cyrewp9", Disposition::Inline).await.unwrap();
@@ -716,7 +767,8 @@ impl Paddle {
     /// Get a request builder for querying subscriptions.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let subscriptions = client.subscriptions_list().send().await.unwrap();
@@ -728,7 +780,8 @@ impl Paddle {
     /// Get a request builder for fetching a subscription using its ID.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.subscription_get("sub_01hv8y5ehszzq0yv20ttx3166y").send().await.unwrap();
@@ -749,8 +802,9 @@ impl Paddle {
     ///
     /// The `update_summary` object contains details of prorated credits and charges created, along with the overall result of the update.
     ///
-    /// /// # Example:
-    /// ```
+    /// # Example:
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     ///
@@ -781,7 +835,8 @@ impl Paddle {
     /// If successful, your response includes a copy of the updated subscription entity. When an update results in an immediate charge, responses may take longer than usual while a payment attempt is processed.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.subscription_get("sub_01hv8y5ehszzq0yv20ttx3166y").send().await.unwrap();
@@ -913,7 +968,8 @@ impl Paddle {
     /// Use the builder parameters to filter and page through results.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.adjustments_list().send().await.unwrap();
@@ -934,7 +990,8 @@ impl Paddle {
     /// Adjustments can apply to some or all items on a transaction. You'll need the Paddle ID of the transaction to create a refund or credit for, along with the Paddle ID of any transaction items `(details.line_items[].id)`.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::{
     ///     enums::{AdjustmentAction, AdjustmentType},
     ///     Paddle,
@@ -966,7 +1023,8 @@ impl Paddle {
     /// The link returned is not a permanent link. It expires after an hour.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::{enums::Disposition, Paddle};
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.adjustment_credit_note("txn_01hv8wptq8987qeep44cyrewp9", Disposition::Inline).await.unwrap();
@@ -999,7 +1057,8 @@ impl Paddle {
     /// You can work with the preview prices operation using the Paddle.PricePreview() method in Paddle.js. When working with Paddle.PricePreview(), request and response fields are camelCase rather than snake_case.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::{enums::Disposition, Paddle};
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     ///
@@ -1066,7 +1125,8 @@ impl Paddle {
     /// The response is not paginated.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::{enums::Disposition, Paddle};
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.event_types_list().await.unwrap();
@@ -1081,7 +1141,8 @@ impl Paddle {
     /// The response is not paginated.
     ///
     /// # Example:
-    /// ```
+    ///
+    /// ```rust,no_run
     /// use paddle_rust_sdk::{enums::Disposition, Paddle};
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let res = client.events_list().send().await.unwrap();
@@ -1134,7 +1195,7 @@ impl Paddle {
 
         match res {
             Response::Success(success) => Ok(success),
-            Response::Error(error) => Err(Error::Paddle(error)),
+            Response::Error(error) => Err(Error::PaddleApi(error)),
         }
     }
 }

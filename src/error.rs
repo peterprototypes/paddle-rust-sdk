@@ -3,6 +3,7 @@
 use std::error;
 use std::fmt;
 
+use chrono::Duration;
 use serde::Deserialize;
 
 use crate::ErrorResponse;
@@ -15,6 +16,27 @@ pub enum ErrorType {
     ApiError,
 }
 
+#[derive(Debug)]
+pub enum SignatureError {
+    Empty,
+    InvalidFormat,
+    InvalidPartFormat,
+    ParseError,
+    MaxVarianceExceeded(Duration),
+}
+
+impl fmt::Display for SignatureError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::Empty => write!(f, "empty string provided"),
+            Self::InvalidFormat => write!(f, "invalid format"),
+            Self::InvalidPartFormat => write!(f, "invalid signature part format"),
+            Self::ParseError => write!(f, "unable to extract timestamp or signature"),
+            Self::MaxVarianceExceeded(dur) => write!(f, "request was made more than {dur} ago"),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct ValidationError {
     pub field: String,
@@ -22,7 +44,7 @@ pub struct ValidationError {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct PaddleError {
+pub struct PaddleApiError {
     #[serde(rename = "type")]
     pub error_type: ErrorType,
     pub code: String,
@@ -35,8 +57,11 @@ pub struct PaddleError {
 pub enum Error {
     Request(reqwest::Error),
     Url(url::ParseError),
-    Paddle(ErrorResponse),
+    PaddleApi(ErrorResponse),
     QueryString(serde_qs::Error),
+    PaddleSignature(SignatureError),
+    ParseIntError(std::num::ParseIntError),
+    MacError(hmac::digest::MacError),
 }
 
 impl fmt::Display for Error {
@@ -44,8 +69,11 @@ impl fmt::Display for Error {
         match self {
             Self::Request(err) => write!(f, "Request error: {}", err),
             Self::Url(err) => write!(f, "URL error: {}", err),
-            Self::Paddle(err) => write!(f, "Paddle error: {}", err.error.detail),
+            Self::PaddleApi(err) => write!(f, "Paddle error: {}", err.error.detail),
             Self::QueryString(err) => write!(f, "Query string error: {}", err),
+            Self::PaddleSignature(err) => write!(f, "Paddle signature error: {}", err),
+            Self::ParseIntError(err) => write!(f, "Integer parsing error: {}", err),
+            Self::MacError(err) => write!(f, "Hmac error: {}", err),
         }
     }
 }
@@ -55,8 +83,11 @@ impl error::Error for Error {
         match self {
             Self::Request(err) => Some(err),
             Self::Url(err) => Some(err),
-            Self::Paddle(_) => None,
+            Self::PaddleApi(_) => None,
             Self::QueryString(err) => Some(err),
+            Self::PaddleSignature(_) => None,
+            Self::ParseIntError(err) => Some(err),
+            Self::MacError(err) => Some(err),
         }
     }
 }
@@ -76,5 +107,17 @@ impl From<url::ParseError> for Error {
 impl From<serde_qs::Error> for Error {
     fn from(err: serde_qs::Error) -> Self {
         Self::QueryString(err)
+    }
+}
+
+impl From<std::num::ParseIntError> for Error {
+    fn from(err: std::num::ParseIntError) -> Self {
+        Self::ParseIntError(err)
+    }
+}
+
+impl From<hmac::digest::MacError> for Error {
+    fn from(err: hmac::digest::MacError) -> Self {
+        Self::MacError(err)
     }
 }

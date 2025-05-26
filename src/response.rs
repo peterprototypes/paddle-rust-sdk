@@ -2,7 +2,7 @@
 
 use serde::Deserialize;
 
-use crate::PaddleError;
+use crate::PaddleApiError;
 
 /// Meta information about the API request.
 /// This includes the request ID, which can be used for debugging or tracking purposes.
@@ -28,6 +28,6 @@ pub struct SuccessResponse<T> {
 /// Error response structure for the Paddle API.
 #[derive(Debug, Deserialize)]
 pub struct ErrorResponse {
-    pub error: PaddleError,
+    pub error: PaddleApiError,
     pub meta: Meta,
 }
