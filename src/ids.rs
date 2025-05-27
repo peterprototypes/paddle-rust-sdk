@@ -151,6 +151,18 @@ pub struct DiscountCode(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EventID(String);
 
+impl<T: Display> From<T> for EventID {
+    fn from(value: T) -> Self {
+        EventID(value.to_string())
+    }
+}
+
+impl AsRef<str> for EventID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this price, prefixed with `pri_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PriceID(String);
@@ -184,6 +196,38 @@ impl AsRef<str> for ProductID {
     }
 }
 
+/// Unique Paddle ID for API keys, prefixed with `apikey_`.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ApiKeyID(pub String);
+
+impl<T: Display> From<T> for ApiKeyID {
+    fn from(value: T) -> Self {
+        ApiKeyID(value.to_string())
+    }
+}
+
+impl AsRef<str> for ApiKeyID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
+/// Unique Paddle ID for payouts, prefixed with `payout_`.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PayoutID(pub String);
+
+impl<T: Display> From<T> for PayoutID {
+    fn from(value: T) -> Self {
+        PayoutID(value.to_string())
+    }
+}
+
+impl AsRef<str> for PayoutID {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Unique Paddle ID for this notification, prefixed with `ntf_`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NotificationID(String);
@@ -200,7 +244,7 @@ pub struct NotificationLogID(String);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EndpointSecretKey(String);
 
-/// Just a Paddle ID. I've noticed this used in reports.
+/// Just a Paddle ID. I've noticed this used in some places.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PaddleID(String);
 

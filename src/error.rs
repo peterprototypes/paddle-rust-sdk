@@ -62,6 +62,7 @@ pub enum Error {
     PaddleSignature(SignatureError),
     ParseIntError(std::num::ParseIntError),
     MacError(hmac::digest::MacError),
+    JsonError(serde_json::Error),
 }
 
 impl fmt::Display for Error {
@@ -74,6 +75,7 @@ impl fmt::Display for Error {
             Self::PaddleSignature(err) => write!(f, "Paddle signature error: {}", err),
             Self::ParseIntError(err) => write!(f, "Integer parsing error: {}", err),
             Self::MacError(err) => write!(f, "Hmac error: {}", err),
+            Self::JsonError(err) => write!(f, "Serde json error: {}", err),
         }
     }
 }
@@ -88,6 +90,7 @@ impl error::Error for Error {
             Self::PaddleSignature(_) => None,
             Self::ParseIntError(err) => Some(err),
             Self::MacError(err) => Some(err),
+            Self::JsonError(err) => Some(err),
         }
     }
 }
@@ -119,5 +122,11 @@ impl From<std::num::ParseIntError> for Error {
 impl From<hmac::digest::MacError> for Error {
     fn from(err: hmac::digest::MacError) -> Self {
         Self::MacError(err)
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(value: serde_json::Error) -> Self {
+        Self::JsonError(value)
     }
 }

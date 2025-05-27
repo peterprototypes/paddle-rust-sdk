@@ -23,12 +23,12 @@ async fn paddle_callback(request_body: String, req: HttpRequest) -> impl Respond
         return HttpResponse::BadRequest();
     };
 
-    let key = "...";
+    let key = "pdl_ntfset_01jw5t7njm3zfttyc8svst87rm_8ez0Wfm7VaeV+2IT3MpLGxwiQpDHWbYC";
 
-    match Paddle::verify(request_body, key, signature, MaximumVariance::default()) {
-        Ok(_) => {
+    match Paddle::unmarshal(request_body, key, signature, MaximumVariance::default()) {
+        Ok(event) => {
             // Proccess the request asynchronously
-            actix_web::rt::spawn(async { dbg!("here") });
+            actix_web::rt::spawn(async { dbg!(event) });
         }
         Err(e) => {
             println!("{:?}", e);

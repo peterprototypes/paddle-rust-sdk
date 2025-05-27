@@ -32,7 +32,7 @@ pub mod transactions;
 pub mod response;
 
 use entities::{
-    CustomerAuthenticationToken, EventType, PricePreviewItem, ReportBase, Subscription,
+    CustomerAuthenticationToken, Event, EventType, PricePreviewItem, ReportBase, Subscription,
     Transaction, TransactionInvoice,
 };
 use enums::{
@@ -80,17 +80,21 @@ impl Paddle {
         })
     }
 
-    /// Validates the integrity of a Paddle webhook request
-    pub fn verify(
+    /// Validate the integrity of a Paddle webhook request.
+    ///
+    /// Returns the deserialized [Event] struct.
+    pub fn unmarshal(
         request_body: String,
         secret_key: impl AsRef<str>,
         signature: impl AsRef<str>,
         maximum_variance: MaximumVariance,
-    ) -> std::result::Result<(), Error> {
+    ) -> std::result::Result<Event, Error> {
         let signature: Signature = signature.as_ref().parse()?;
         signature.verify(&request_body, secret_key, maximum_variance)?;
 
-        Ok(())
+        let event = serde_json::from_str(&request_body)?;
+
+        Ok(event)
     }
 
     /// Get a request builder for fetching products. Use the after method to page through results.

@@ -29,9 +29,9 @@ The following list outlines the current coverage of the Paddle API in this crate
 
 ## Webhook signature verification
 
-This crate provides a method to verify that received events are genuinely sent from Paddle.
+Use the `Paddle::unmarshal` method to verify that received events are genuinely sent from Paddle. Additionally, this method returns the deserialized event struct.
 
-Example verifying the signature of an incoming request (Actix web):
+Example handling webhook delivery with Actix:
 
 ```rust
 use actix_web::{post, App, HttpRequest, HttpResponse, HttpServer, Responder};
@@ -39,6 +39,8 @@ use paddle_rust_sdk::{webhooks::MaximumVariance, Paddle};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    // let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
+
     HttpServer::new(|| App::new().service(paddle_callback))
         .bind(("127.0.0.1", 8080))?
         .run()
@@ -57,12 +59,12 @@ async fn paddle_callback(request_body: String, req: HttpRequest) -> impl Respond
         return HttpResponse::BadRequest();
     };
 
-    let key = "...";
+    let key = "pdl_ntfset_01jw5t7njm3zfttyc8svst87rm_8ez0Wfm7VaeV+2IT3MpLGxwiQpDHWbYC";
 
-    match Paddle::verify(request_body, key, signature, MaximumVariance::default()) {
-        Ok(_) => {
+    match Paddle::unmarshal(request_body, key, signature, MaximumVariance::default()) {
+        Ok(event) => {
             // Proccess the request asynchronously
-            actix_web::rt::spawn(async { dbg!("here") });
+            actix_web::rt::spawn(async { dbg!(event) });
         }
         Err(e) => {
             println!("{:?}", e);
@@ -73,7 +75,6 @@ async fn paddle_callback(request_body: String, req: HttpRequest) -> impl Respond
     // Respond as soon as possible
     HttpResponse::Ok()
 }
-
 ```
 
 ## Running examples

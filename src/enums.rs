@@ -930,6 +930,163 @@ pub enum EventTypeName {
     TransactionUpdated,
 }
 
+/// Type of event sent by Paddle along with it's corresponding entity data
+#[allow(clippy::large_enum_variant)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "event_type", content = "data")]
+pub enum EventData {
+    /// An [`address.created`](https://developer.paddle.com/webhooks/addresses/address-created) event.
+    #[serde(rename = "address.created")]
+    AddressCreated(crate::entities::Address),
+    /// An [`address.imported`](https://developer.paddle.com/webhooks/addresses/address-imported) event.
+    #[serde(rename = "address.imported")]
+    AddressImported(crate::entities::Address),
+    /// An [`address.updated`](https://developer.paddle.com/webhooks/addresses/address-updated) event.
+    #[serde(rename = "address.updated")]
+    AddressUpdated(crate::entities::Address),
+    /// An [`adjustment.created`](https://developer.paddle.com/webhooks/adjustments/adjustment-created) event.
+    #[serde(rename = "adjustment.created")]
+    AdjustmentCreated(crate::entities::Adjustment),
+    /// An [`adjustment.updated`](https://developer.paddle.com/webhooks/adjustments/adjustment-updated) event.
+    #[serde(rename = "adjustment.updated")]
+    AdjustmentUpdated(crate::entities::Adjustment),
+    /// A [`api_key.created`](https://developer.paddle.com/webhooks/api-keys/api-key-created) event.
+    #[serde(rename = "api_key.created")]
+    ApiKeyCreated(crate::entities::ApiKey),
+    /// A [`api_key.updated`](https://developer.paddle.com/webhooks/api-keys/api-key-updated) event.
+    #[serde(rename = "api_key.updated")]
+    ApiKeyUpdated(crate::entities::ApiKey),
+    /// A [`api_key.expiring`](https://developer.paddle.com/webhooks/api-keys/api-key-expiring) event.
+    #[serde(rename = "api_key.expiring")]
+    ApiKeyExpiring(crate::entities::ApiKey),
+    /// A [`api_key.expired`](https://developer.paddle.com/webhooks/api-keys/api-key-expired) event.
+    #[serde(rename = "api_key.expired")]
+    ApiKeyExpired(crate::entities::ApiKey),
+    /// A [`api_key.revoked`](https://developer.paddle.com/webhooks/api-keys/api-key-revoked) event.
+    #[serde(rename = "api_key.revoked")]
+    ApiKeyRevoked(crate::entities::ApiKey),
+    /// A [`business.created`](https://developer.paddle.com/webhooks/businesses/business-created) event.
+    #[serde(rename = "business.created")]
+    BusinessCreated(crate::entities::Business),
+    /// A [`business.imported`](https://developer.paddle.com/webhooks/businesses/business-imported) event.
+    #[serde(rename = "business.imported")]
+    BusinessImported(crate::entities::Business),
+    /// A [`business.updated`](https://developer.paddle.com/webhooks/businesses/business-updated) event.
+    #[serde(rename = "business.updated")]
+    BusinessUpdated(crate::entities::Business),
+    /// A [`customer.created`](https://developer.paddle.com/webhooks/customers/customer-created) event.
+    #[serde(rename = "customer.created")]
+    CustomerCreated(crate::entities::Customer),
+    /// A [`customer.imported`](https://developer.paddle.com/webhooks/customers/customer-imported) event.
+    #[serde(rename = "customer.imported")]
+    CustomerImported(crate::entities::Customer),
+    /// A [`customer.updated`](https://developer.paddle.com/webhooks/customers/customer-updated) event.
+    #[serde(rename = "customer.updated")]
+    CustomerUpdated(crate::entities::Customer),
+    /// A [`discount.created`](https://developer.paddle.com/webhooks/discounts/discount-created) event.
+    #[serde(rename = "discount.created")]
+    DiscountCreated(crate::entities::Discount),
+    /// A [`discount.imported`](https://developer.paddle.com/webhooks/discounts/discount-imported) event.
+    #[serde(rename = "discount.imported")]
+    DiscountImported(crate::entities::Discount),
+    /// A [`discount.updated`](https://developer.paddle.com/webhooks/discounts/discount-updated) event.
+    #[serde(rename = "discount.updated")]
+    DiscountUpdated(crate::entities::Discount),
+    /// A [`payment_method.saved`](https://developer.paddle.com/webhooks/payment-methods/payment-method-saved) event.
+    #[serde(rename = "payment_method.saved")]
+    PaymentMethodSaved(crate::entities::PaymentMethod),
+    /// A [`payment_method.deleted`](https://developer.paddle.com/webhooks/payment-methods/payment-method-deleted) event.
+    #[serde(rename = "payment_method.deleted")]
+    PaymentMethodDeleted(crate::entities::PaymentMethod),
+    /// A [`payout.created`](https://developer.paddle.com/webhooks/payouts/payout-created) event.
+    #[serde(rename = "payout.created")]
+    PayoutCreated(crate::entities::Payout),
+    /// A [`payout.paid`](https://developer.paddle.com/webhooks/payouts/payout-paid) event.
+    #[serde(rename = "payout.paid")]
+    PayoutPaid(crate::entities::Payout),
+    /// A [`price.created`](https://developer.paddle.com/webhooks/prices/price-created) event.
+    #[serde(rename = "price.created")]
+    PriceCreated(crate::entities::Price),
+    /// A [`price.imported`](https://developer.paddle.com/webhooks/prices/price-imported) event.
+    #[serde(rename = "price.imported")]
+    PriceImported(crate::entities::Price),
+    /// A [`price.updated`](https://developer.paddle.com/webhooks/prices/price-updated) event.
+    #[serde(rename = "price.updated")]
+    PriceUpdated(crate::entities::Price),
+    /// A [`product.created`](https://developer.paddle.com/webhooks/products/product-created) event.
+    #[serde(rename = "product.created")]
+    ProductCreated(crate::entities::Product),
+    /// A [`product.imported`](https://developer.paddle.com/webhooks/products/product-imported) event.
+    #[serde(rename = "product.imported")]
+    ProductImported(crate::entities::Product),
+    /// A [`product.updated`](https://developer.paddle.com/webhooks/products/product-updated) event.
+    #[serde(rename = "product.updated")]
+    ProductUpdated(crate::entities::Product),
+    /// A [`report.created`](https://developer.paddle.com/webhooks/reports/report-created) event.
+    #[serde(rename = "report.created")]
+    ReportCreated(crate::entities::ReportBase),
+    /// A [`report.updated`](https://developer.paddle.com/webhooks/reports/report-updated) event.
+    #[serde(rename = "report.updated")]
+    ReportUpdated(crate::entities::ReportBase),
+    /// A [`subscription.activated`](https://developer.paddle.com/webhooks/subscriptions/subscription-activated) event.
+    #[serde(rename = "subscription.activated")]
+    SubscriptionActivated(crate::entities::Subscription),
+    /// A [`subscription.canceled`](https://developer.paddle.com/webhooks/subscriptions/subscription-canceled) event.
+    #[serde(rename = "subscription.canceled")]
+    SubscriptionCanceled(crate::entities::Subscription),
+    /// A [`subscription.created`](https://developer.paddle.com/webhooks/subscriptions/subscription-created) event.
+    #[serde(rename = "subscription.created")]
+    SubscriptionCreated(crate::entities::Subscription),
+    /// A [`subscription.imported`](https://developer.paddle.com/webhooks/subscriptions/subscription-imported) event.
+    #[serde(rename = "subscription.imported")]
+    SubscriptionImported(crate::entities::Subscription),
+    /// A [`subscription.past_due`](https://developer.paddle.com/webhooks/subscriptions/subscription-past-due) event.
+    #[serde(rename = "subscription.past_due")]
+    SubscriptionPastDue(crate::entities::Subscription),
+    /// A [`subscription.paused`](https://developer.paddle.com/webhooks/subscriptions/subscription-paused) event.
+    #[serde(rename = "subscription.paused")]
+    SubscriptionPaused(crate::entities::Subscription),
+    /// A [`subscription.resumed`](https://developer.paddle.com/webhooks/subscriptions/subscription-resumed) event.
+    #[serde(rename = "subscription.resumed")]
+    SubscriptionResumed(crate::entities::Subscription),
+    /// A [`subscription.trialing`](https://developer.paddle.com/webhooks/subscriptions/subscription-trialing) event.
+    #[serde(rename = "subscription.trialing")]
+    SubscriptionTrialing(crate::entities::Subscription),
+    /// A [`subscription.updated`](https://developer.paddle.com/webhooks/subscriptions/subscription-updated) event.
+    #[serde(rename = "subscription.updated")]
+    SubscriptionUpdated(crate::entities::Subscription),
+    /// A [`transaction.billed`](https://developer.paddle.com/webhooks/transactions/transaction-billed) event.
+    #[serde(rename = "transaction.billed")]
+    TransactionBilled(crate::entities::Transaction),
+    /// A [`transaction.canceled`](https://developer.paddle.com/webhooks/transactions/transaction-canceled) event.
+    #[serde(rename = "transaction.canceled")]
+    TransactionCanceled(crate::entities::Transaction),
+    /// A [`transaction.completed`](https://developer.paddle.com/webhooks/transactions/transaction-completed) event.
+    #[serde(rename = "transaction.completed")]
+    TransactionCompleted(crate::entities::Transaction),
+    /// A [`transaction.created`](https://developer.paddle.com/webhooks/transactions/transaction-created) event.
+    #[serde(rename = "transaction.created")]
+    TransactionCreated(crate::entities::Transaction),
+    /// A [`transaction.paid`](https://developer.paddle.com/webhooks/transactions/transaction-paid) event.
+    #[serde(rename = "transaction.paid")]
+    TransactionPaid(crate::entities::Transaction),
+    /// A [`transaction.past_due`](https://developer.paddle.com/webhooks/transactions/transaction-past-due) event.
+    #[serde(rename = "transaction.past_due")]
+    TransactionPastDue(crate::entities::Transaction),
+    /// A [`transaction.payment_failed`](https://developer.paddle.com/webhooks/transactions/transaction-payment-failed) event.
+    #[serde(rename = "transaction.payment_failed")]
+    TransactionPaymentFailed(crate::entities::Transaction),
+    /// A [`transaction.ready`](https://developer.paddle.com/webhooks/transactions/transaction-ready) event.
+    #[serde(rename = "transaction.ready")]
+    TransactionReady(crate::entities::Transaction),
+    /// A [`transaction.revised`](https://developer.paddle.com/webhooks/transactions/transaction-revised) event.
+    #[serde(rename = "transaction.revised")]
+    TransactionRevised(crate::entities::Transaction),
+    /// A [`transaction.updated`](https://developer.paddle.com/webhooks/transactions/transaction-updated) event.
+    #[serde(rename = "transaction.updated")]
+    TransactionUpdated(crate::entities::Transaction),
+}
+
 /// Status of this subscription item. Set automatically by Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
@@ -1455,4 +1612,23 @@ pub enum Disposition {
     Attachment,
     /// Generated URL displays the PDF inline in the browser. Browsers typically open the PDF in the current tab.
     Inline,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[non_exhaustive]
+#[serde(rename_all = "lowercase")]
+pub enum PayoutStatus {
+    /// Payout is paid.
+    Paid,
+    /// Payout is unpaid. Typically means it has been created, but is not yet completed.
+    Unpaid,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[non_exhaustive]
+#[serde(rename_all = "lowercase")]
+pub enum ApiKeyStatus {
+    Active,
+    Expired,
+    Revoked,
 }

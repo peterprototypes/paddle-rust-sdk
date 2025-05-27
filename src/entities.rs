@@ -173,6 +173,7 @@ pub struct Adjustment {
     /// Breakdown of how this adjustment affects your payout balance.
     pub payout_totals: Option<AdjustmentPayoutTotals>,
     /// List of tax rates applied for this adjustment.
+    #[serde(default)]
     pub tax_rates_used: Vec<AdjustmentTaxRateUsed>,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
     pub created_at: DateTime<Utc>,
@@ -538,6 +539,7 @@ pub struct Discount {
     /// How many times this discount has been redeemed. Automatically incremented by Paddle.
     ///
     /// Paddle counts a usage as a redemption on a checkout, transaction, or subscription. Transactions created for subscription renewals, midcycle changes, and one-time charges aren't considered a redemption.
+    #[serde(default)]
     pub times_used: i64,
     /// RFC 3339 datetime string of when this entity was created. Set automatically by Paddle.
     pub created_at: DateTime<Utc>,
@@ -601,12 +603,11 @@ pub struct ValidationError {
 pub struct Event {
     /// Unique Paddle ID for this event, prefixed with `evt_`.
     pub event_id: EventID,
-    /// Type of event sent by Paddle, in the format `entity.event_type`.
-    pub event_type: String, // EventTypeName,
     /// RFC 3339 datetime string.
-    pub occurred_at: String,
+    pub occurred_at: DateTime<Utc>,
     /// New or changed entity.
-    pub data: HashMap<String, String>,
+    #[serde(flatten)]
+    pub data: EventData,
 }
 
 /// Represents an event type.
@@ -1218,7 +1219,7 @@ pub struct Subscription {
     /// Change that's scheduled to be applied to a subscription. Use the pause subscription, cancel subscription, and resume subscription operations to create scheduled changes. `null` if no scheduled changes.
     pub scheduled_change: Option<SubscriptionScheduledChange>,
     /// Authenticated customer portal deep links for this subscription. For security, the `token` appended to each link is temporary. You shouldn't store these links.
-    pub management_urls: SubscriptionManagementUrls,
+    pub management_urls: Option<SubscriptionManagementUrls>,
     /// List of items on this subscription. Only recurring items are returned.
     pub items: Vec<SubscriptionItem>,
     /// Your own structured key-value data.
@@ -2113,6 +2114,44 @@ pub struct PricePreviewLineItem {
     /// Represents a product entity.
     pub product: Product,
     pub discounts: Vec<PricePreviewDiscounts>,
+}
+
+/// Payout entity received from a payout event
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Payout {
+    /// ID for this payout.
+    pub id: PayoutID,
+    /// Status of this payout.
+    pub status: PayoutStatus,
+    /// Fee amount for this chargeback in the original currency.
+    pub amount: String,
+    /// Three-letter ISO 4217 currency code for chargeback fees.
+    pub currency_code: CurrencyCodeChargebacks,
+}
+
+/// ApiKey entity
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ApiKey {
+    /// Unique Paddle ID for this API key entity, prefixed with apikey_.
+    pub id: ApiKeyID,
+    /// Short name of this API key. Typically unique and human-identifiable.
+    pub name: String,
+    /// Short description of this API key. Typically gives details about what the API key is used for and where it's used.
+    pub description: Option<String>,
+    /// An obfuscated version of this API key, prefixed with `pdl_` and containing `_apikey_`.
+    pub key: String,
+    /// Status of this API key.
+    pub status: ApiKeyStatus,
+    /// Permissions assigned to this API key. Determines what actions the API key can perform.
+    pub permissions: Vec<String>,
+    /// Datetime of when this API key expires.
+    pub expires_at: Option<DateTime<Utc>>,
+    /// Datetime of when this API key was last used (accurate to within 1 hour). null if never used.
+    pub last_used_at: Option<DateTime<Utc>>,
+    /// Datetime of when this entity was created. Set automatically by Paddle.
+    pub created_at: DateTime<Utc>,
+    /// Datetime of when this entity was updated. Set automatically by Paddle.
+    pub updated_at: DateTime<Utc>,
 }
 
 /// Calculated totals for a price preview, including discounts, tax, and currency conversion.
