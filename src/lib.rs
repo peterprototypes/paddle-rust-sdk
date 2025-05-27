@@ -6,8 +6,8 @@
 //!
 
 use reports::ReportType;
-use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
-use serde::{de::DeserializeOwned, Serialize};
+use reqwest::{IntoUrl, Method, StatusCode, Url, header::CONTENT_TYPE};
+use serde::{Serialize, de::DeserializeOwned};
 
 pub mod entities;
 pub mod enums;
@@ -44,8 +44,10 @@ use ids::{
 };
 use webhooks::{MaximumVariance, Signature};
 
-use error::{Error, PaddleApiError};
+use error::PaddleApiError;
 use response::{ErrorResponse, Response, SuccessResponse};
+
+pub use error::Error;
 
 type Result<T> = std::result::Result<SuccessResponse<T>, Error>;
 
