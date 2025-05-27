@@ -6,8 +6,8 @@
 //!
 
 use reports::ReportType;
-use reqwest::{IntoUrl, Method, StatusCode, Url, header::CONTENT_TYPE};
-use serde::{Serialize, de::DeserializeOwned};
+use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
+use serde::{de::DeserializeOwned, Serialize};
 
 pub mod entities;
 pub mod enums;
@@ -86,15 +86,15 @@ impl Paddle {
     ///
     /// Returns the deserialized [Event] struct.
     pub fn unmarshal(
-        request_body: String,
+        request_body: impl AsRef<str>,
         secret_key: impl AsRef<str>,
         signature: impl AsRef<str>,
         maximum_variance: MaximumVariance,
     ) -> std::result::Result<Event, Error> {
         let signature: Signature = signature.as_ref().parse()?;
-        signature.verify(&request_body, secret_key, maximum_variance)?;
+        signature.verify(request_body.as_ref(), secret_key, maximum_variance)?;
 
-        let event = serde_json::from_str(&request_body)?;
+        let event = serde_json::from_str(request_body.as_ref())?;
 
         Ok(event)
     }
