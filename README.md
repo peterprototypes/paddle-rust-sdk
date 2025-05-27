@@ -77,6 +77,28 @@ async fn paddle_callback(request_body: String, req: HttpRequest) -> impl Respond
 }
 ```
 
+This lib also provides the list live and sandbox IPs that webhook requests originate from. 
+
+Use the `Paddle::ALLOWED_WEBHOOK_IPS_PRODUCTION` and `Paddle::ALLOWED_WEBHOOK_IPS_SANDBOX` constants to check that a requests is made from a Paddle server. Actix example:
+
+```rust
+#[post("/webhook")]
+async fn webhook(req: HttpRequest, post: String) -> Result<impl Responder> {
+    // SECURITY: Do not use realip_remote_addr unless you can be sure that the Forwarded and X-Forwarded-For headers cannot be spoofed by the client. If you are running without a proxy then obtaining the peer address [ConnectionInfo::peer_addr] would be more appropriate.
+    let maybe_remote_addr = req.connection_info().realip_remote_addr().map(|s| s.to_string());
+
+    let Some(remote_addr) = maybe_remote_addr else {
+        return Ok("");
+    };
+
+    if !Paddle::ALLOWED_WEBHOOK_IPS_PRODUCTION.contains(&remote_addr.as_str()) {
+        return Ok("");
+    }
+
+    //...snip
+}
+```
+
 ## Running examples
 
 `<YOUR_API_KEY>` must be generated in the sandbox environment. All examples call the sandbox endpoints.

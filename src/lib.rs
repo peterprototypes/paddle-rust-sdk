@@ -64,6 +64,26 @@ impl Paddle {
     pub const PRODUCTION: &'static str = "https://api.paddle.com";
     pub const SANDBOX: &'static str = "https://sandbox-api.paddle.com";
 
+    /// List of IP addresses Paddle uses to call webhook endpoints from the Live environment
+    pub const ALLOWED_WEBHOOK_IPS_PRODUCTION: [&str; 6] = [
+        "34.232.58.13",
+        "34.195.105.136",
+        "34.237.3.244",
+        "35.155.119.135",
+        "52.11.166.252",
+        "34.212.5.7",
+    ];
+
+    /// List of IP addresses Paddle uses to call webhook endpoints from the Sandbox environment
+    pub const ALLOWED_WEBHOOK_IPS_SANDBOX: [&str; 6] = [
+        "34.194.127.46",
+        "54.234.237.108",
+        "3.208.120.145",
+        "44.226.236.210",
+        "44.241.183.62",
+        "100.20.172.113",
+    ];
+
     /// Creates a new Paddle client instance.
     ///
     /// Example:
