@@ -1,5 +1,6 @@
 use crate::{Error, Paddle, SuccessResponse};
-use serde::Serialize;
+use reqwest::{Method, Url};
+use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Value;
 use std::marker::PhantomData;
 
@@ -23,8 +24,30 @@ impl<'a, T> Paginated<'a, T> {
             _type: PhantomData,
         })
     }
+}
 
-    pub fn next(&mut self) -> Result<SuccessResponse<T>, Error> {
-        todo!()
+impl<'a, T> Paginated<'a, T>
+where
+    T: DeserializeOwned,
+{
+    pub async fn next(&mut self) -> Result<Option<SuccessResponse<T>>, Error> {
+        if let Some(query) = self.query.take() {
+            let response = self.client.send(query, Method::GET, &self.path).await?;
+            if let Some(pagination) = &response.meta.pagination {
+                if pagination.has_more {
+                    let url = Url::parse(&pagination.next)?;
+                    self.path = url.path().to_string();
+                    let query = url
+                        .query()
+                        .map(serde_qs::from_str)
+                        .transpose()?
+                        .unwrap_or_default();
+                    self.query = Some(query);
+                }
+            }
+            Ok(Some(response))
+        } else {
+            Ok(None)
+        }
     }
 }
