@@ -9,20 +9,25 @@ pub struct Paginated<'a, T> {
     path: String,
     query: Option<Value>,
     _type: PhantomData<T>,
+    error: Option<Error>,
 }
 
 impl<'a, T> Paginated<'a, T> {
-    pub fn create<Q>(client: &'a Paddle, path: &str, query: &Q) -> Result<Self, Error>
+    pub fn new<Q>(client: &'a Paddle, path: &str, query: Q) -> Self
     where
         Q: Serialize,
     {
-        let query = serde_json::to_value(&query)?;
-        Ok(Self {
+        let (query, error) = match serde_json::to_value(query) {
+            Ok(query) => (Some(query), None),
+            Err(err) => (None, Some(Error::from(err))),
+        };
+        Self {
             client,
             path: path.to_string(),
-            query: Some(query),
+            query,
             _type: PhantomData,
-        })
+            error,
+        }
     }
 }
 
@@ -31,6 +36,9 @@ where
     T: DeserializeOwned,
 {
     pub async fn next(&mut self) -> Result<Option<SuccessResponse<T>>, Error> {
+        if let Some(err) = self.error.take() {
+            return Err(err);
+        }
         if let Some(query) = self.query.take() {
             let response = self.client.send(query, Method::GET, &self.path).await?;
             if let Some(pagination) = &response.meta.pagination {
