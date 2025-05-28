@@ -1,7 +1,7 @@
 use crate::{Error, Paddle, SuccessResponse};
 use reqwest::{Method, Url};
 use serde::{de::DeserializeOwned, Serialize};
-use serde_json::Value;
+use serde_json::{Map, Value};
 use std::marker::PhantomData;
 
 pub struct Paginated<'a, T> {
@@ -45,12 +45,12 @@ where
                 if pagination.has_more {
                     let url = Url::parse(&pagination.next)?;
                     self.path = url.path().to_string();
-                    let query = url
+                    let query: Map<String, Value> = url
                         .query()
                         .map(serde_qs::from_str)
                         .transpose()?
                         .unwrap_or_default();
-                    self.query = Some(query);
+                    self.query = Some(Value::Object(query));
                 }
             }
             Ok(Some(response))

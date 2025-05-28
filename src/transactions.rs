@@ -331,7 +331,7 @@ impl<'a> TransactionsList<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Paginated<Vec<Transaction>> {
+    pub fn send(&self) -> Paginated<Vec<Transaction>> {
         Paginated::new(self.client, "/transactions", self)
     }
 }
