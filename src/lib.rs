@@ -21,6 +21,7 @@ pub mod businesses;
 pub mod customers;
 pub mod discounts;
 pub mod events;
+pub mod paginated;
 pub mod payment_methods;
 pub mod prices;
 pub mod pricing_preview;
