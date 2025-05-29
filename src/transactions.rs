@@ -17,6 +17,7 @@ use crate::enums::{CollectionMode, CurrencyCode, TransactionOrigin, TransactionS
 use crate::ids::{
     AddressID, BusinessID, CustomerID, DiscountID, PriceID, SubscriptionID, TransactionID,
 };
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 #[allow(non_snake_case)]
@@ -330,8 +331,8 @@ impl<'a> TransactionsList<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Transaction>> {
-        self.client.send(self, Method::GET, "/transactions").await
+    pub fn send(&self) -> Paginated<Vec<Transaction>> {
+        Paginated::new(self.client, "/transactions", self)
     }
 }
 

@@ -2,6 +2,7 @@
 
 use serde::Deserialize;
 
+use crate::entities::Pagination;
 use crate::PaddleApiError;
 
 /// Meta information about the API request.
@@ -9,6 +10,7 @@ use crate::PaddleApiError;
 #[derive(Debug, Deserialize)]
 pub struct Meta {
     pub request_id: String,
+    pub pagination: Option<Pagination>,
 }
 
 #[derive(Debug, Deserialize)]
