@@ -11,6 +11,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::Product;
 use crate::enums::{CatalogType, Status, TaxCategory};
 use crate::ids::ProductID;
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching products from Paddle API.
@@ -115,9 +116,9 @@ impl<'a> ProductsList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Product>> {
-        self.client.send(self, Method::GET, "/products").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<Product>> {
+        Paginated::new(self.client, "/products", self)
     }
 }
 

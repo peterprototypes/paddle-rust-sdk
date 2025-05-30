@@ -11,6 +11,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::{CreditBalance, Customer, CustomerPortalSession};
 use crate::enums::Status;
 use crate::ids::{CustomerID, SubscriptionID};
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching customers from Paddle API.
@@ -98,9 +99,9 @@ impl<'a> CustomersList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Customer>> {
-        self.client.send(self, Method::GET, "/customers").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<Customer>> {
+        Paginated::new(self.client, "/customers", self)
     }
 }
 

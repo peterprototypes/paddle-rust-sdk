@@ -4,7 +4,10 @@ use paddle_rust_sdk::Paddle;
 async fn main() {
     let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
 
-    let res = client.events_list().send().await.unwrap();
+    let list = client.events_list();
+    let mut paginated = list.send();
 
-    dbg!(res.data);
+    while let Some(page) = paginated.next().await.unwrap() {
+        dbg!(page.data);
+    }
 }

@@ -4,12 +4,10 @@ use paddle_rust_sdk::{enums::ReportStatus, Paddle};
 async fn main() {
     let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
 
-    let res = client
-        .reports_list()
-        .status([ReportStatus::Ready])
-        .send()
-        .await
-        .unwrap();
+    let mut list = client.reports_list();
+    let mut paginated = list.status([ReportStatus::Ready]).send();
 
-    dbg!(res.data);
+    while let Some(page) = paginated.next().await.unwrap() {
+        dbg!(page.data);
+    }
 }

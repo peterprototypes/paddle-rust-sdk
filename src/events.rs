@@ -2,14 +2,14 @@
 //!
 //! See the [Paddle API](https://developer.paddle.com/api-reference/pricing-preview/overview) documentation for more information.
 
-use reqwest::Method;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use serde_with::skip_serializing_none;
 
 use crate::entities::Event;
 use crate::ids::PaddleID;
-use crate::{Paddle, Result};
+use crate::paginated::Paginated;
+use crate::Paddle;
 
 pub trait ReportType: Serialize {
     type FilterName: Serialize + DeserializeOwned;
@@ -63,8 +63,8 @@ impl<'a> EventsList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Event>> {
-        self.client.send(self, Method::GET, "/events").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<Event>> {
+        Paginated::new(self.client, "/events", self)
     }
 }

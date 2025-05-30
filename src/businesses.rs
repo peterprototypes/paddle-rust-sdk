@@ -11,6 +11,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::{Business, Contact};
 use crate::enums::Status;
 use crate::ids::{BusinessID, CustomerID};
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching businesses from Paddle API.
@@ -93,14 +94,10 @@ impl<'a> BusinessesList<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Business>> {
-        self.client
-            .send(
-                self,
-                Method::GET,
-                &format!("/customers/{}/businesses", self.customer_id.as_ref()),
-            )
-            .await
+    pub fn send(&self) -> Paginated<Vec<Business>> {
+        let url = format!("/customers/{}/businesses", self.customer_id.as_ref());
+
+        Paginated::new(self.client, &url, self)
     }
 }
 

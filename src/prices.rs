@@ -12,6 +12,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::{Duration, Money, Price, PriceQuantity, UnitPriceOverride};
 use crate::enums::{CatalogType, CountryCodeSupported, CurrencyCode, Interval, Status, TaxMode};
 use crate::ids::{PriceID, ProductID};
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching prices from Paddle API.
@@ -116,9 +117,9 @@ impl<'a> PricesList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Price>> {
-        self.client.send(self, Method::GET, "/prices").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<Price>> {
+        Paginated::new(self.client, "/prices", self)
     }
 }
 

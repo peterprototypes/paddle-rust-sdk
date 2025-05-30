@@ -4,13 +4,10 @@ use paddle_rust_sdk::Paddle;
 async fn main() {
     let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
 
-    let prices = client
-        .prices_list()
-        .order_by_asc("id")
-        .per_page(20)
-        .send()
-        .await
-        .unwrap();
+    let mut prices_list = client.prices_list();
+    let mut prices = prices_list.order_by_asc("id").per_page(20).send();
 
-    dbg!(prices);
+    while let Some(res) = prices.next().await.unwrap() {
+        dbg!(res.data);
+    }
 }

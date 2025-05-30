@@ -15,6 +15,7 @@ use crate::enums::{
     SubscriptionOnPaymentFailure, SubscriptionOnResume, SubscriptionStatus,
 };
 use crate::ids::{AddressID, BusinessID, CustomerID, PriceID, SubscriptionID};
+use crate::paginated::Paginated;
 use crate::transactions::TransactionItem;
 use crate::{Paddle, Result};
 
@@ -140,9 +141,9 @@ impl<'a> SubscriptionsList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Subscription>> {
-        self.client.send(self, Method::GET, "/subscriptions").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<Subscription>> {
+        Paginated::new(self.client, "/subscriptions", self)
     }
 }
 

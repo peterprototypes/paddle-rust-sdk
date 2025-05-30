@@ -10,6 +10,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::{ReportBase, ReportFilter, ReportFilterValue};
 use crate::enums::{FilterOperator, ReportStatus};
 use crate::ids::PaddleID;
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 pub trait ReportType: Serialize {
@@ -73,9 +74,9 @@ impl<'a> ReportsList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<ReportBase>> {
-        self.client.send(self, Method::GET, "/reports").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<ReportBase>> {
+        Paginated::new(self.client, "/reports", self)
     }
 }
 

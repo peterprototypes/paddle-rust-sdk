@@ -7,14 +7,14 @@ use paddle_rust_sdk::{
 async fn main() {
     let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
 
-    let res = client
-        .subscriptions_list()
-        .status([SubscriptionStatus::Trialing])
+    let mut list = client.subscriptions_list();
+    let mut paginated = list
+        // .status([SubscriptionStatus::Trialing])
         .per_page(25)
         .collection_mode(CollectionMode::Automatic)
-        .send()
-        .await
-        .unwrap();
+        .send();
 
-    dbg!(res.data);
+    while let Some(page) = paginated.next().await.unwrap() {
+        dbg!(page.data);
+    }
 }

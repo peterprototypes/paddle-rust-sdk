@@ -4,7 +4,10 @@ use paddle_rust_sdk::Paddle;
 async fn main() {
     let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
 
-    let discounts = client.discounts_list().send().await.unwrap();
+    let list = client.discounts_list();
+    let mut discounts = list.send();
 
-    dbg!(discounts);
+    while let Some(res) = discounts.next().await.unwrap() {
+        dbg!(res.data);
+    }
 }

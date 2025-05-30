@@ -130,7 +130,13 @@ impl Paddle {
     /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let products = client.products_list().send().await.unwrap();
+    ///
+    /// let mut products_list = client.products_list();
+    /// let mut products = products_list.order_by_asc("id").per_page(20).send();
+    ///
+    /// while let Some(res) = products.next().await.unwrap() {
+    ///     dbg!(res.data);
+    /// }
     /// ```
     pub fn products_list(&self) -> products::ProductsList {
         products::ProductsList::new(self)
@@ -187,8 +193,15 @@ impl Paddle {
     ///
     /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
+    ///
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let prices = client.prices_list().send().await.unwrap();
+    ///
+    /// let mut prices_list = client.prices_list();
+    /// let mut prices = prices_list.order_by_asc("id").per_page(20).send();
+    ///
+    /// while let Some(res) = prices.next().await.unwrap() {
+    ///     dbg!(res.data);
+    /// }
     /// ```
     pub fn prices_list(&self) -> prices::PricesList {
         prices::PricesList::new(self)
@@ -252,7 +265,13 @@ impl Paddle {
     /// ```rust,no_run
     /// use paddle_rust_sdk::Paddle;
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
-    /// let discounts = client.discounts_list().send().await.unwrap();
+    ///
+    /// let list = client.discounts_list();
+    /// let mut discounts = list.send();
+    ///
+    /// while let Some(res) = discounts.next().await.unwrap() {
+    ///     dbg!(res.data);
+    /// }
     /// ```
     pub fn discounts_list(&self) -> discounts::DiscountsList {
         discounts::DiscountsList::new(self)

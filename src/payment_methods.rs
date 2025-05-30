@@ -8,6 +8,7 @@ use serde_with::skip_serializing_none;
 
 use crate::entities::PaymentMethod;
 use crate::ids::{AddressID, CustomerID, PaymentMethodID};
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching businesses from Paddle API.
@@ -81,15 +82,11 @@ impl<'a> PaymentMethodsList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<PaymentMethod>> {
-        self.client
-            .send(
-                self,
-                Method::GET,
-                &format!("/customers/{}/payment-methods", self.customer_id.as_ref()),
-            )
-            .await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<PaymentMethod>> {
+        let url = format!("/customers/{}/payment-methods", self.customer_id.as_ref());
+
+        Paginated::new(self.client, &url, self)
     }
 }
 

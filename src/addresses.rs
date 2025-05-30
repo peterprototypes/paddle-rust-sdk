@@ -11,6 +11,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::Address;
 use crate::enums::{CountryCodeSupported, Status};
 use crate::ids::{AddressID, CustomerID};
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching addresses from Paddle API.
@@ -93,14 +94,10 @@ impl<'a> AddressesList<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Address>> {
-        self.client
-            .send(
-                self,
-                Method::GET,
-                &format!("/customers/{}/addresses", self.customer_id.as_ref()),
-            )
-            .await
+    pub fn send(&self) -> Paginated<Vec<Address>> {
+        let url = format!("/customers/{}/addresses", self.customer_id.as_ref());
+
+        Paginated::new(self.client, &url, self)
     }
 }
 

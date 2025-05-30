@@ -12,6 +12,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::Discount;
 use crate::enums::{CurrencyCode, DiscountType, Status};
 use crate::ids::DiscountID;
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching discounts from Paddle API.
@@ -91,9 +92,9 @@ impl<'a> DiscountsList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Discount>> {
-        self.client.send(self, Method::GET, "/discounts").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<Discount>> {
+        Paginated::new(self.client, "/discounts", self)
     }
 }
 

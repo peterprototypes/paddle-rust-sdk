@@ -9,6 +9,7 @@ use serde_with::skip_serializing_none;
 use crate::entities::{Adjustment, AdjustmentItemInput};
 use crate::enums::{AdjustmentAction, AdjustmentStatus, AdjustmentType, TaxMode};
 use crate::ids::{AdjustmentID, CustomerID, SubscriptionID, TransactionID};
+use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
 // Request builder for retrieving adjustments
@@ -121,9 +122,9 @@ impl<'a> AdjustmentsList<'a> {
         self
     }
 
-    /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Vec<Adjustment>> {
-        self.client.send(self, Method::GET, "/adjustments").await
+    /// Returns a paginator for fetching pages of entities from Paddle
+    pub fn send(&self) -> Paginated<Vec<Adjustment>> {
+        Paginated::new(self.client, "/adjustments", self)
     }
 }
 
