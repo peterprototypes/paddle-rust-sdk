@@ -59,3 +59,16 @@ where
         }
     }
 }
+
+impl<'a, I> Paginated<'a, Vec<I>>
+where
+    I: DeserializeOwned,
+{
+    pub async fn all(&mut self) -> Result<Vec<I>, Error> {
+        let mut collected = Vec::new();
+        while let Some(response) = self.next().await? {
+            collected.extend(response.data.into_iter());
+        }
+        Ok(collected)
+    }
+}
