@@ -1,5 +1,5 @@
 [package]
-version = "0.10.0"
+version = "0.10.1"
 name = "paddle-rust-sdk"
 description = "Rust SDK for working with the Paddle API in server-side apps. (Unofficial)"
 license = "Apache-2.0"
