@@ -1,6 +1,6 @@
-//! Builders for making requests to the Paddle API for previewing prices.
+//! Request builders for creating and listing reports.
 //!
-//! See the [Paddle API](https://developer.paddle.com/api-reference/pricing-preview/overview) documentation for more information.
+//! See the [Paddle API](https://developer.paddle.com/api-reference/reports/overview) documentation for more information.
 
 use reqwest::Method;
 use serde::de::DeserializeOwned;

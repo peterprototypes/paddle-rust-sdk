@@ -1,4 +1,4 @@
-//! Builders for making requests to the Paddle API for product entities.
+//! Request builders for working with products in Paddle API.
 //!
 //! See the [Paddle API](https://developer.paddle.com/api-reference/products/overview) documentation for more information.
 

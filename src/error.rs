@@ -8,20 +8,29 @@ use serde::Deserialize;
 
 use crate::ErrorResponse;
 
+/// Type of error encountered.
 #[derive(Debug, Deserialize)]
 #[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum ErrorType {
+    /// Typically means there's a problem with the request that you made.
     RequestError,
+    /// Typically means there's a problem with the Paddle API.
     ApiError,
 }
 
+/// Error generated when validating webhook signatures
 #[derive(Debug)]
 pub enum SignatureError {
+    /// No signature provided
     Empty,
+    /// Invalid signature format
     InvalidFormat,
+    /// A part of the signature is invalid
     InvalidPartFormat,
+    /// Unable to extract timestamp or signature
     ParseError,
+    /// Generated when the signature was calculated earlier in time then allowed
     MaxVarianceExceeded(Duration),
 }
 
@@ -37,22 +46,34 @@ impl fmt::Display for SignatureError {
     }
 }
 
+/// Error struct for a single invalid field.
 #[derive(Debug, Deserialize)]
 pub struct ValidationError {
+    /// Field where validation error occurred.
     pub field: String,
+    /// Information about how the field failed validation.
     pub message: String,
 }
 
+/// Error type returned from the Paddle API
 #[derive(Debug, Deserialize)]
 pub struct PaddleApiError {
+    /// Type of error encountered.
     #[serde(rename = "type")]
     pub error_type: ErrorType,
+    /// Short snake case string that describes this error. Use to search the error reference.
     pub code: String,
+    /// Some information about what went wrong as a human-readable string.
     pub detail: String,
+    /// Link to a page in the error reference for this specific error.
     pub documentation_url: String,
+    /// List of validation errors.
     pub errors: Option<Vec<ValidationError>>,
 }
 
+/// Paddle SDK Error type
+///
+/// If an error is generated anywhere in this crate, it will return this enum.
 #[derive(Debug)]
 pub enum Error {
     Request(reqwest::Error),

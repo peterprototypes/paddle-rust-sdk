@@ -1,8 +1,8 @@
 use paddle_rust_sdk::{enums::CountryCodeSupported, Paddle};
 
 #[tokio::main]
-async fn main() {
-    let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Paddle::new(std::env::var("PADDLE_API_KEY")?, Paddle::SANDBOX)?;
 
     let address = client
         .address_create("ctm_01jqztc78e1xfdgwhcgjzdrvgd", CountryCodeSupported::US)
@@ -12,8 +12,9 @@ async fn main() {
         .postal_code("30033")
         .region("GA")
         .send()
-        .await
-        .unwrap();
+        .await?;
 
     dbg!(address);
+
+    Ok(())
 }

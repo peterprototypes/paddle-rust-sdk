@@ -2,7 +2,34 @@
 
 //! # Paddle API Client
 //!
-//! This is a Rust client for the Paddle API, which allows you to interact with Paddle's services.
+//! An async client library for interaction with Paddle API, An async and ergonomic wrapper around Paddle's REST HTTP API.
+//!
+//! Every interaction is done via the [Paddle] client type.
+//!
+//! ## Init and Usage Example
+//!
+//! ```rust,no_run
+//! use paddle_rust_sdk::Paddle;
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let client = Paddle::new(std::env::var("PADDLE_API_KEY")?, Paddle::SANDBOX)?;
+//!
+//!     let mut list = client.customers_list();
+//!     let mut paginated = list.per_page(2).send();
+//!     let customers = paginated.all().await?;
+//!
+//!     dbg!(customers);
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
+//! The `examples/` dir has up to date working example code.
+//!
+//! ## Webhook signature verification
+//!
+//! Use the [Paddle::unmarshal] method to verify that received events are genuinely sent from Paddle. Additionally, this method returns the deserialized event struct.
 //!
 
 use reports::ReportType;
@@ -105,7 +132,14 @@ impl Paddle {
 
     /// Validate the integrity of a Paddle webhook request.
     ///
-    /// Returns the deserialized [Event] struct.
+    /// - **request_body** - The raw body of the request. Don't transform or process the raw body of the request, including adding whitespace or applying other formatting. This results in a different signed payload, meaning signatures won't match when you compare.
+    /// - **secret_key** - Secret key created in Paddle dashboard. Each notification destination has it's own secret key.
+    /// - **signature** - "Paddle-Signature" HTTP request header from an incoming webhook sent by Paddle.
+    /// - **maximum_variance** - Maximum allowed age for a generated signature. [MaximumVariance::default] is 5 seconds. Pass `MaximumVariance(None)` to disable timestamp checking.
+    ///
+    /// **Return** - the deserialized [Event] struct.
+    ///
+    /// The `examples/` directory contains a demo webhook handler for Actix web.
     pub fn unmarshal(
         request_body: impl AsRef<str>,
         secret_key: impl AsRef<str>,

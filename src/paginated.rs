@@ -1,3 +1,5 @@
+//! # Helpers for working with paginated requests.
+
 use crate::{Error, Paddle, SuccessResponse};
 use reqwest::{Method, Url};
 use serde::{de::DeserializeOwned, Serialize};

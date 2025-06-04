@@ -1,4 +1,4 @@
-//! Builders for making requests to the Paddle API for price entities.
+//! Request builders for working with price entities in Paddle API.
 //!
 //! See the [Paddle API](https://developer.paddle.com/api-reference/prices/overview) documentation for more information.
 

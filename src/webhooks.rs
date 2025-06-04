@@ -1,3 +1,5 @@
+//! # Helpers for validating webhook requests.
+
 use std::num::ParseIntError;
 use std::str::FromStr;
 
@@ -9,6 +11,11 @@ use crate::error::{Error, SignatureError};
 
 type HmacSha256 = Hmac<Sha256>;
 
+/// Maximum allowed age for a signature.
+///
+/// Signatures sent by Paddle contain the timestamp when they were generated. Pass this struct to [Paddle::unmarshal](crate::Paddle::unmarshal) to set the maximum allowed age for signatures.
+///
+/// [MaximumVariance::default] - signatures cannot be older than 5 seconds.
 pub struct MaximumVariance(pub Option<Duration>);
 
 impl MaximumVariance {
@@ -18,6 +25,7 @@ impl MaximumVariance {
 }
 
 impl Default for MaximumVariance {
+    /// Default config - signatures cannot be older than 5 seconds.
     fn default() -> Self {
         Self(Some(Duration::seconds(5)))
     }

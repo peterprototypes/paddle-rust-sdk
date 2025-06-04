@@ -21,10 +21,11 @@ Pass your API key while initializing a new Paddle client.
 use paddle_rust_sdk::Paddle;
 
 #[tokio::main]
-async fn main() {
-    let client = Paddle::new(std::env::var("PADDLE_API_KEY").unwrap(), Paddle::SANDBOX).unwrap();
-}
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Paddle::new(std::env::var("PADDLE_API_KEY")?, Paddle::SANDBOX)?;
 
+    Ok(())
+}
 ```
 
 ## Fetching Entities
