@@ -22,133 +22,92 @@ macro_rules! paddle_id {
             }
         }
     };
+    ($($(#[$attr:meta])* $name:ident,)*) => {
+        $(
+            paddle_id! {
+                $(#[$attr])*
+                $name
+            }
+        )*
+    };
 }
 
 paddle_id! {
     /// Unique Paddle ID for this address entity, prefixed with `add_`.
-    AddressID
-}
+    AddressID,
 
-paddle_id! {
     /// Unique Paddle ID for this customer entity, prefixed with `ctm_`.
-    CustomerID
-}
+    CustomerID,
 
-paddle_id! {
     /// Unique Paddle ID for this adjustment entity, prefixed with `adj_`.
-    AdjustmentID
-}
+    AdjustmentID,
 
-paddle_id! {
     /// Unique Paddle ID for this transaction entity, prefixed with `txn_`.
-    TransactionID
-}
-paddle_id! {
+    TransactionID,
+
     /// Unique Paddle ID for this subscription entity, prefixed with `sub_`.
-    SubscriptionID
-}
+    SubscriptionID,
 
-paddle_id! {
     /// Unique Paddle ID for this transaction item, prefixed with `txnitm_`. Used when working with [adjustments](https://developer.paddle.com/build/transactions/create-transaction-adjustments).
-    TransactionItemID
-}
+    TransactionItemID,
 
-paddle_id! {
     /// Unique Paddle ID for this adjustment item, prefixed with `adjitm_`.
-    AdjustmentItemID
-}
+    AdjustmentItemID,
 
-paddle_id! {
     /// Unique Paddle ID for this business entity, prefixed with `biz_`.
-    BusinessID
-}
+    BusinessID,
 
-paddle_id! {
     /// Unique Paddle ID for this payment method entity, prefixed with `paymtd_`.
-    PaymentMethodID
-}
+    PaymentMethodID,
 
-paddle_id! {
     /// Unique Paddle ID for this customer portal session entity, prefixed with `cpls_`.
-    CustomerPortalSessionID
-}
+    CustomerPortalSessionID,
 
-paddle_id! {
     /// Unique Paddle ID for this discount, prefixed with `dsc_`.
-    DiscountID
-}
+    DiscountID,
 
-paddle_id! {
     /// Unique code that customers can use to apply this discount at checkout. Use letters and numbers only, up to 16 characters. Not case-sensitive.
-    DiscountCode
-}
+    DiscountCode,
 
-paddle_id! {
     /// Unique Paddle ID for this event, prefixed with `evt_`.
-    EventID
-}
+    EventID,
 
-paddle_id! {
     /// Unique Paddle ID for this price, prefixed with `pri_`.
-    PriceID
-}
+    PriceID,
 
-paddle_id! {
     /// Unique Paddle ID for this product, prefixed with `pro_`.
-    ProductID
-}
+    ProductID,
 
-paddle_id! {
     /// Unique Paddle ID for API keys, prefixed with `apikey_`.
-    ApiKeyID
-}
+    ApiKeyID,
 
-paddle_id! {
     /// Unique Paddle ID for payouts, prefixed with `payout_`.
-    PayoutID
-}
+    PayoutID,
 
-paddle_id! {
     /// Unique Paddle ID for this notification, prefixed with `ntf_`.
-    NotificationID
-}
+    NotificationID,
 
-paddle_id! {
     /// Unique Paddle ID for this notification setting, prefixed with `ntfset_`.
-    NotificationSettingID
-}
+    NotificationSettingID,
 
-paddle_id! {
     /// Unique Paddle ID for this notification log, prefixed with `ntflog_`.
-    NotificationLogID
-}
+    NotificationLogID,
 
-paddle_id! {
     /// Webhook destination secret key, prefixed with `pdl_ntfset_`. Used for signature verification.
-    EndpointSecretKey
-}
+    EndpointSecretKey,
 
-paddle_id! {
     /// Just a Paddle ID. I've noticed this used in some places.
-    PaddleID
-}
+    PaddleID,
 
-paddle_id! {
     /// Unique Paddle ID for this simulation event, prefixed with `ntfsimevt_`.
-    SimulationEventID
-}
+    SimulationEventID,
 
-paddle_id! {
     /// Unique Paddle ID for this simulation run, prefixed with `ntfsimrun_`.
-    SimulationRunID
-}
+    SimulationRunID,
 
-paddle_id! {
     /// Unique Paddle ID for this simulation, prefixed with `ntfsim_`.
-    SimulationID
-}
+    SimulationID,
 
-paddle_id! {
     /// Paddle ID of the invoice that this transaction is related to, prefixed with `inv_`. Used for compatibility with the Paddle Invoice API, which is now deprecated. This field is scheduled to be removed in the next version of the Paddle API.
-    InvoiceId
+    InvoiceId,
 }
