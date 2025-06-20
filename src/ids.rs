@@ -16,6 +16,12 @@ macro_rules! paddle_id {
             }
         }
 
+        impl Into<String> for $name {
+            fn into(self) -> String {
+                self.0
+            }
+        }
+
         impl AsRef<str> for $name {
             fn as_ref(&self) -> &str {
                 &self.0
