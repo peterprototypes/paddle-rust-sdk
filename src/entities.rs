@@ -1208,7 +1208,7 @@ pub struct Subscription {
     /// RFC 3339 datetime string of when this subscription was canceled. Set automatically by Paddle when the cancel subscription operation is used. `null` if not canceled.
     pub canceled_at: Option<DateTime<Utc>>,
     /// Details of the discount applied to this subscription.
-    pub discount: Option<Discount>,
+    pub discount: Option<SubscriptionDiscountTimePeriod>,
     /// How payment is collected. `automatic` for checkout, `manual` for invoices.
     pub collection_mode: CollectionMode,
     /// Details for invoicing. Required if `collection_mode` is `manual`.
