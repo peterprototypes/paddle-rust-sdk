@@ -1,6 +1,6 @@
 //! Unique Paddle IDs
 
-use std::fmt::Display;
+use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
@@ -10,21 +10,33 @@ macro_rules! paddle_id {
         #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name(pub String);
 
-        impl<T: Display> From<T> for $name {
-            fn from(value: T) -> Self {
+        impl From<String> for $name {
+            fn from(value: String) -> Self {
+                $name(value)
+            }
+        }
+
+        impl From<&str> for $name {
+            fn from(value: &str) -> Self {
                 $name(value.to_string())
             }
         }
 
-        impl Into<String> for $name {
-            fn into(self) -> String {
-                self.0
+        impl From<$name> for String {
+            fn from(value: $name) -> Self {
+                value.0
             }
         }
 
         impl AsRef<str> for $name {
             fn as_ref(&self) -> &str {
                 &self.0
+            }
+        }
+
+        impl fmt::Display for $name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "{}", self.0)
             }
         }
     };
