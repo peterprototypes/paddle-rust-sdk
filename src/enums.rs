@@ -1632,3 +1632,14 @@ pub enum ApiKeyStatus {
     Expired,
     Revoked,
 }
+
+/// Include related entities in the response.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum SubscriptionInclude {
+    /// Include an object with a preview of the next transaction for this subscription. May include prorated charges that aren't yet billed and one-time charges.
+    NextTransaction,
+    /// Include an object with a preview of the recurring transaction for this subscription. This is what the customer can expect to be billed when there are no prorated or one-time charges.
+    RecurringTransactionDetails,
+}
