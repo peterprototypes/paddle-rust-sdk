@@ -9,6 +9,7 @@ use serde_with::skip_serializing_none;
 
 use crate::entities::{
     BillingDetails, Subscription, SubscriptionDiscountEffectiveFrom, SubscriptionPreview,
+    SubscriptionWithInclude,
 };
 use crate::enums::{
     CollectionMode, CurrencyCode, EffectiveFrom, ProrationBillingMode, ScheduledChangeAction,
@@ -178,7 +179,7 @@ impl<'a> SubscriptionGet<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Subscription> {
+    pub async fn send(&self) -> Result<SubscriptionWithInclude> {
         self.client
             .send(
                 self,
