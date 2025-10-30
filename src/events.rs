@@ -64,7 +64,7 @@ impl<'a> EventsList<'a> {
     }
 
     /// Returns a paginator for fetching pages of entities from Paddle
-    pub fn send(&self) -> Paginated<Vec<Event>> {
+    pub fn send(&self) -> Paginated<'_, Vec<Event>> {
         Paginated::new(self.client, "/events", self)
     }
 }

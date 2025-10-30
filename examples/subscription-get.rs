@@ -1,4 +1,4 @@
-use paddle_rust_sdk::Paddle;
+use paddle_rust_sdk::{enums::SubscriptionInclude, Paddle};
 
 #[tokio::main]
 async fn main() {
@@ -6,7 +6,10 @@ async fn main() {
 
     let response = client
         .subscription_get("sub_01jt0rbstf4v79k955pa7jhmjy")
-        .include(["next_transaction", "recurring_transaction_details"])
+        .include([
+            SubscriptionInclude::NextTransaction,
+            SubscriptionInclude::RecurringTransactionDetails,
+        ])
         .send()
         .await
         .unwrap();

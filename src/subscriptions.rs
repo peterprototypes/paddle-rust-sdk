@@ -9,10 +9,11 @@ use serde_with::skip_serializing_none;
 
 use crate::entities::{
     BillingDetails, Subscription, SubscriptionDiscountEffectiveFrom, SubscriptionPreview,
+    SubscriptionWithInclude,
 };
 use crate::enums::{
     CollectionMode, CurrencyCode, EffectiveFrom, ProrationBillingMode, ScheduledChangeAction,
-    SubscriptionOnPaymentFailure, SubscriptionOnResume, SubscriptionStatus,
+    SubscriptionInclude, SubscriptionOnPaymentFailure, SubscriptionOnResume, SubscriptionStatus,
 };
 use crate::ids::{AddressID, BusinessID, CustomerID, PriceID, SubscriptionID};
 use crate::paginated::Paginated;
@@ -142,7 +143,7 @@ impl<'a> SubscriptionsList<'a> {
     }
 
     /// Returns a paginator for fetching pages of entities from Paddle
-    pub fn send(&self) -> Paginated<Vec<Subscription>> {
+    pub fn send(&self) -> Paginated<'_, Vec<Subscription>> {
         Paginated::new(self.client, "/subscriptions", self)
     }
 }
@@ -155,8 +156,8 @@ pub struct SubscriptionGet<'a> {
     client: &'a Paddle,
     #[serde(skip)]
     subscription_id: SubscriptionID,
-    #[serde(serialize_with = "crate::comma_separated")]
-    include: Option<Vec<String>>,
+    #[serde(serialize_with = "crate::comma_separated_enum")]
+    include: Option<Vec<SubscriptionInclude>>,
 }
 
 impl<'a> SubscriptionGet<'a> {
@@ -169,24 +170,16 @@ impl<'a> SubscriptionGet<'a> {
     }
 
     /// Include related entities in the response.
-    ///
-    /// ## Valid values are:
-    ///
-    /// - `next_transaction` - Include an object with a preview of the next transaction for this subscription. May include prorated charges that aren't yet billed and one-time charges.
-    /// - `recurring_transaction_details` - Include an object with a preview of the recurring transaction for this subscription. This is what the customer can expect to be billed when there are no prorated or one-time charges.
-    ///
-    pub fn include(&mut self, entities: impl IntoIterator<Item = impl AsRef<str>>) -> &mut Self {
-        self.include = Some(
-            entities
-                .into_iter()
-                .map(|s| s.as_ref().to_string())
-                .collect(),
-        );
+    pub fn include(
+        &mut self,
+        entities: impl IntoIterator<Item = SubscriptionInclude>,
+    ) -> &mut Self {
+        self.include = Some(entities.into_iter().collect());
         self
     }
 
     /// Send the request to Paddle and return the response.
-    pub async fn send(&self) -> Result<Subscription> {
+    pub async fn send(&self) -> Result<SubscriptionWithInclude> {
         self.client
             .send(
                 self,

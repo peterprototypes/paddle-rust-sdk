@@ -172,7 +172,7 @@ impl Paddle {
     ///     dbg!(res.data);
     /// }
     /// ```
-    pub fn products_list(&self) -> products::ProductsList {
+    pub fn products_list(&self) -> products::ProductsList<'_> {
         products::ProductsList::new(self)
     }
 
@@ -190,7 +190,7 @@ impl Paddle {
         &self,
         name: impl Into<String>,
         tax_category: TaxCategory,
-    ) -> products::ProductCreate {
+    ) -> products::ProductCreate<'_> {
         products::ProductCreate::new(self, name, tax_category)
     }
 
@@ -203,7 +203,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.product_get("pro_01jqx9rd...").send().await.unwrap();
     /// ```
-    pub fn product_get(&self, product_id: impl Into<ProductID>) -> products::ProductGet {
+    pub fn product_get(&self, product_id: impl Into<ProductID>) -> products::ProductGet<'_> {
         products::ProductGet::new(self, product_id)
     }
 
@@ -217,7 +217,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let product = client.product_update("pro_01jqx9rd...").name("My New Name").send().await.unwrap();
     /// ```
-    pub fn product_update(&self, product_id: impl Into<ProductID>) -> products::ProductUpdate {
+    pub fn product_update(&self, product_id: impl Into<ProductID>) -> products::ProductUpdate<'_> {
         products::ProductUpdate::new(self, product_id)
     }
 
@@ -237,7 +237,7 @@ impl Paddle {
     ///     dbg!(res.data);
     /// }
     /// ```
-    pub fn prices_list(&self) -> prices::PricesList {
+    pub fn prices_list(&self) -> prices::PricesList<'_> {
         prices::PricesList::new(self)
     }
 
@@ -261,7 +261,7 @@ impl Paddle {
         description: impl Into<String>,
         amount: u64,
         currency: CurrencyCode,
-    ) -> prices::PricesCreate {
+    ) -> prices::PricesCreate<'_> {
         prices::PricesCreate::new(self, product_id, description, amount, currency)
     }
 
@@ -274,7 +274,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let price = client.price_get("price_01jqx9rd...").send().await.unwrap();
     /// ```
-    pub fn price_get(&self, price_id: impl Into<PriceID>) -> prices::PriceGet {
+    pub fn price_get(&self, price_id: impl Into<PriceID>) -> prices::PriceGet<'_> {
         prices::PriceGet::new(self, price_id)
     }
 
@@ -288,7 +288,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let price = client.price_update("pri_01jqxv...").name("Updated Name").send().await.unwrap();
     /// ```
-    pub fn price_update(&self, price_id: impl Into<PriceID>) -> prices::PriceUpdate {
+    pub fn price_update(&self, price_id: impl Into<PriceID>) -> prices::PriceUpdate<'_> {
         prices::PriceUpdate::new(self, price_id)
     }
 
@@ -307,7 +307,7 @@ impl Paddle {
     ///     dbg!(res.data);
     /// }
     /// ```
-    pub fn discounts_list(&self) -> discounts::DiscountsList {
+    pub fn discounts_list(&self) -> discounts::DiscountsList<'_> {
         discounts::DiscountsList::new(self)
     }
 
@@ -325,7 +325,7 @@ impl Paddle {
         amount: impl Into<String>,
         description: impl Into<String>,
         discount_type: DiscountType,
-    ) -> discounts::DiscountCreate {
+    ) -> discounts::DiscountCreate<'_> {
         discounts::DiscountCreate::new(self, amount, description, discount_type)
     }
 
@@ -338,7 +338,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_get("dsc_01jqzpbmnq...").send().await.unwrap();
     /// ```
-    pub fn discount_get(&self, discount_id: impl Into<DiscountID>) -> discounts::DiscountGet {
+    pub fn discount_get(&self, discount_id: impl Into<DiscountID>) -> discounts::DiscountGet<'_> {
         discounts::DiscountGet::new(self, discount_id)
     }
 
@@ -351,7 +351,10 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.discount_update("dsc_01jqzpbmnq...").amount("18").send().await.unwrap();
     /// ```
-    pub fn discount_update(&self, discount_id: impl Into<DiscountID>) -> discounts::DiscountUpdate {
+    pub fn discount_update(
+        &self,
+        discount_id: impl Into<DiscountID>,
+    ) -> discounts::DiscountUpdate<'_> {
         discounts::DiscountUpdate::new(self, discount_id)
     }
 
@@ -366,7 +369,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.customers_list().send().await.unwrap();
     /// ```
-    pub fn customers_list(&self) -> customers::CustomersList {
+    pub fn customers_list(&self) -> customers::CustomersList<'_> {
         customers::CustomersList::new(self)
     }
 
@@ -379,7 +382,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.customer_create("test@example.com").send().await.unwrap();
     /// ```
-    pub fn customer_create(&self, email: impl Into<String>) -> customers::CustomerCreate {
+    pub fn customer_create(&self, email: impl Into<String>) -> customers::CustomerCreate<'_> {
         customers::CustomerCreate::new(self, email.into())
     }
 
@@ -392,7 +395,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_get("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// ```
-    pub fn customer_get(&self, customer_id: impl Into<CustomerID>) -> customers::CustomerGet {
+    pub fn customer_get(&self, customer_id: impl Into<CustomerID>) -> customers::CustomerGet<'_> {
         customers::CustomerGet::new(self, customer_id)
     }
 
@@ -405,7 +408,10 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let discount = client.customer_update("ctm_01jqztc78e1xfdgwhcgjzdrvgd").email("new_email@example.com").send().await.unwrap();
     /// ```
-    pub fn customer_update(&self, customer_id: impl Into<CustomerID>) -> customers::CustomerUpdate {
+    pub fn customer_update(
+        &self,
+        customer_id: impl Into<CustomerID>,
+    ) -> customers::CustomerUpdate<'_> {
         customers::CustomerUpdate::new(self, customer_id)
     }
 
@@ -435,7 +441,7 @@ impl Paddle {
     pub fn customer_credit_balances(
         &self,
         customer_id: impl Into<CustomerID>,
-    ) -> customers::CustomerCreditBalances {
+    ) -> customers::CustomerCreditBalances<'_> {
         customers::CustomerCreditBalances::new(self, customer_id)
     }
 
@@ -483,7 +489,10 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let customers = client.addresses_list("ctm_01jqztc78e1xfdgwhcgjzdrvgd").send().await.unwrap();
     /// ```
-    pub fn addresses_list(&self, customer_id: impl Into<CustomerID>) -> addresses::AddressesList {
+    pub fn addresses_list(
+        &self,
+        customer_id: impl Into<CustomerID>,
+    ) -> addresses::AddressesList<'_> {
         addresses::AddressesList::new(self, customer_id)
     }
 
@@ -500,7 +509,7 @@ impl Paddle {
         &self,
         customer_id: impl Into<CustomerID>,
         country_code: CountryCodeSupported,
-    ) -> addresses::AddressCreate {
+    ) -> addresses::AddressCreate<'_> {
         addresses::AddressCreate::new(self, customer_id, country_code)
     }
 
@@ -517,7 +526,7 @@ impl Paddle {
         &self,
         customer_id: impl Into<CustomerID>,
         address_id: impl Into<AddressID>,
-    ) -> addresses::AddressGet {
+    ) -> addresses::AddressGet<'_> {
         addresses::AddressGet::new(self, customer_id, address_id)
     }
 
@@ -534,7 +543,7 @@ impl Paddle {
         &self,
         customer_id: impl Into<CustomerID>,
         address_id: impl Into<AddressID>,
-    ) -> addresses::AddressUpdate {
+    ) -> addresses::AddressUpdate<'_> {
         addresses::AddressUpdate::new(self, customer_id, address_id)
     }
 
@@ -552,7 +561,7 @@ impl Paddle {
     pub fn businesses_list(
         &self,
         customer_id: impl Into<CustomerID>,
-    ) -> businesses::BusinessesList {
+    ) -> businesses::BusinessesList<'_> {
         businesses::BusinessesList::new(self, customer_id)
     }
 
@@ -569,7 +578,7 @@ impl Paddle {
         &self,
         customer_id: impl Into<CustomerID>,
         name: impl Into<String>,
-    ) -> businesses::BusinessCreate {
+    ) -> businesses::BusinessCreate<'_> {
         businesses::BusinessCreate::new(self, customer_id, name)
     }
 
@@ -586,7 +595,7 @@ impl Paddle {
         &self,
         customer_id: impl Into<CustomerID>,
         business_id: impl Into<BusinessID>,
-    ) -> businesses::BusinessGet {
+    ) -> businesses::BusinessGet<'_> {
         businesses::BusinessGet::new(self, customer_id, business_id)
     }
 
@@ -603,7 +612,7 @@ impl Paddle {
         &self,
         customer_id: impl Into<CustomerID>,
         business_id: impl Into<BusinessID>,
-    ) -> businesses::BusinessUpdate {
+    ) -> businesses::BusinessUpdate<'_> {
         businesses::BusinessUpdate::new(self, customer_id, business_id)
     }
 
@@ -619,7 +628,7 @@ impl Paddle {
     pub fn payment_methods_list(
         &self,
         customer_id: impl Into<CustomerID>,
-    ) -> payment_methods::PaymentMethodsList {
+    ) -> payment_methods::PaymentMethodsList<'_> {
         payment_methods::PaymentMethodsList::new(self, customer_id)
     }
 
@@ -636,7 +645,7 @@ impl Paddle {
         &self,
         customer_id: impl Into<CustomerID>,
         payment_method_id: impl Into<PaymentMethodID>,
-    ) -> payment_methods::PaymentMethodGet {
+    ) -> payment_methods::PaymentMethodGet<'_> {
         payment_methods::PaymentMethodGet::new(self, customer_id, payment_method_id)
     }
 
@@ -698,7 +707,7 @@ impl Paddle {
     pub fn create_portal_session(
         &self,
         customer_id: impl Into<CustomerID>,
-    ) -> customers::PortalSessionCreate {
+    ) -> customers::PortalSessionCreate<'_> {
         customers::PortalSessionCreate::new(self, customer_id)
     }
 
@@ -713,7 +722,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let transactions = client.transactions_list().send().await.unwrap();
     /// ```
-    pub fn transactions_list(&self) -> transactions::TransactionsList {
+    pub fn transactions_list(&self) -> transactions::TransactionsList<'_> {
         transactions::TransactionsList::new(self)
     }
 
@@ -735,7 +744,7 @@ impl Paddle {
     ///
     /// dbg!(res.data);
     /// ```
-    pub fn transaction_create(&self) -> transactions::TransactionCreate {
+    pub fn transaction_create(&self) -> transactions::TransactionCreate<'_> {
         transactions::TransactionCreate::new(self)
     }
 
@@ -752,7 +761,7 @@ impl Paddle {
     pub fn transaction_get(
         &self,
         transaction_id: impl Into<TransactionID>,
-    ) -> transactions::TransactionGet {
+    ) -> transactions::TransactionGet<'_> {
         transactions::TransactionGet::new(self, transaction_id)
     }
 
@@ -768,7 +777,7 @@ impl Paddle {
     pub fn transaction_update(
         &self,
         transaction_id: impl Into<TransactionID>,
-    ) -> transactions::TransactionUpdate {
+    ) -> transactions::TransactionUpdate<'_> {
         transactions::TransactionUpdate::new(self, transaction_id)
     }
 
@@ -817,7 +826,7 @@ impl Paddle {
     /// If successful, your response includes the data you sent with a details object that includes totals for the supplied prices.
     ///
     /// Transaction previews don't create transactions, so no `id` is returned.
-    pub fn transaction_preview(&self) -> transactions::TransactionPreview {
+    pub fn transaction_preview(&self) -> transactions::TransactionPreview<'_> {
         transactions::TransactionPreview::new(self)
     }
 
@@ -840,7 +849,7 @@ impl Paddle {
     pub fn transaction_revise(
         &self,
         transaction_id: impl Into<TransactionID>,
-    ) -> transactions::TransactionRevise {
+    ) -> transactions::TransactionRevise<'_> {
         transactions::TransactionRevise::new(self, transaction_id)
     }
 
@@ -853,7 +862,7 @@ impl Paddle {
     /// let client = Paddle::new("your_api_key", Paddle::SANDBOX).unwrap();
     /// let subscriptions = client.subscriptions_list().send().await.unwrap();
     /// ```
-    pub fn subscriptions_list(&self) -> subscriptions::SubscriptionsList {
+    pub fn subscriptions_list(&self) -> subscriptions::SubscriptionsList<'_> {
         subscriptions::SubscriptionsList::new(self)
     }
 
@@ -870,7 +879,7 @@ impl Paddle {
     pub fn subscription_get(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionGet {
+    ) -> subscriptions::SubscriptionGet<'_> {
         subscriptions::SubscriptionGet::new(self, subscription_id)
     }
 
@@ -900,7 +909,7 @@ impl Paddle {
     pub fn subscription_preview_update(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionPreviewUpdate {
+    ) -> subscriptions::SubscriptionPreviewUpdate<'_> {
         subscriptions::SubscriptionPreviewUpdate::new(self, subscription_id)
     }
 
@@ -925,7 +934,7 @@ impl Paddle {
     pub fn subscription_update(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionUpdate {
+    ) -> subscriptions::SubscriptionUpdate<'_> {
         subscriptions::SubscriptionUpdate::new(self, subscription_id)
     }
 
@@ -960,7 +969,7 @@ impl Paddle {
     pub fn subscription_preview_one_time_charge(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionOneTimeChargePreview {
+    ) -> subscriptions::SubscriptionOneTimeChargePreview<'_> {
         subscriptions::SubscriptionOneTimeChargePreview::new(self, subscription_id)
     }
 
@@ -976,7 +985,7 @@ impl Paddle {
     pub fn subscription_one_time_charge(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionOneTimeCharge {
+    ) -> subscriptions::SubscriptionOneTimeCharge<'_> {
         subscriptions::SubscriptionOneTimeCharge::new(self, subscription_id)
     }
 
@@ -1006,7 +1015,7 @@ impl Paddle {
     pub fn subscription_pause(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionPause {
+    ) -> subscriptions::SubscriptionPause<'_> {
         subscriptions::SubscriptionPause::new(self, subscription_id)
     }
 
@@ -1025,7 +1034,7 @@ impl Paddle {
     pub fn subscription_resume(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionResume {
+    ) -> subscriptions::SubscriptionResume<'_> {
         subscriptions::SubscriptionResume::new(self, subscription_id)
     }
 
@@ -1039,7 +1048,7 @@ impl Paddle {
     pub fn subscription_cancel(
         &self,
         subscription_id: impl Into<SubscriptionID>,
-    ) -> subscriptions::SubscriptionCancel {
+    ) -> subscriptions::SubscriptionCancel<'_> {
         subscriptions::SubscriptionCancel::new(self, subscription_id)
     }
 
@@ -1055,7 +1064,7 @@ impl Paddle {
     /// let res = client.adjustments_list().send().await.unwrap();
     /// dbg!(res.data);
     /// ```
-    pub fn adjustments_list(&self) -> adjustments::AdjustmentsList {
+    pub fn adjustments_list(&self) -> adjustments::AdjustmentsList<'_> {
         adjustments::AdjustmentsList::new(self)
     }
 
@@ -1092,7 +1101,7 @@ impl Paddle {
         transaction_id: impl Into<TransactionID>,
         action: AdjustmentAction,
         reason: impl Into<String>,
-    ) -> adjustments::AdjustmentCreate {
+    ) -> adjustments::AdjustmentCreate<'_> {
         adjustments::AdjustmentCreate::new(self, transaction_id, action, reason)
     }
 
@@ -1152,7 +1161,7 @@ impl Paddle {
     pub fn pricing_preview(
         &self,
         items: impl IntoIterator<Item = PricePreviewItem>,
-    ) -> pricing_preview::PricingPreview {
+    ) -> pricing_preview::PricingPreview<'_> {
         pricing_preview::PricingPreview::new(self, items)
     }
 
@@ -1228,7 +1237,7 @@ impl Paddle {
     /// let res = client.events_list().send().await.unwrap();
     /// dbg!(res.data)
     /// ```
-    pub fn events_list(&self) -> events::EventsList {
+    pub fn events_list(&self) -> events::EventsList<'_> {
         events::EventsList::new(self)
     }
 

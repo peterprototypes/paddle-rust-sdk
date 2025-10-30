@@ -83,7 +83,7 @@ impl<'a> PaymentMethodsList<'a> {
     }
 
     /// Returns a paginator for fetching pages of entities from Paddle
-    pub fn send(&self) -> Paginated<Vec<PaymentMethod>> {
+    pub fn send(&self) -> Paginated<'_, Vec<PaymentMethod>> {
         let url = format!("/customers/{}/payment-methods", self.customer_id.as_ref());
 
         Paginated::new(self.client, &url, self)

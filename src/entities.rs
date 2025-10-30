@@ -1347,6 +1347,18 @@ pub struct NextTransaction {
     pub adjustments: Vec<AdjustmentPreview>,
 }
 
+/// Represents a subscription entity with related entities included.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SubscriptionWithInclude {
+    /// The subscription entity.
+    #[serde(flatten)]
+    pub subscription: Subscription,
+    /// Preview of the next transaction for this subscription. May include prorated charges that aren't yet billed and one-time charges. Returned when the `include` parameter is used with the `next_transaction` value. `null` if the subscription is scheduled to cancel or pause.
+    pub next_transaction: Option<NextTransaction>,
+    /// Preview of the recurring transaction for this subscription. This is what the customer can expect to be billed when there are no prorated or one-time charges. Returned when the `include` parameter is used with the `recurring_transaction_details` value.
+    pub recurring_transaction_details: Option<SubscriptionTransactionDetailsPreview>,
+}
+
 /// Details of the result of credits and charges. Where the total of any credit adjustments is greater than the total charge, the result is a prorated credit; otherwise, the result is a prorated charge.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UpdateSummaryResult {

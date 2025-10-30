@@ -94,7 +94,7 @@ impl<'a> AddressesList<'a> {
     }
 
     /// Send the request to Paddle and return the response.
-    pub fn send(&self) -> Paginated<Vec<Address>> {
+    pub fn send(&self) -> Paginated<'_, Vec<Address>> {
         let url = format!("/customers/{}/addresses", self.customer_id.as_ref());
 
         Paginated::new(self.client, &url, self)
