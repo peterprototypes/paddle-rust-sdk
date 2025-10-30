@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 use paddle_rust_sdk::{
     enums::{CollectionMode, SubscriptionStatus},
     Paddle,
