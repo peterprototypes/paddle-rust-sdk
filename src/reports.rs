@@ -75,7 +75,7 @@ impl<'a> ReportsList<'a> {
     }
 
     /// Returns a paginator for fetching pages of entities from Paddle
-    pub fn send(&self) -> Paginated<Vec<ReportBase>> {
+    pub fn send(&self) -> Paginated<'_, Vec<ReportBase>> {
         Paginated::new(self.client, "/reports", self)
     }
 }

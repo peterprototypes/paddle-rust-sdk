@@ -123,7 +123,7 @@ impl<'a> AdjustmentsList<'a> {
     }
 
     /// Returns a paginator for fetching pages of entities from Paddle
-    pub fn send(&self) -> Paginated<Vec<Adjustment>> {
+    pub fn send(&self) -> Paginated<'_, Vec<Adjustment>> {
         Paginated::new(self.client, "/adjustments", self)
     }
 }

@@ -125,7 +125,7 @@ mod tests {
         let signature_str =
             "ts=1671552777;h1=eb4d0dc8853be92b7f063b9f3ba5233eb920a09459b6e6b2c26705b4364db151";
 
-        let sig: Signature = signature_str.parse().expect("To parse correctly");
+        let _sig: Signature = signature_str.parse().expect("To parse correctly");
     }
 
     #[test]
