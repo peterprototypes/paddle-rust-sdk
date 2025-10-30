@@ -475,9 +475,9 @@ pub enum CountryCodeSupported {
 /// Whether this entity can be used in Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "kebab-case"))]
+#[non_exhaustive]
 pub enum Status {
     /// Entity is active and can be used.
     Active,
@@ -488,9 +488,9 @@ pub enum Status {
 /// How this adjustment impacts the related transaction.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum AdjustmentAction {
     /// Credits some or all the related transaction.
     Credit,
@@ -509,9 +509,9 @@ pub enum AdjustmentAction {
 /// Type of adjustment. Use `full` to adjust the grand total for the related transaction. Include an `items` array when creating a `partial` adjustment. If omitted, defaults to `partial`.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum AdjustmentType {
     /// The grand total for the related transaction is adjusted.
     Full,
@@ -595,9 +595,9 @@ pub enum CurrencyCode {
 /// Credit adjustments don't require approval from Paddle, so they're created as `approved`.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum AdjustmentStatus {
     /// Adjustment is pending approval by Paddle. Most refunds for live accounts must be approved by Paddle.
     PendingApproval,
@@ -663,9 +663,9 @@ pub enum CurrencyCodePayouts {
 /// Include `amount` when creating a `partial` adjustment.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum AdjustmentItemType {
     /// Full total for this transaction item is adjusted.
     Full,
@@ -680,9 +680,9 @@ pub enum AdjustmentItemType {
 /// Unit of time.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "kebab-case"))]
+#[non_exhaustive]
 pub enum Interval {
     Day,
     Week,
@@ -693,9 +693,9 @@ pub enum Interval {
 /// Type of credit or debit card used to pay.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum CardType {
     /// American Express
     AmericanExpress,
@@ -722,9 +722,9 @@ pub enum CardType {
 /// Type of item. Standard items are considered part of your catalog and are shown on the Paddle dashboard.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "kebab-case"))]
+#[non_exhaustive]
 pub enum CatalogType {
     /// Non-catalog item. Typically created for a specific transaction or subscription. Not returned when listing or shown in the Paddle dashboard.
     Custom,
@@ -735,9 +735,9 @@ pub enum CatalogType {
 /// How payment is collected. `automatic` for checkout, `manual` for invoices.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum CollectionMode {
     /// Payment is collected automatically using a checkout initially, then using a payment method on file.
     Automatic,
@@ -748,9 +748,9 @@ pub enum CollectionMode {
 /// Type of payment method saved.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum SavedPaymentMethodType {
     /// Alipay, popular in China.
     Alipay,
@@ -767,9 +767,9 @@ pub enum SavedPaymentMethodType {
 /// Describes how this payment method was saved.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum PaymentMethodOrigin {
     /// The customer chose to save this payment method while purchasing a one-time item.
     SavedDuringPurchase,
@@ -780,9 +780,9 @@ pub enum PaymentMethodOrigin {
 /// Whether this entity can be used in Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "kebab-case"))]
+#[non_exhaustive]
 pub enum DiscountStatus {
     /// Entity is active and can be used.
     Active,
@@ -793,9 +793,9 @@ pub enum DiscountStatus {
 /// Type of discount. Determines how this discount impacts the checkout or transaction total.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum DiscountType {
     /// Discounts a checkout or transaction by a flat amount, for example -$100. Requires `currency_code`.
     Flat,
@@ -809,9 +809,9 @@ pub enum DiscountType {
 /// `scheduled_change` to apply the subscription change at the end of the billing period.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum EffectiveFrom {
     /// Takes effect on the next billing period.
     NextBillingPeriod,
@@ -833,9 +833,9 @@ pub enum Type {
 /// Reason why a payment attempt failed. Returns `null` if payment captured successfully.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum ErrorCode {
     /// Cancellation not possible because the amount has already been canceled. Not typically returned for payments.
     AlreadyCanceled,
@@ -1129,9 +1129,9 @@ pub enum EventData {
 /// Status of this subscription item. Set automatically by Paddle.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum SubscriptionItemStatus {
     /// This item is active. It is not in trial and Paddle bills for it.
     Active,
@@ -1144,9 +1144,9 @@ pub enum SubscriptionItemStatus {
 /// How tax is calculated for this price.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum TaxMode {
     /// Prices use the setting from your account.
     AccountSetting,
@@ -1159,9 +1159,9 @@ pub enum TaxMode {
 /// Tax category for this product. Used for charging the correct rate of tax. Selected tax category must be enabled on your Paddle account.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "kebab-case"))]
+#[non_exhaustive]
 pub enum TaxCategory {
     /// Non-customizable digital files or media (not software) acquired with an up front payment that can be accessed without any physical product being delivered.
     DigitalGoods,
@@ -1202,9 +1202,9 @@ impl AsRef<str> for TaxCategory {
 /// Type of payment method used for this payment attempt.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum PaymentMethodType {
     /// Alipay, popular in China.
     Alipay,
@@ -1281,9 +1281,9 @@ pub enum TrafficSource {
 /// Operator to use when filtering.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum FilterOperator {
     /// Less than.
     Lt,
@@ -1293,9 +1293,9 @@ pub enum FilterOperator {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum TransactionOrigin {
     /// Transaction created via the Paddle API.
     Api,
@@ -1316,9 +1316,9 @@ pub enum TransactionOrigin {
 /// Reports are created as `pending` initially, then move to `ready` when they're available to download.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum ReportStatus {
     /// Report created, but Paddle is processing it. It's not yet ready for download.
     Pending,
@@ -1333,9 +1333,9 @@ pub enum ReportStatus {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum AdjustmentsReportFilterName {
     /// Filter by adjustment action. Pass an array of strings containing any valid value for the `action` field against an adjustment.
     Action,
@@ -1350,9 +1350,9 @@ pub enum AdjustmentsReportFilterName {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum DiscountsReportFilterName {
     /// Filter by discount type. Pass an array of strings containing any valid value for the `type` field against a discount.
     Type,
@@ -1365,9 +1365,9 @@ pub enum DiscountsReportFilterName {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum BalanceReportFilterName {
     /// Filter by discount updated date. Pass an RFC 3339 datetime string.
     UpdatedAt,
@@ -1376,9 +1376,9 @@ pub enum BalanceReportFilterName {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum ProductPricesReportFilterName {
     /// Filter by product status. Pass an array of strings containing any valid value for the `status` field against a product.
     ProductStatus,
@@ -1397,9 +1397,9 @@ pub enum ProductPricesReportFilterName {
 /// Field name to filter by.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum TransactionsReportFilterName {
     /// Filter by collection mode. Pass an array of strings containing any valid value for the `collection_mode` field against a transaction.
     CollectionMode,
@@ -1416,9 +1416,9 @@ pub enum TransactionsReportFilterName {
 /// Type of report.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum AdjustmentsReportType {
     /// Adjustments reports contain information about refunds, credits, and chargebacks.
     Adjustments,
@@ -1433,9 +1433,9 @@ impl ReportType for AdjustmentsReportType {
 /// Type of report.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum TransactionsReportType {
     /// Transactions reports contain information about revenue received, past due invoices, draft and issued invoices, and canceled transactions.
     Transactions,
@@ -1450,9 +1450,9 @@ impl ReportType for TransactionsReportType {
 /// Type of report.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum ProductsAndPricesReportType {
     /// Products and prices reports contain information about your products and prices. May include non-catalog products and prices.
     ProductsPrices,
@@ -1465,9 +1465,9 @@ impl ReportType for ProductsAndPricesReportType {
 /// Type of report.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum DiscountsReportType {
     /// Discounts reports contain information about your product and checkout discounts.
     Discounts,
@@ -1480,9 +1480,9 @@ impl ReportType for DiscountsReportType {
 /// Type of report.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum BalanceReportType {
     /// Balance reports contain information about your account balance activity, including all movements of funds in and out of your balance.
     Balance,
@@ -1551,9 +1551,9 @@ pub enum SimulationKind {
 /// Status of this payment attempt.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum PaymentAttemptStatus {
     /// Authorized but not captured. Payment attempt is incomplete.
     Authorized,
@@ -1580,9 +1580,9 @@ pub enum PaymentAttemptStatus {
 /// Status of this subscription. Set automatically by Paddle. Use the pause subscription or cancel subscription operations to change.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum SubscriptionStatus {
     /// Subscription is active. Paddle is billing for this subscription and related transactions aren't past due.
     Active,
@@ -1599,9 +1599,9 @@ pub enum SubscriptionStatus {
 /// Status of this transaction. You may set a transaction to `billed` or `canceled`, other statuses are set automatically by Paddle. Automatically-collected transactions may return `completed` if payment is captured successfully, or `past_due` if payment failed.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum TransactionStatus {
     /// Transaction is missing required fields. Typically the first stage of a checkout before customer details are captured.
     Draft,
@@ -1622,9 +1622,9 @@ pub enum TransactionStatus {
 /// Kind of change that's scheduled to be applied to this subscription.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum ScheduledChangeAction {
     /// Subscription is scheduled to cancel. Its status changes to `canceled` on the `effective_at` date.
     Cancel,
@@ -1637,9 +1637,9 @@ pub enum ScheduledChangeAction {
 /// How Paddle should handle changes made to a subscription or its items if the payment fails during update. If omitted, defaults to `prevent_change`.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum SubscriptionOnPaymentFailure {
     /// In case of payment failure, prevent the change to the subscription from applying.
     PreventChange,
@@ -1650,9 +1650,9 @@ pub enum SubscriptionOnPaymentFailure {
 /// Whether the subscription change results in a prorated credit or a charge.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum UpdateSummaryResultAction {
     /// Changes to the subscription results in a prorated credit.
     Credit,
@@ -1667,9 +1667,9 @@ pub enum UpdateSummaryResultAction {
 /// collects for payment immediately is used.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum ProrationBillingMode {
     /// Paddle calculates the prorated amount for the subscription changes based on the current billing cycle, then
     /// creates a transaction to collect immediately.
@@ -1690,9 +1690,9 @@ pub enum ProrationBillingMode {
 /// How Paddle should set the billing period for the subscription when resuming. If omitted, defaults to `start_new_billing_period`.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "strum", strum(rename_all = "snake_case"))]
+#[non_exhaustive]
 pub enum SubscriptionOnResume {
     /// When resuming, continue the existing billing period. If the customer resumes before the end date of the existing billing period, there's no immediate charge. If after, an error is returned.
     ContinueExistingBillingPeriod,
@@ -1703,9 +1703,9 @@ pub enum SubscriptionOnResume {
 /// Determine whether the generated URL should download the PDF as an attachment saved locally, or open it inline in the browser.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum Disposition {
     /// Generated URL downloads the PDF as an attachment. Browsers typically automatically save the PDF.
     Attachment,
@@ -1715,9 +1715,9 @@ pub enum Disposition {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum PayoutStatus {
     /// Payout is paid.
     Paid,
@@ -1727,9 +1727,9 @@ pub enum PayoutStatus {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
-#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "strum", strum(rename_all = "lowercase"))]
+#[non_exhaustive]
 pub enum ApiKeyStatus {
     Active,
     Expired,
