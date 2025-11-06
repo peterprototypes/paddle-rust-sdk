@@ -8,7 +8,7 @@ use strum::{Display, EnumString};
 
 use crate::reports::ReportType;
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
 #[non_exhaustive]
 pub enum CountryCodeSupported {
@@ -470,6 +470,10 @@ pub enum CountryCodeSupported {
     ZA,
     /// Zambia
     ZM,
+    /// Other country code
+    #[serde(untagged)]
+    #[cfg_attr(feature = "strum", strum(default))]
+    Other(String),
 }
 
 /// Whether this entity can be used in Paddle.
