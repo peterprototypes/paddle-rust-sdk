@@ -1,5 +1,5 @@
 [package]
-version = "0.14.1"
+version = "0.15.0"
 name = "paddle-rust-sdk"
 description = "Rust SDK for working with the Paddle API in server-side apps. (Unofficial)"
 license = "Apache-2.0"
@@ -15,7 +15,10 @@ doctest = false
 
 [dependencies]
 reqwest = { version = "0.12", default-features = false, features = [
-  "charset", "http2", "system-proxy", "json",
+    "charset",
+    "http2",
+    "system-proxy",
+    "json",
 ] }
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
