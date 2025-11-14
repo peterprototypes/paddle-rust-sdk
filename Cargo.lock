@@ -1253,6 +1253,7 @@ dependencies = [
  "actix-web",
  "chrono",
  "hmac",
+ "paddle-rust-sdk-types",
  "reqwest",
  "serde",
  "serde_json",
@@ -1262,6 +1263,17 @@ dependencies = [
  "strum",
  "tokio",
  "url",
+]
+
+[[package]]
+name = "paddle-rust-sdk-types"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "strum",
 ]
 
 [[package]]
