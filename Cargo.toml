@@ -1,3 +1,13 @@
+[workspace]
+members = ["paddle-rust-sdk-types"]
+
+[workspace.dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_with = "3.12"
+strum = { version = ">=0.26,<0.28", features = ["derive"] }
+
 [package]
 version = "0.15.0"
 name = "paddle-rust-sdk"
@@ -14,21 +24,23 @@ edition = "2021"
 doctest = false
 
 [dependencies]
+paddle-rust-sdk-types = { path = "./paddle-rust-sdk-types" }
+
 reqwest = { version = "0.12", default-features = false, features = [
-    "charset",
-    "http2",
-    "system-proxy",
-    "json",
+  "charset",
+  "http2",
+  "system-proxy",
+  "json",
 ] }
-chrono = { version = "0.4", features = ["serde"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 serde_qs = "0.15"
 url = "2.5"
-serde_with = "3.12"
+serde_with.workspace = true
 sha2 = "0.10"
 hmac = { version = "0.12", features = ["std"] }
-strum = { version = ">=0.26,<0.28", features = ["derive"], optional = true }
+strum = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }

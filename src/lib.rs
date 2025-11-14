@@ -32,14 +32,12 @@
 //! Use the [Paddle::unmarshal] method to verify that received events are genuinely sent from Paddle. Additionally, this method returns the deserialized event struct.
 //!
 
-use reports::ReportType;
+use paddle_rust_sdk_types::reports::ReportType;
+pub use paddle_rust_sdk_types::{entities, enums, ids};
 use reqwest::{header::CONTENT_TYPE, IntoUrl, Method, StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
-pub mod entities;
-pub mod enums;
 pub mod error;
-pub mod ids;
 pub mod webhooks;
 
 pub mod addresses;
@@ -59,14 +57,14 @@ pub mod transactions;
 
 pub mod response;
 
-use entities::{
+use paddle_rust_sdk_types::entities::{
     CustomerAuthenticationToken, Event, EventType, PricePreviewItem, ReportBase, Subscription,
     Transaction, TransactionInvoice,
 };
-use enums::{
+use paddle_rust_sdk_types::enums::{
     AdjustmentAction, CountryCodeSupported, CurrencyCode, DiscountType, Disposition, TaxCategory,
 };
-use ids::{
+use paddle_rust_sdk_types::ids::{
     AddressID, AdjustmentID, BusinessID, CustomerID, DiscountID, PaddleID, PaymentMethodID,
     PriceID, ProductID, SubscriptionID, TransactionID,
 };

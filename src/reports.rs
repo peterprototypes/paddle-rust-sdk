@@ -2,6 +2,7 @@
 //!
 //! See the [Paddle API](https://developer.paddle.com/api-reference/reports/overview) documentation for more information.
 
+use paddle_rust_sdk_types::reports::ReportType;
 use reqwest::Method;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -12,10 +13,6 @@ use crate::enums::{FilterOperator, ReportStatus};
 use crate::ids::PaddleID;
 use crate::paginated::Paginated;
 use crate::{Paddle, Result};
-
-pub trait ReportType: Serialize {
-    type FilterName: Serialize + DeserializeOwned;
-}
 
 /// Request builder for querying Paddle for reports.
 #[skip_serializing_none]
