@@ -710,6 +710,8 @@ pub struct Product {
     pub created_at: DateTime<Utc>,
     /// RFC 3339 datetime string of when this entity was updated. Set automatically by Paddle.
     pub updated_at: DateTime<Utc>,
+    /// Populated when requested with client.products_list().include(["prices"])
+    pub prices: Option<Vec<Price>>,
 }
 
 /// Represents a subscription item.
