@@ -1157,6 +1157,8 @@ pub enum TaxMode {
     External,
     /// Prices are inclusive of tax.
     Internal,
+    /// Prices are inclusive or exclusive of tax, depending on the country of the transaction.
+    Location,
 }
 
 /// Tax category for this product. Used for charging the correct rate of tax. Selected tax category must be enabled on your Paddle account.
