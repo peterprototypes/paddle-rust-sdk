@@ -1,7 +1,14 @@
 [package]
 name = "paddle-rust-sdk-types"
 version = "0.1.0"
-edition = "2024"
+description = "Paddle Rust SDK Types (Unofficial)"
+license = "Apache-2.0"
+readme = "README.md"
+authors = ["Peter Todorov <ptodorov@cytec.bg>"]
+keywords = ["payments", "paddle", "finance"]
+categories = ["finance", "web-programming"]
+repository = "https://github.com/peterprototypes/paddle-rust-sdk"
+edition = "2021"
 
 [dependencies]
 serde.workspace = true

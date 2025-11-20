@@ -23,7 +23,7 @@ jobs:
           toolchain: nightly
           override: true
 
-      - run: cargo publish --token ${CRATES_TOKEN}
+      - run: cargo publish --token ${CRATES_TOKEN} --workspace
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
 
