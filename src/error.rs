@@ -10,7 +10,6 @@ use crate::ErrorResponse;
 
 /// Type of error encountered.
 #[derive(Debug, Deserialize)]
-#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum ErrorType {
     /// Typically means there's a problem with the request that you made.
