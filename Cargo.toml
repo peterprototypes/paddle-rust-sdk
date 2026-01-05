@@ -24,7 +24,7 @@ edition = "2021"
 doctest = false
 
 [dependencies]
-paddle-rust-sdk-types = { path = "./paddle-rust-sdk-types", version = "0.1" }
+paddle-rust-sdk-types = { path = "./paddle-rust-sdk-types", version = "0.2" }
 
 reqwest = { version = "0.12", default-features = false, features = [
   "charset",
