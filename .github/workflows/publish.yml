@@ -23,9 +23,9 @@ jobs:
           toolchain: nightly
           override: true
 
-      - run: cargo publish --token ${CRATES_TOKEN} --workspace
+      - run: cargo publish --workspace
         env:
-          CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_TOKEN }}
 
       - name: Update CHANGELOG
         id: changelog
