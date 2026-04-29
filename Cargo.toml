@@ -48,6 +48,7 @@ actix-web = "4"
 
 [features]
 default = ["native-certs"]
+strum = ["dep:strum", "paddle-rust-sdk-types/strum"]
 
 native-certs = ["reqwest/native-tls"]
 rustls-native-roots = ["reqwest/rustls-tls-native-roots"]
