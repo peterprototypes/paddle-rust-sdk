@@ -23,9 +23,24 @@ jobs:
           toolchain: nightly
           override: true
 
-      - run: cargo publish --workspace
+      - name: Publish crates
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_TOKEN }}
+        run: |
+          set -e
+          for crate in paddle-rust-sdk-types paddle-rust-sdk; do
+            echo "Publishing $crate..."
+            if output=$(cargo publish -p "$crate" 2>&1); then
+              echo "$output"
+            else
+              echo "$output"
+              if echo "$output" | grep -q "already exists on crates.io index"; then
+                echo "Skipping $crate — already published at current version."
+              else
+                exit 1
+              fi
+            fi
+          done
 
       - name: Update CHANGELOG
         id: changelog
