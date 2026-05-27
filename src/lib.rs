@@ -55,7 +55,10 @@ pub mod reports;
 pub mod subscriptions;
 pub mod transactions;
 
+pub mod nullable;
 pub mod response;
+
+pub use nullable::Nullable;
 
 use paddle_rust_sdk_types::entities::{
     CustomerAuthenticationToken, Event, EventType, PricePreviewItem, ReportBase, Subscription,

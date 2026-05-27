@@ -12,6 +12,7 @@ use crate::entities::{CreditBalance, Customer, CustomerPortalSession};
 use crate::enums::Status;
 use crate::ids::{CustomerID, SubscriptionID};
 use crate::paginated::Paginated;
+use crate::nullable::Nullable;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching customers from Paddle API.
@@ -182,18 +183,22 @@ impl<'a> CustomerGet<'a> {
 }
 
 /// Request builder for updating a customer in Paddle API.
-#[skip_serializing_none]
 #[derive(Serialize)]
 pub struct CustomerUpdate<'a> {
     #[serde(skip)]
     client: &'a Paddle,
     #[serde(skip)]
     customer_id: CustomerID,
-    name: Option<String>,
-    email: Option<String>,
-    status: Option<Status>,
-    custom_data: Option<HashMap<String, String>>,
-    locale: Option<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    name: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    email: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    status: Nullable<Status>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    custom_data: Nullable<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    locale: Nullable<String>,
 }
 
 impl<'a> CustomerUpdate<'a> {
@@ -201,41 +206,44 @@ impl<'a> CustomerUpdate<'a> {
         Self {
             client,
             customer_id: customer_id.into(),
-            name: None,
-            email: None,
-            status: None,
-            custom_data: None,
-            locale: None,
+            name: Nullable::Unchanged,
+            email: Nullable::Unchanged,
+            status: Nullable::Unchanged,
+            custom_data: Nullable::Unchanged,
+            locale: Nullable::Unchanged,
         }
     }
 
     /// Full name of this customer. Required when creating transactions where `collection_mode` is `manual` (invoices).
-    pub fn name(&mut self, name: impl Into<String>) -> &mut Self {
-        self.name = Some(name.into());
+    pub fn name(&mut self, name: impl Into<Nullable<String>>) -> &mut Self {
+        self.name = name.into();
         self
     }
 
     /// Email address for this customer.
-    pub fn email(&mut self, email: impl Into<String>) -> &mut Self {
-        self.email = Some(email.into());
+    pub fn email(&mut self, email: impl Into<Nullable<String>>) -> &mut Self {
+        self.email = email.into();
         self
     }
 
     /// Whether this entity can be used in Paddle.
-    pub fn status(&mut self, status: Status) -> &mut Self {
-        self.status = Some(status);
+    pub fn status(&mut self, status: impl Into<Nullable<Status>>) -> &mut Self {
+        self.status = status.into();
         self
     }
 
     /// Your own structured key-value data.
-    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
-        self.custom_data = Some(custom_data);
+    pub fn custom_data(
+        &mut self,
+        custom_data: impl Into<Nullable<HashMap<String, String>>>,
+    ) -> &mut Self {
+        self.custom_data = custom_data.into();
         self
     }
 
     /// Valid IETF BCP 47 short form locale tag.
-    pub fn locale(&mut self, locale: impl Into<String>) -> &mut Self {
-        self.locale = Some(locale.into());
+    pub fn locale(&mut self, locale: impl Into<Nullable<String>>) -> &mut Self {
+        self.locale = locale.into();
         self
     }
 

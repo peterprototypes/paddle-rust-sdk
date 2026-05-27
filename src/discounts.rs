@@ -13,6 +13,7 @@ use crate::entities::Discount;
 use crate::enums::{CurrencyCode, DiscountType, Status};
 use crate::ids::DiscountID;
 use crate::paginated::Paginated;
+use crate::nullable::Nullable;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching discounts from Paddle API.
@@ -246,26 +247,38 @@ impl<'a> DiscountGet<'a> {
 }
 
 /// Request builder for updating discounts in Paddle API.
-#[skip_serializing_none]
 #[derive(Serialize)]
 pub struct DiscountUpdate<'a> {
     #[serde(skip)]
     client: &'a Paddle,
     #[serde(skip)]
     discount_id: DiscountID,
-    status: Option<Status>,
-    description: Option<String>,
-    enabled_for_checkout: Option<bool>,
-    code: Option<String>,
-    r#type: Option<DiscountType>,
-    amount: Option<String>,
-    currency_code: Option<CurrencyCode>,
-    recur: Option<bool>,
-    maximum_recurring_intervals: Option<u64>,
-    usage_limit: Option<u64>,
-    restrict_to: Option<Vec<String>>,
-    expires_at: Option<DateTime<Utc>>,
-    custom_data: Option<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    status: Nullable<Status>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    description: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    enabled_for_checkout: Nullable<bool>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    code: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    r#type: Nullable<DiscountType>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    amount: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    currency_code: Nullable<CurrencyCode>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    recur: Nullable<bool>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    maximum_recurring_intervals: Nullable<u64>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    usage_limit: Nullable<u64>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    restrict_to: Nullable<Vec<String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    expires_at: Nullable<DateTime<Utc>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    custom_data: Nullable<HashMap<String, String>>,
 }
 
 impl<'a> DiscountUpdate<'a> {
@@ -273,109 +286,122 @@ impl<'a> DiscountUpdate<'a> {
         Self {
             client,
             discount_id: discount_id.into(),
-            status: None,
-            description: None,
-            enabled_for_checkout: None,
-            code: None,
-            r#type: None,
-            amount: None,
-            currency_code: None,
-            recur: None,
-            maximum_recurring_intervals: None,
-            usage_limit: None,
-            restrict_to: None,
-            expires_at: None,
-            custom_data: None,
+            status: Nullable::Unchanged,
+            description: Nullable::Unchanged,
+            enabled_for_checkout: Nullable::Unchanged,
+            code: Nullable::Unchanged,
+            r#type: Nullable::Unchanged,
+            amount: Nullable::Unchanged,
+            currency_code: Nullable::Unchanged,
+            recur: Nullable::Unchanged,
+            maximum_recurring_intervals: Nullable::Unchanged,
+            usage_limit: Nullable::Unchanged,
+            restrict_to: Nullable::Unchanged,
+            expires_at: Nullable::Unchanged,
+            custom_data: Nullable::Unchanged,
         }
     }
 
     /// Whether this entity can be used in Paddle.
-    pub fn status(&mut self, status: Status) -> &mut Self {
-        self.status = Some(status);
+    pub fn status(&mut self, status: impl Into<Nullable<Status>>) -> &mut Self {
+        self.status = status.into();
         self
     }
 
     /// Short description for this discount for your reference. Not shown to customers.
-    pub fn description(&mut self, description: impl Into<String>) -> &mut Self {
-        self.description = Some(description.into());
+    pub fn description(&mut self, description: impl Into<Nullable<String>>) -> &mut Self {
+        self.description = description.into();
         self
     }
 
     /// Whether this discount can be redeemed by customers at checkout (true) or not (false).
-    pub fn enabled_for_checkout(&mut self, enabled: bool) -> &mut Self {
-        self.enabled_for_checkout = Some(enabled);
+    pub fn enabled_for_checkout(
+        &mut self,
+        enabled: impl Into<Nullable<bool>>,
+    ) -> &mut Self {
+        self.enabled_for_checkout = enabled.into();
         self
     }
 
     /// Unique code that customers can use to redeem this discount at checkout. Not case-sensitive.
-    pub fn code(&mut self, code: impl Into<String>) -> &mut Self {
-        self.code = Some(code.into());
+    pub fn code(&mut self, code: impl Into<Nullable<String>>) -> &mut Self {
+        self.code = code.into();
         self
     }
 
     /// Type of discount. Determines how this discount impacts the checkout or transaction total.
-    pub fn discount_type(&mut self, discount_type: DiscountType) -> &mut Self {
-        self.r#type = Some(discount_type);
+    pub fn discount_type(
+        &mut self,
+        discount_type: impl Into<Nullable<DiscountType>>,
+    ) -> &mut Self {
+        self.r#type = discount_type.into();
         self
     }
 
     /// Amount to discount by. For percentage discounts, must be an amount between 0.01 and 100. For flat and flat_per_seat discounts, amount in the lowest denomination for a currency.
-    pub fn amount(&mut self, amount: impl Into<String>) -> &mut Self {
-        self.amount = Some(amount.into());
+    pub fn amount(&mut self, amount: impl Into<Nullable<String>>) -> &mut Self {
+        self.amount = amount.into();
         self
     }
 
     /// Supported three-letter ISO 4217 currency code. Required where discount type is [DiscountType::Flat] or [DiscountType::FlatPerSeat].
-    pub fn currency_code(&mut self, currency_code: CurrencyCode) -> &mut Self {
-        self.currency_code = Some(currency_code);
+    pub fn currency_code(
+        &mut self,
+        currency_code: impl Into<Nullable<CurrencyCode>>,
+    ) -> &mut Self {
+        self.currency_code = currency_code.into();
         self
     }
 
     /// Whether this discount applies for multiple subscription billing periods (`true`) or not (`false`). If omitted, defaults to `false`.
-    pub fn recur(&mut self, recur: bool) -> &mut Self {
-        self.recur = Some(recur);
+    pub fn recur(&mut self, recur: impl Into<Nullable<bool>>) -> &mut Self {
+        self.recur = recur.into();
         self
     }
 
     /// Number of subscription billing periods that this discount recurs for. Requires `recur`. `null` if this discount recurs forever.
     ///
     /// Subscription renewals, midcycle changes, and one-time charges billed to a subscription aren't considered a redemption. `times_used` is not incremented in these cases.
-    pub fn maximum_recurring_intervals(&mut self, maximum_recurring_intervals: u64) -> &mut Self {
-        self.maximum_recurring_intervals = Some(maximum_recurring_intervals);
+    pub fn maximum_recurring_intervals(
+        &mut self,
+        maximum_recurring_intervals: impl Into<Nullable<u64>>,
+    ) -> &mut Self {
+        self.maximum_recurring_intervals = maximum_recurring_intervals.into();
         self
     }
 
     /// Maximum number of times this discount can be redeemed. This is an overall limit for this discount, rather than a per-customer limit. `null` if this discount can be redeemed an unlimited amount of times.
-    pub fn usage_limit(&mut self, usage_limit: u64) -> &mut Self {
-        self.usage_limit = Some(usage_limit);
+    pub fn usage_limit(&mut self, usage_limit: impl Into<Nullable<u64>>) -> &mut Self {
+        self.usage_limit = usage_limit.into();
         self
     }
 
     /// Product or price IDs that this discount is for. When including a product ID, all prices for that product can be discounted. `null` if this discount applies to all products and prices.
     pub fn restrict_to(
         &mut self,
-        restrict_to: impl IntoIterator<Item = impl AsRef<str>>,
+        restrict_to: impl Into<Nullable<Vec<String>>>,
     ) -> &mut Self {
-        self.restrict_to = Some(
-            restrict_to
-                .into_iter()
-                .map(|s| s.as_ref().to_string())
-                .collect(),
-        );
+        self.restrict_to = restrict_to.into();
         self
     }
 
     /// Datetime when this discount expires. Discount can no longer be redeemed after this date has elapsed. `null` if this discount can be redeemed forever.
     ///
     /// Expired discounts can't be redeemed against transactions or checkouts, but can be applied when updating subscriptions.
-    pub fn expires_at(&mut self, expires_at: DateTime<Utc>) -> &mut Self {
-        self.expires_at = Some(expires_at);
+    pub fn expires_at(
+        &mut self,
+        expires_at: impl Into<Nullable<DateTime<Utc>>>,
+    ) -> &mut Self {
+        self.expires_at = expires_at.into();
         self
     }
 
     /// Set custom data for this discount.
-    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
-        self.custom_data = Some(custom_data);
+    pub fn custom_data(
+        &mut self,
+        custom_data: impl Into<Nullable<HashMap<String, String>>>,
+    ) -> &mut Self {
+        self.custom_data = custom_data.into();
         self
     }
 

@@ -17,6 +17,7 @@ use crate::enums::{CollectionMode, CurrencyCode, TransactionOrigin, TransactionS
 use crate::ids::{
     AddressID, BusinessID, CustomerID, DiscountID, PriceID, SubscriptionID, TransactionID,
 };
+use crate::nullable::Nullable;
 use crate::paginated::Paginated;
 use crate::{Paddle, Result};
 
@@ -587,7 +588,6 @@ impl<'a> TransactionGet<'a> {
 }
 
 /// Request builder for updating a transaction.
-#[skip_serializing_none]
 #[derive(Serialize)]
 pub struct TransactionUpdate<'a> {
     #[serde(skip)]
@@ -596,18 +596,30 @@ pub struct TransactionUpdate<'a> {
     transaction_id: TransactionID,
     #[serde(skip)]
     include: Option<Vec<String>>,
-    status: Option<TransactionStatus>,
-    customer_id: Option<CustomerID>,
-    address_id: Option<AddressID>,
-    business_id: Option<BusinessID>,
-    custom_data: Option<HashMap<String, String>>,
-    currency_code: Option<CurrencyCode>,
-    collection_mode: Option<CollectionMode>,
-    discount_id: Option<DiscountID>,
-    billing_details: Option<BillingDetails>,
-    billing_period: Option<TimePeriod>,
-    items: Option<Vec<TransactionItem>>,
-    checkout: Option<TransactionCheckout>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    status: Nullable<TransactionStatus>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    customer_id: Nullable<CustomerID>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    address_id: Nullable<AddressID>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    business_id: Nullable<BusinessID>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    custom_data: Nullable<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    currency_code: Nullable<CurrencyCode>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    collection_mode: Nullable<CollectionMode>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    discount_id: Nullable<DiscountID>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    billing_details: Nullable<BillingDetails>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    billing_period: Nullable<TimePeriod>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    items: Nullable<Vec<TransactionItem>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    checkout: Nullable<TransactionCheckout>,
 }
 
 impl<'a> TransactionUpdate<'a> {
@@ -616,18 +628,18 @@ impl<'a> TransactionUpdate<'a> {
             client,
             transaction_id: transaction_id.into(),
             include: None,
-            status: None,
-            customer_id: None,
-            address_id: None,
-            business_id: None,
-            custom_data: None,
-            currency_code: None,
-            collection_mode: None,
-            discount_id: None,
-            billing_details: None,
-            billing_period: None,
-            items: None,
-            checkout: None,
+            status: Nullable::Unchanged,
+            customer_id: Nullable::Unchanged,
+            address_id: Nullable::Unchanged,
+            business_id: Nullable::Unchanged,
+            custom_data: Nullable::Unchanged,
+            currency_code: Nullable::Unchanged,
+            collection_mode: Nullable::Unchanged,
+            discount_id: Nullable::Unchanged,
+            billing_details: Nullable::Unchanged,
+            billing_period: Nullable::Unchanged,
+            items: Nullable::Unchanged,
+            checkout: Nullable::Unchanged,
         }
     }
 
@@ -655,67 +667,88 @@ impl<'a> TransactionUpdate<'a> {
     /// Status of this transaction. You may set a transaction to billed or canceled. Billed transactions cannot be changed.
     ///
     /// For manually-collected transactions, marking as billed is essentially issuing an invoice.
-    pub fn status(&mut self, status: TransactionStatus) -> &mut Self {
-        self.status = Some(status);
+    pub fn status(&mut self, status: impl Into<Nullable<TransactionStatus>>) -> &mut Self {
+        self.status = status.into();
         self
     }
 
     /// Paddle ID of the customer that this transaction is for.
-    pub fn customer_id(&mut self, customer_id: impl Into<CustomerID>) -> &mut Self {
-        self.customer_id = Some(customer_id.into());
+    pub fn customer_id(&mut self, customer_id: impl Into<Nullable<CustomerID>>) -> &mut Self {
+        self.customer_id = customer_id.into();
         self
     }
 
     /// Paddle ID of the address that this transaction is for.
-    pub fn address_id(&mut self, address_id: impl Into<AddressID>) -> &mut Self {
-        self.address_id = Some(address_id.into());
+    pub fn address_id(&mut self, address_id: impl Into<Nullable<AddressID>>) -> &mut Self {
+        self.address_id = address_id.into();
         self
     }
 
     /// Paddle ID of the business that this transaction is for.
-    pub fn business_id(&mut self, business_id: impl Into<BusinessID>) -> &mut Self {
-        self.business_id = Some(business_id.into());
+    pub fn business_id(&mut self, business_id: impl Into<Nullable<BusinessID>>) -> &mut Self {
+        self.business_id = business_id.into();
         self
     }
 
     /// Your own structured key-value data.
-    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
-        self.custom_data = Some(custom_data);
+    pub fn custom_data(
+        &mut self,
+        custom_data: impl Into<Nullable<HashMap<String, String>>>,
+    ) -> &mut Self {
+        self.custom_data = custom_data.into();
         self
     }
 
     /// Supported three-letter currency code. Must be `USD`, `EUR`, or `GBP` if `collection_mode` is `manual`.
-    pub fn currency_code(&mut self, currency_code: CurrencyCode) -> &mut Self {
-        self.currency_code = Some(currency_code);
+    pub fn currency_code(
+        &mut self,
+        currency_code: impl Into<Nullable<CurrencyCode>>,
+    ) -> &mut Self {
+        self.currency_code = currency_code.into();
         self
     }
 
     /// How payment is collected for this transaction. `automatic` for checkout, `manual` for invoices.
-    pub fn collection_mode(&mut self, mode: CollectionMode) -> &mut Self {
-        self.collection_mode = Some(mode);
+    pub fn collection_mode(
+        &mut self,
+        mode: impl Into<Nullable<CollectionMode>>,
+    ) -> &mut Self {
+        self.collection_mode = mode.into();
         self
     }
 
     /// Paddle ID of the discount applied to this transaction.
-    pub fn discount_id(&mut self, discount_id: impl Into<DiscountID>) -> &mut Self {
-        self.discount_id = Some(discount_id.into());
+    pub fn discount_id(
+        &mut self,
+        discount_id: impl Into<Nullable<DiscountID>>,
+    ) -> &mut Self {
+        self.discount_id = discount_id.into();
         self
     }
 
     /// Details for invoicing. Required if `collection_mode` is `manual`.
-    pub fn billing_details(&mut self, billing_details: BillingDetails) -> &mut Self {
-        self.billing_details = Some(billing_details);
+    pub fn billing_details(
+        &mut self,
+        billing_details: impl Into<Nullable<BillingDetails>>,
+    ) -> &mut Self {
+        self.billing_details = billing_details.into();
         self
     }
 
     /// Time period that this transaction is for. Set automatically by Paddle for subscription renewals to describe the period that charges are for.
-    pub fn billing_period(&mut self, billing_period: TimePeriod) -> &mut Self {
-        self.billing_period = Some(billing_period);
+    pub fn billing_period(
+        &mut self,
+        billing_period: impl Into<Nullable<TimePeriod>>,
+    ) -> &mut Self {
+        self.billing_period = billing_period.into();
         self
     }
 
-    pub fn items(&mut self, items: impl IntoIterator<Item = TransactionItem>) -> &mut Self {
-        self.items = Some(items.into_iter().collect());
+    pub fn items(
+        &mut self,
+        items: impl Into<Nullable<Vec<TransactionItem>>>,
+    ) -> &mut Self {
+        self.items = items.into();
         self
     }
 
@@ -725,8 +758,12 @@ impl<'a> TransactionUpdate<'a> {
     /// Pass the URL for an approved domain, or null to set to your default payment URL.
     ///
     /// Paddle returns a unique payment link composed of the URL passed or your default payment URL + ?_ptxn= and the Paddle ID for this transaction.
-    pub fn checkout_url(&mut self, url: String) -> &mut Self {
-        self.checkout = Some(TransactionCheckout { url: Some(url) });
+    pub fn checkout_url(&mut self, url: impl Into<Nullable<String>>) -> &mut Self {
+        self.checkout = match url.into() {
+            Nullable::Unchanged => Nullable::Unchanged,
+            Nullable::Null => Nullable::Null,
+            Nullable::Value(url) => Nullable::Value(TransactionCheckout { url: Some(url) }),
+        };
         self
     }
 

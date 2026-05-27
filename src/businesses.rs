@@ -12,6 +12,7 @@ use crate::entities::{Business, Contact};
 use crate::enums::Status;
 use crate::ids::{BusinessID, CustomerID};
 use crate::paginated::Paginated;
+use crate::nullable::Nullable;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching businesses from Paddle API.
@@ -211,7 +212,6 @@ impl<'a> BusinessGet<'a> {
 }
 
 /// Request builder for updating a business in Paddle API.
-#[skip_serializing_none]
 #[derive(Serialize)]
 pub struct BusinessUpdate<'a> {
     #[serde(skip)]
@@ -220,11 +220,16 @@ pub struct BusinessUpdate<'a> {
     customer_id: CustomerID,
     #[serde(skip)]
     business_id: BusinessID,
-    name: Option<String>,
-    company_number: Option<String>,
-    tax_identifier: Option<String>,
-    contacts: Option<Vec<Contact>>,
-    custom_data: Option<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    name: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    company_number: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    tax_identifier: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    contacts: Nullable<Vec<Contact>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    custom_data: Nullable<HashMap<String, String>>,
 }
 
 impl<'a> BusinessUpdate<'a> {
@@ -237,41 +242,44 @@ impl<'a> BusinessUpdate<'a> {
             client,
             customer_id: customer_id.into(),
             business_id: business_id.into(),
-            name: None,
-            company_number: None,
-            tax_identifier: None,
-            contacts: None,
-            custom_data: None,
+            name: Nullable::Unchanged,
+            company_number: Nullable::Unchanged,
+            tax_identifier: Nullable::Unchanged,
+            contacts: Nullable::Unchanged,
+            custom_data: Nullable::Unchanged,
         }
     }
 
     /// Name of this business.
-    pub fn name(&mut self, name: impl Into<String>) -> &mut Self {
-        self.name = Some(name.into());
+    pub fn name(&mut self, name: impl Into<Nullable<String>>) -> &mut Self {
+        self.name = name.into();
         self
     }
 
     /// Company number for this business.
-    pub fn company_number(&mut self, company_number: impl Into<String>) -> &mut Self {
-        self.company_number = Some(company_number.into());
+    pub fn company_number(&mut self, company_number: impl Into<Nullable<String>>) -> &mut Self {
+        self.company_number = company_number.into();
         self
     }
 
     /// Tax identifier for this business.
-    pub fn tax_identifier(&mut self, tax_identifier: impl Into<String>) -> &mut Self {
-        self.tax_identifier = Some(tax_identifier.into());
+    pub fn tax_identifier(&mut self, tax_identifier: impl Into<Nullable<String>>) -> &mut Self {
+        self.tax_identifier = tax_identifier.into();
         self
     }
 
     /// Contact information for this business.
-    pub fn contacts(&mut self, contacts: impl IntoIterator<Item = Contact>) -> &mut Self {
-        self.contacts = Some(contacts.into_iter().collect());
+    pub fn contacts(&mut self, contacts: impl Into<Nullable<Vec<Contact>>>) -> &mut Self {
+        self.contacts = contacts.into();
         self
     }
 
     /// Custom data for this business.
-    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
-        self.custom_data = Some(custom_data);
+    pub fn custom_data(
+        &mut self,
+        custom_data: impl Into<Nullable<HashMap<String, String>>>,
+    ) -> &mut Self {
+        self.custom_data = custom_data.into();
         self
     }
 

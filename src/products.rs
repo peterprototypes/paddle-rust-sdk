@@ -12,6 +12,7 @@ use crate::entities::Product;
 use crate::enums::{CatalogType, Status, TaxCategory};
 use crate::ids::ProductID;
 use crate::paginated::Paginated;
+use crate::nullable::Nullable;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching products from Paddle API.
@@ -224,20 +225,26 @@ impl<'a> ProductGet<'a> {
 }
 
 /// Request builder for updating a product in Paddle API.
-#[skip_serializing_none]
 #[derive(Serialize)]
 pub struct ProductUpdate<'a> {
     #[serde(skip)]
     client: &'a Paddle,
     #[serde(skip)]
     product_id: ProductID,
-    name: Option<String>,
-    description: Option<String>,
-    r#type: Option<CatalogType>,
-    tax_category: Option<TaxCategory>,
-    image_url: Option<String>,
-    custom_data: Option<HashMap<String, String>>,
-    status: Option<Status>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    name: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    description: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    r#type: Nullable<CatalogType>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    tax_category: Nullable<TaxCategory>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    image_url: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    custom_data: Nullable<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    status: Nullable<Status>,
 }
 
 impl<'a> ProductUpdate<'a> {
@@ -245,55 +252,58 @@ impl<'a> ProductUpdate<'a> {
         Self {
             client,
             product_id: product_id.into(),
-            name: None,
-            description: None,
-            r#type: None,
-            tax_category: None,
-            image_url: None,
-            custom_data: None,
-            status: None,
+            name: Nullable::Unchanged,
+            description: Nullable::Unchanged,
+            r#type: Nullable::Unchanged,
+            tax_category: Nullable::Unchanged,
+            image_url: Nullable::Unchanged,
+            custom_data: Nullable::Unchanged,
+            status: Nullable::Unchanged,
         }
     }
 
     /// Set the product name.
-    pub fn name(&mut self, name: impl Into<String>) -> &mut Self {
-        self.name = Some(name.into());
+    pub fn name(&mut self, name: impl Into<Nullable<String>>) -> &mut Self {
+        self.name = name.into();
         self
     }
 
     /// Set the product description.
-    pub fn description(&mut self, description: impl Into<String>) -> &mut Self {
-        self.description = Some(description.into());
+    pub fn description(&mut self, description: impl Into<Nullable<String>>) -> &mut Self {
+        self.description = description.into();
         self
     }
 
     /// Set the product catalog type.
-    pub fn catalog_type(&mut self, catalog_type: CatalogType) -> &mut Self {
-        self.r#type = Some(catalog_type);
+    pub fn catalog_type(&mut self, catalog_type: impl Into<Nullable<CatalogType>>) -> &mut Self {
+        self.r#type = catalog_type.into();
         self
     }
 
     /// Set the product tax category.
-    pub fn tax_category(&mut self, tax_category: TaxCategory) -> &mut Self {
-        self.tax_category = Some(tax_category);
+    pub fn tax_category(&mut self, tax_category: impl Into<Nullable<TaxCategory>>) -> &mut Self {
+        self.tax_category = tax_category.into();
         self
     }
 
     /// Set the product image URL.
-    pub fn image_url(&mut self, image_url: impl Into<String>) -> &mut Self {
-        self.image_url = Some(image_url.into());
+    pub fn image_url(&mut self, image_url: impl Into<Nullable<String>>) -> &mut Self {
+        self.image_url = image_url.into();
         self
     }
 
     /// Set custom data for the product.
-    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
-        self.custom_data = Some(custom_data);
+    pub fn custom_data(
+        &mut self,
+        custom_data: impl Into<Nullable<HashMap<String, String>>>,
+    ) -> &mut Self {
+        self.custom_data = custom_data.into();
         self
     }
 
     /// Set the product status.
-    pub fn status(&mut self, status: Status) -> &mut Self {
-        self.status = Some(status);
+    pub fn status(&mut self, status: impl Into<Nullable<Status>>) -> &mut Self {
+        self.status = status.into();
         self
     }
 

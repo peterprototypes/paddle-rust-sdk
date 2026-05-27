@@ -13,6 +13,7 @@ use crate::entities::{Duration, Money, Price, PriceQuantity, UnitPriceOverride};
 use crate::enums::{CatalogType, CountryCodeSupported, CurrencyCode, Interval, Status, TaxMode};
 use crate::ids::{PriceID, ProductID};
 use crate::paginated::Paginated;
+use crate::nullable::Nullable;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching prices from Paddle API.
@@ -315,24 +316,34 @@ impl<'a> PriceGet<'a> {
 }
 
 /// Request builder for updating a price in Paddle API.
-#[skip_serializing_none]
 #[derive(Serialize)]
 pub struct PriceUpdate<'a> {
     #[serde(skip)]
     client: &'a Paddle,
     #[serde(skip)]
     price_id: PriceID,
-    description: Option<String>,
-    r#type: Option<CatalogType>,
-    name: Option<String>,
-    billing_cycle: Option<Duration>,
-    trial_period: Option<Duration>,
-    tax_mode: Option<TaxMode>,
-    unit_price: Option<Money>,
-    unit_price_overrides: Option<Vec<UnitPriceOverride>>,
-    quantity: Option<PriceQuantity>,
-    status: Option<Status>,
-    custom_data: Option<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    description: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    r#type: Nullable<CatalogType>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    name: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    billing_cycle: Nullable<Duration>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    trial_period: Nullable<Duration>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    tax_mode: Nullable<TaxMode>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    unit_price: Nullable<Money>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    unit_price_overrides: Nullable<Vec<UnitPriceOverride>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    quantity: Nullable<PriceQuantity>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    status: Nullable<Status>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    custom_data: Nullable<HashMap<String, String>>,
 }
 
 impl<'a> PriceUpdate<'a> {
@@ -340,70 +351,65 @@ impl<'a> PriceUpdate<'a> {
         Self {
             client,
             price_id: price_id.into(),
-            description: None,
-            r#type: None,
-            name: None,
-            billing_cycle: None,
-            trial_period: None,
-            tax_mode: None,
-            unit_price: None,
-            unit_price_overrides: None,
-            quantity: None,
-            status: None,
-            custom_data: None,
+            description: Nullable::Unchanged,
+            r#type: Nullable::Unchanged,
+            name: Nullable::Unchanged,
+            billing_cycle: Nullable::Unchanged,
+            trial_period: Nullable::Unchanged,
+            tax_mode: Nullable::Unchanged,
+            unit_price: Nullable::Unchanged,
+            unit_price_overrides: Nullable::Unchanged,
+            quantity: Nullable::Unchanged,
+            status: Nullable::Unchanged,
+            custom_data: Nullable::Unchanged,
         }
     }
 
     /// Update the price description.
-    pub fn description(&mut self, description: impl Into<String>) -> &mut Self {
-        self.description = Some(description.into());
+    pub fn description(&mut self, description: impl Into<Nullable<String>>) -> &mut Self {
+        self.description = description.into();
         self
     }
 
     /// Update the price type.
-    pub fn catalog_type(&mut self, catalog_type: CatalogType) -> &mut Self {
-        self.r#type = Some(catalog_type);
+    pub fn catalog_type(&mut self, catalog_type: impl Into<Nullable<CatalogType>>) -> &mut Self {
+        self.r#type = catalog_type.into();
         self
     }
 
     /// Update the price name. Name is shown to customers at checkout and on invoices. Typically describes how often the related product bills.
-    pub fn name(&mut self, name: impl Into<String>) -> &mut Self {
-        self.name = Some(name.into());
+    pub fn name(&mut self, name: impl Into<Nullable<String>>) -> &mut Self {
+        self.name = name.into();
         self
     }
 
     /// Update how often this price should be charged.
-    pub fn billing_cycle(&mut self, frequency: u64, interval: Interval) -> &mut Self {
-        self.billing_cycle = Some(Duration {
-            interval,
-            frequency,
-        });
-
+    pub fn billing_cycle(
+        &mut self,
+        billing_cycle: impl Into<Nullable<Duration>>,
+    ) -> &mut Self {
+        self.billing_cycle = billing_cycle.into();
         self
     }
 
     /// Update the trial period for the product related to this price.
-    pub fn trial_period(&mut self, frequency: u64, interval: Interval) -> &mut Self {
-        self.trial_period = Some(Duration {
-            interval,
-            frequency,
-        });
-
+    pub fn trial_period(
+        &mut self,
+        trial_period: impl Into<Nullable<Duration>>,
+    ) -> &mut Self {
+        self.trial_period = trial_period.into();
         self
     }
 
     /// Update how tax is calculated for this price.
-    pub fn tax_mode(&mut self, tax_mode: TaxMode) -> &mut Self {
-        self.tax_mode = Some(tax_mode);
+    pub fn tax_mode(&mut self, tax_mode: impl Into<Nullable<TaxMode>>) -> &mut Self {
+        self.tax_mode = tax_mode.into();
         self
     }
 
     /// Update the base price. This price applies to all customers, except for customers located in countries where you have unit_price_overrides.
-    pub fn unit_price(&mut self, amount: u64, currency: CurrencyCode) -> &mut Self {
-        self.unit_price = Some(Money {
-            amount: amount.to_string(),
-            currency_code: currency,
-        });
+    pub fn unit_price(&mut self, unit_price: impl Into<Nullable<Money>>) -> &mut Self {
+        self.unit_price = unit_price.into();
         self
     }
 
@@ -414,48 +420,50 @@ impl<'a> PriceUpdate<'a> {
         amount: u64,
         currency: CurrencyCode,
     ) -> &mut Self {
-        if self.unit_price_overrides.is_none() {
-            self.unit_price_overrides = Some(vec![]);
+        if !matches!(self.unit_price_overrides, Nullable::Value(_)) {
+            self.unit_price_overrides = Nullable::Value(vec![]);
         }
 
-        self.unit_price_overrides
-            .as_mut()
-            .unwrap()
-            .push(UnitPriceOverride {
+        if let Nullable::Value(ref mut v) = self.unit_price_overrides {
+            v.push(UnitPriceOverride {
                 country_codes: country_codes.into_iter().collect(),
                 unit_price: Money {
                     amount: amount.to_string(),
                     currency_code: currency,
                 },
             });
+        }
 
         self
     }
 
     /// Use to override the base price with a custom price and currency for a country or group of countries.
-    pub fn set_unit_price_overrides(&mut self, overrides: Vec<UnitPriceOverride>) -> &mut Self {
-        self.unit_price_overrides = Some(overrides);
+    pub fn set_unit_price_overrides(
+        &mut self,
+        overrides: impl Into<Nullable<Vec<UnitPriceOverride>>>,
+    ) -> &mut Self {
+        self.unit_price_overrides = overrides.into();
         self
     }
 
     /// Update how many times the related product can be purchased at this price.
-    pub fn quantity(&mut self, range: Range<u64>) -> &mut Self {
-        self.quantity = Some(PriceQuantity {
-            minimum: range.start,
-            maximum: range.end,
-        });
+    pub fn quantity(&mut self, quantity: impl Into<Nullable<PriceQuantity>>) -> &mut Self {
+        self.quantity = quantity.into();
         self
     }
 
     /// Update whether this entity can be used in Paddle.
-    pub fn status(&mut self, status: Status) -> &mut Self {
-        self.status = Some(status);
+    pub fn status(&mut self, status: impl Into<Nullable<Status>>) -> &mut Self {
+        self.status = status.into();
         self
     }
 
     /// Set custom data for the price.
-    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
-        self.custom_data = Some(custom_data);
+    pub fn custom_data(
+        &mut self,
+        custom_data: impl Into<Nullable<HashMap<String, String>>>,
+    ) -> &mut Self {
+        self.custom_data = custom_data.into();
         self
     }
 

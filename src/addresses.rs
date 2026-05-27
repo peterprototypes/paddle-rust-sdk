@@ -12,6 +12,7 @@ use crate::entities::Address;
 use crate::enums::{CountryCodeSupported, Status};
 use crate::ids::{AddressID, CustomerID};
 use crate::paginated::Paginated;
+use crate::nullable::Nullable;
 use crate::{Paddle, Result};
 
 /// Request builder for fetching addresses from Paddle API.
@@ -235,7 +236,6 @@ impl<'a> AddressGet<'a> {
 }
 
 /// Request builder for updating an address in Paddle API.
-#[skip_serializing_none]
 #[derive(Serialize)]
 pub struct AddressUpdate<'a> {
     #[serde(skip)]
@@ -244,15 +244,24 @@ pub struct AddressUpdate<'a> {
     customer_id: CustomerID,
     #[serde(skip)]
     address_id: AddressID,
-    description: Option<String>,
-    first_line: Option<String>,
-    second_line: Option<String>,
-    city: Option<String>,
-    postal_code: Option<String>,
-    region: Option<String>,
-    country_code: Option<CountryCodeSupported>,
-    custom_data: Option<HashMap<String, String>>,
-    status: Option<Status>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    description: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    first_line: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    second_line: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    city: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    postal_code: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    region: Nullable<String>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    country_code: Nullable<CountryCodeSupported>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    custom_data: Nullable<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Nullable::is_unchanged")]
+    status: Nullable<Status>,
 }
 
 impl<'a> AddressUpdate<'a> {
@@ -265,69 +274,75 @@ impl<'a> AddressUpdate<'a> {
             client,
             customer_id: customer_id.into(),
             address_id: address_id.into(),
-            description: None,
-            first_line: None,
-            second_line: None,
-            city: None,
-            postal_code: None,
-            region: None,
-            country_code: None,
-            custom_data: None,
-            status: None,
+            description: Nullable::Unchanged,
+            first_line: Nullable::Unchanged,
+            second_line: Nullable::Unchanged,
+            city: Nullable::Unchanged,
+            postal_code: Nullable::Unchanged,
+            region: Nullable::Unchanged,
+            country_code: Nullable::Unchanged,
+            custom_data: Nullable::Unchanged,
+            status: Nullable::Unchanged,
         }
     }
 
     /// Memorable description for this address.
-    pub fn description(&mut self, description: impl Into<String>) -> &mut Self {
-        self.description = Some(description.into());
+    pub fn description(&mut self, description: impl Into<Nullable<String>>) -> &mut Self {
+        self.description = description.into();
         self
     }
 
     /// First line of the address.
-    pub fn first_line(&mut self, first_line: impl Into<String>) -> &mut Self {
-        self.first_line = Some(first_line.into());
+    pub fn first_line(&mut self, first_line: impl Into<Nullable<String>>) -> &mut Self {
+        self.first_line = first_line.into();
         self
     }
 
     /// Second line of the address.
-    pub fn second_line(&mut self, second_line: impl Into<String>) -> &mut Self {
-        self.second_line = Some(second_line.into());
+    pub fn second_line(&mut self, second_line: impl Into<Nullable<String>>) -> &mut Self {
+        self.second_line = second_line.into();
         self
     }
 
     /// City name.
-    pub fn city(&mut self, city: impl Into<String>) -> &mut Self {
-        self.city = Some(city.into());
+    pub fn city(&mut self, city: impl Into<Nullable<String>>) -> &mut Self {
+        self.city = city.into();
         self
     }
 
     /// Postal code. Required for US addresses
-    pub fn postal_code(&mut self, postal_code: impl Into<String>) -> &mut Self {
-        self.postal_code = Some(postal_code.into());
+    pub fn postal_code(&mut self, postal_code: impl Into<Nullable<String>>) -> &mut Self {
+        self.postal_code = postal_code.into();
         self
     }
 
     /// Region name.
-    pub fn region(&mut self, region: impl Into<String>) -> &mut Self {
-        self.region = Some(region.into());
+    pub fn region(&mut self, region: impl Into<Nullable<String>>) -> &mut Self {
+        self.region = region.into();
         self
     }
 
     /// Country code.
-    pub fn country_code(&mut self, country_code: CountryCodeSupported) -> &mut Self {
-        self.country_code = Some(country_code);
+    pub fn country_code(
+        &mut self,
+        country_code: impl Into<Nullable<CountryCodeSupported>>,
+    ) -> &mut Self {
+        self.country_code = country_code.into();
         self
     }
 
     /// Custom data to be stored with this address.
-    pub fn custom_data(&mut self, custom_data: HashMap<String, String>) -> &mut Self {
-        self.custom_data = Some(custom_data);
+    pub fn custom_data(
+        &mut self,
+        custom_data: impl Into<Nullable<HashMap<String, String>>>,
+    ) -> &mut Self {
+        self.custom_data = custom_data.into();
         self
     }
 
     /// Status of the address.
-    pub fn status(&mut self, status: Status) -> &mut Self {
-        self.status = Some(status);
+    pub fn status(&mut self, status: impl Into<Nullable<Status>>) -> &mut Self {
+        self.status = status.into();
         self
     }
 
