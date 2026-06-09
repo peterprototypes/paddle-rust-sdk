@@ -1248,7 +1248,7 @@ dependencies = [
 
 [[package]]
 name = "paddle-rust-sdk"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "actix-web",
  "chrono",
