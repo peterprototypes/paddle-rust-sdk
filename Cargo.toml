@@ -38,7 +38,7 @@ serde_json.workspace = true
 serde_qs = "0.15"
 url = "2.5"
 serde_with.workspace = true
-sha2 = "0.10"
+sha2 = "0.11"
 hmac = { version = "0.12", features = ["std"] }
 strum = { workspace = true, optional = true }
 
