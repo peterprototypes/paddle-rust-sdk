@@ -5,8 +5,8 @@ members = ["paddle-rust-sdk-types"]
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-serde_with = "3.12"
-strum = { version = ">=0.26,<0.28", features = ["derive"] }
+serde_with = "3.21"
+strum = { version = ">=0.26,<0.29", features = ["derive"] }
 
 [package]
 version = "0.19.0"
@@ -26,7 +26,7 @@ doctest = false
 [dependencies]
 paddle-rust-sdk-types = { path = "./paddle-rust-sdk-types", version = "0.2" }
 
-reqwest = { version = "0.12", default-features = false, features = [
+reqwest = { version = "0.13", default-features = false, features = [
   "charset",
   "http2",
   "system-proxy",
@@ -35,11 +35,11 @@ reqwest = { version = "0.12", default-features = false, features = [
 chrono.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-serde_qs = "0.15"
+serde_qs = "1"
 url = "2.5"
 serde_with.workspace = true
 sha2 = "0.11"
-hmac = { version = "0.12", features = ["std"] }
+hmac = "0.13"
 strum = { workspace = true, optional = true }
 
 [dev-dependencies]
@@ -51,5 +51,5 @@ default = ["native-certs"]
 strum = ["dep:strum", "paddle-rust-sdk-types/strum"]
 
 native-certs = ["reqwest/native-tls"]
-rustls-native-roots = ["reqwest/rustls-tls-native-roots"]
-rustls-webpki-roots = ["reqwest/rustls-tls-webpki-roots"]
+rustls-native-roots = ["reqwest/rustls"]
+rustls-webpki-roots = ["reqwest/rustls"]

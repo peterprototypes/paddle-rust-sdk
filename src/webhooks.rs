@@ -4,7 +4,7 @@ use std::num::ParseIntError;
 use std::str::FromStr;
 
 use chrono::{prelude::*, Duration};
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use sha2::Sha256;
 
 use crate::error::{Error, SignatureError};
