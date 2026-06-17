@@ -1057,7 +1057,7 @@ pub enum EventData {
     SubscriptionCanceled(crate::entities::Subscription),
     /// A [`subscription.created`](https://developer.paddle.com/webhooks/subscriptions/subscription-created) event.
     #[serde(rename = "subscription.created")]
-    SubscriptionCreated(crate::entities::Subscription),
+    SubscriptionCreated(crate::entities::SubscriptionCreatedEvent),
     /// A [`subscription.imported`](https://developer.paddle.com/webhooks/subscriptions/subscription-imported) event.
     #[serde(rename = "subscription.imported")]
     SubscriptionImported(crate::entities::Subscription),

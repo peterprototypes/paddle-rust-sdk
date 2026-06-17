@@ -1230,6 +1230,15 @@ pub struct Subscription {
     pub import_meta: Option<ImportMeta>,
 }
 
+/// Represents a subscription entity when sent as a subscription.created event.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SubscriptionCreatedEvent {
+    /// Unique Paddle ID for this transaction entity, prefixed with `txn_`.
+    pub transaction_id: TransactionID,
+    #[serde(flatten)]
+    pub subscription: Subscription,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum SubscriptionChargeItem {
     /// Add a catalog item to a subscription. In this case, the product and price that you're billing for exist in your product catalog in Paddle.
