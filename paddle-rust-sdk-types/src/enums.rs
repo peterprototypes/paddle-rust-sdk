@@ -746,12 +746,34 @@ pub enum SavedPaymentMethodType {
     Alipay,
     /// Apple Pay on a supported Apple device.
     ApplePay,
+    /// BLIK, a popular payment method in Poland.
+    Blik,
     /// Credit or debit card.
     Card,
     /// Google Pay on a supported Android device, Chromebook, or Google Chrome browser.
     GooglePay,
+    /// Kakao Pay, a popular payment method in Korea.
+    KakaoPay,
+    /// Korean payment methods, which includes over 20 payment options for the Korean market. Check `underlying_payment_method.korea_local` for information about the Korean payment method used to pay.
+    KoreaLocal,
+    /// Korean local credit or debit card.
+    SouthKoreaLocalCard,
+    /// MB WAY, a popular payment method in Portugal.
+    MbWay,
+    /// Naver Pay, a popular payment method in Korea.
+    NaverPay,
+    /// Payco, a popular payment method in Korea.
+    Payco,
     /// PayPal.
     Paypal,
+    /// Pix, popular in Brazil.
+    Pix,
+    /// Samsung Pay, a popular payment method in South Korea.
+    SamsungPay,
+    /// Unified Payments Interface (UPI), popular in India.
+    Upi,
+    /// WeChat Pay, a popular payment method in China.
+    WechatPay,
 }
 
 /// Describes how this payment method was saved.
@@ -1180,6 +1202,60 @@ impl AsRef<str> for TaxCategory {
     }
 }
 
+/// Type of Korean payment method used to pay.
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "strum", derive(EnumString, Display))]
+#[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "strum", strum(serialize_all = "snake_case"))]
+pub enum SouthKoreaLocalCardType {
+    /// BC Card (BCard), a kind of card issued in Korea. (비씨카드).
+    Bc,
+    /// Card issued by Citi Bank in Korea. (한국씨티은행).
+    Citi,
+    /// Card issued by Hana Bank in Korea. (하나카드).
+    Hana,
+    /// Hyundai Card, a credit card issued by Hyundai in Korea. (현대카드).
+    Hyundai,
+    /// Card issued by Jeju Bank in Korea. (제주은행).
+    Jeju,
+    /// Card issued by Jeonbuk Bank in Korea. (전북은행).
+    Jeonbuk,
+    /// Card issued by Kakaobank in Korea. (주식회사 카카오뱅크).
+    Kakaobank,
+    /// Card issued by K Bank in Korea. (케이뱅크).
+    Kbank,
+    /// Card issued by KDB Bank in Korea. (한국산업은행).
+    Kdbbank,
+    /// Card issued by Kookmin Bank in Korea. (국민은행).
+    Kookmin,
+    /// Card issued by Kwangju Bank in Korea. (광주은행).
+    Kwangju,
+    /// Lotte Card, a credit card issued by the Lotte Corporation in Korea. (롯데카드).
+    Lotte,
+    /// Card issued by MG Community Credit Cooperatives (KFCC) in Korea. (MG새마을금고).
+    Mg,
+    /// NH Card, a card issued by Nonghyup Bank in Korea. (NH농협은행).
+    Nh,
+    /// Card issued by Korea Post. (우체국예금보험).
+    Post,
+    /// Samsung Card, a card issued by Samsung in Korea. (삼성카드).
+    Samsung,
+    /// Card issued by the Korean Federation of Savings Banks in Korea. (저축은행중앙회).
+    Savingsbank,
+    /// Card issued by Shinhan Bank in Korea. (주식회사 신한은행).
+    Shinhan,
+    /// Card issued by the National Credit Unit Federation of Korea (Shinhyup) in Korea. (신한은행 신협).
+    Shinhyup,
+    /// Card issued by the National Federation of Fisheries Cooperation (Suhyup) in Korea. (수협은행).
+    Suhyup,
+    /// Card issued by Toss Bank in Korea. (토스뱅크).
+    Tossbank,
+    /// Underlying payment method not recognized.
+    Unknown,
+    /// Card issued by Woori Bank in Korea. (주식회사 우리은행).
+    Woori,
+}
+
 /// Type of payment method used for this payment attempt.
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "strum", derive(EnumString, Display))]
@@ -1192,18 +1268,40 @@ pub enum PaymentMethodType {
     ApplePay,
     /// Bancontact, popular in Belgium.
     Bancontact,
+    /// BLIK, a popular payment method in Poland.
+    Blik,
     /// Credit or debit card.
     Card,
     /// Google Pay on a supported Android device, Chromebook, or Google Chrome browser.
     GooglePay,
     /// iDEAL, popular in the Netherlands.
     Ideal,
+    /// Kakao Pay, a popular payment method in Korea.
+    KakaoPay,
+    /// Korean payment methods, which includes over 20 payment options for the Korean market. Check `underlying_payment_method.korea_local` for information about the Korean payment method used to pay.
+    KoreaLocal,
+    /// Korean local credit or debit card.
+    SouthKoreaLocalCard,
+    /// MB WAY, a popular payment method in Portugal.
+    MbWay,
+    /// Naver Pay, a popular payment method in Korea.
+    NaverPay,
     /// Payment recorded offline.
     Offline,
+    /// Payco, a popular payment method in Korea.
+    Payco,
     /// PayPal.
     Paypal,
+    /// Pix, popular in Brazil. Available in early access.
+    Pix,
+    /// Samsung Pay, a popular payment method in Korea.
+    SamsungPay,
     /// Payment method not known.
     Unknown,
+    /// Unified Payments Interface (UPI), popular in India. Available in early access.
+    Upi,
+    /// WeChat Pay, a popular payment method in China.
+    WechatPay,
     /// Wire transfer, sometimes called bank transfer.
     WireTransfer,
 }
