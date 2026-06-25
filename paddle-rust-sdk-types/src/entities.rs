@@ -422,6 +422,15 @@ pub struct PayPal {
     pub reference: String,
 }
 
+/// Korean local credit or debit card metadata
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SouthKoreaLocalCard {
+    /// Type of Korean payment method used to pay.
+    pub r#type: SouthKoreaLocalCardType,
+    /// Last four digits of the card used to pay.
+    pub last4: String,
+}
+
 /// Represents a customer payment method entity.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PaymentMethod {
@@ -437,6 +446,8 @@ pub struct PaymentMethod {
     pub card: Option<Card>,
     /// Information about the PayPal payment method saved. `null` unless `type` is `paypal`.
     pub paypal: Option<PayPal>,
+    /// Information about the Korean local credit or debit card saved. `null` unless `type` is `south_korea_local_card`.
+    pub south_korea_local_card: Option<SouthKoreaLocalCard>,
     /// Describes how this payment method was saved.
     pub origin: PaymentMethodOrigin,
     /// RFC 3339 datetime string of when this entity was saved. Set automatically by Paddle.
@@ -768,6 +779,10 @@ pub struct MethodDetails {
     pub r#type: PaymentMethodType,
     /// Information about the credit or debit card used to pay. `null` unless `type` is `card`.
     pub card: Option<Card>,
+    /// Information about the Korean credit or debit card used to pay. `null` unless `type` is `south_korea_local_card`.
+    pub south_korea_local_card: Option<SouthKoreaLocalCard>,
+    /// Information about the PayPal account used to pay. `null` unless `type` is `paypal`.
+    pub paypal: Option<PayPal>,
 }
 
 /// Notification payload. Includes the new or changed event.
