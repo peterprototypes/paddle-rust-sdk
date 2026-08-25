@@ -110,6 +110,12 @@ impl FromStr for Signature {
 }
 
 fn decode_hex(s: &str) -> Result<Vec<u8>, ParseIntError> {
+    if !s.len().is_multiple_of(2) {
+        // Reuse a real parse failure instead of indexing one byte past the
+        // end of `s`, which panics for odd-length input.
+        return Err(u8::from_str_radix("", 16).unwrap_err());
+    }
+
     (0..s.len())
         .step_by(2)
         .map(|i| u8::from_str_radix(&s[i..i + 2], 16))
@@ -136,6 +142,12 @@ mod tests {
 
         let signature_str =
             "ts=1671552a777;h1=eb4d0dc8853be92b7f063b9f3ba5233eb920a09459b6e6b2c26705b4364db151";
+        assert!(signature_str.parse::<Signature>().is_err());
+    }
+
+    #[test]
+    fn odd_length_h1_returns_error_instead_of_panicking() {
+        let signature_str = "ts=1671552777;h1=abc";
         assert!(signature_str.parse::<Signature>().is_err());
     }
 }
