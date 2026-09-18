@@ -413,13 +413,22 @@ pub struct Customer {
     pub import_meta: Option<ImportMeta>,
 }
 
-/// PayPal metadata
+/// PayPal metadata for a saved payment method
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PayPal {
     /// Email address associated with the PayPal account.
     pub email: String,
     /// PayPal payment method identifier.
     pub reference: String,
+}
+
+/// PayPal metadata for a payment attempt
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PayPalPayment {
+    /// Email address associated with the PayPal account.
+    pub email: String,
+    /// PayPal billing agreement identifier. Only populated for subscription payments where a billing agreement was created between the customer and PayPal. `null` for one-off PayPal payments.
+    pub reference: Option<String>,
 }
 
 /// Korean local credit or debit card metadata
@@ -782,7 +791,7 @@ pub struct MethodDetails {
     /// Information about the Korean credit or debit card used to pay. `null` unless `type` is `south_korea_local_card`.
     pub south_korea_local_card: Option<SouthKoreaLocalCard>,
     /// Information about the PayPal account used to pay. `null` unless `type` is `paypal`.
-    pub paypal: Option<PayPal>,
+    pub paypal: Option<PayPalPayment>,
 }
 
 /// Notification payload. Includes the new or changed event.
